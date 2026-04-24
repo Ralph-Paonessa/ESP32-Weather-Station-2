@@ -9,6 +9,10 @@ Rev. October 7, 2023
 
 // ========  ESP32 Libraries  ================  
 
+#include <Arduino.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+
 // ESP Async Web Server
 //#include <FSImpl.h>
 //#include <vfs_api.h>
@@ -50,7 +54,9 @@ Rev. October 7, 2023
 //#include <WiFiScan.h>
 //#include <WiFiServer.h>
 #include "Logging.h"
-#include <WiFiSTA.h>
+
+//#include <WiFiSTA.h>    // IPv6Address  not defined???
+
 //#include <WiFiUdp.h>
 #include <ESPAsyncWebServer.h>
 

@@ -14,11 +14,15 @@
 
 #include <list>
 using std::list;
+
 #include "App_settings.h"		// for namespace App_Settings
-#include "ListFunctions.h"		// namespace ListFunctions
-#include "SensorData.h"
-using namespace ListFunctions;
 using namespace App_Settings;
+
+#include "ListFunctions.h"		// namespace ListFunctions
+using namespace ListFunctions;
+
+#include "SensorData.h"
+
 
 class Testing {
 

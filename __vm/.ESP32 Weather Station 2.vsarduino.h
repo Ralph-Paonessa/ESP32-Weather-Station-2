@@ -17,9 +17,8 @@
 // User Defined Errors to Ignore below... [vm.intellisense.ignore-error-codes]
 #include <arduino.h>
 #include <pins_arduino.h> 
-#include "..\ESP32 Weather Station 2.ino"
 #include "..\Weather Station.ino"
-#include "..\Weather Stx0Logging.ino"
+#include "..\Weather Stx0 Logging.ino"
 #include "..\Weather Stx1 Sensors.ino"
 #include "..\Weather Stx2 WiFi routines.ino"
 #include "..\Weather Stx3 WebServer.ino"

@@ -1,4 +1,20 @@
+#include "App_Settings.h"
+#include "DebugFlags.h"
+#include "PinAssignments.h"
+#include "Utilities.h"
+#include "FileOperations.h"
+#include "GPSModule.h"
+#include "SDCard.h"
+#include "dataPoint.h"
+#include "SensorData.h"
+#include "WindSpeed2.h"
+#include "WindDirection.h"
 
+#include <Adafruit_MLX90614.h>
+#include <SparkFun_VEML6075_Arduino_Library.h>
+#include <Adafruit_BME280.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 WindSpeed windSpeed(
 	DAVIS_SPEED_CAL_FACTOR,
@@ -54,7 +70,7 @@ int countOneWireDevices() {
 /// Returns temperature (F) from DS18B20 sensor.
 /// </summary>
 /// <returns></returns>
-float reading_Temp_F_DS18B20() {
+float read_Temp_F_DS18B20() {
 	sensor_T.requestTemperatures();	// Begin DS18B20 sensor read.
 	float temp = sensor_T.getTempFByIndex(0);	// Retrieve reading
 	return temp;
@@ -270,7 +286,7 @@ void readSensors() {
 	}
 	dataPoint dp;	// holds successive readings
 	// Temperature.
-	dp = dataPoint(now(), reading_Temp_F_DS18B20());
+	dp = dataPoint(now(), read_Temp_F_DS18B20());
 	d_Temp_F.addReading(dp);
 	// UV readings.
 	dp = dataPoint(now(), sensor_UV.uva());
