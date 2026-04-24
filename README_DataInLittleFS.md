@@ -29,7 +29,7 @@ Data previously has been served using a function that returns a String:
 
 This must be converted to a character array using c_str().
 
-    request->send_P(200, "text/plain", d_Insol.data_10_min_string_delim().c_str());
+    request->send(200, "text/plain", d_Insol.data_10_min_string_delim().c_str());
 
 At present, I've created a new function to read that data file and return
 the results as a String.
@@ -39,7 +39,7 @@ the results as a String.
 This seems *inefficient* because fileReadString operates by reading the file 
 characters into a char[] array, and then converting it to String using
 String(array). But it must then be *converted back* to a char[] array for 
-request->send_P(). But I don't see a preferable approach. In practice, this method 
+request->send(). But I don't see a preferable approach. In practice, this method 
 may not put much of a burdern on the processor.
 
 ## When to retrieve data from flash
