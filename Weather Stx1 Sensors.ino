@@ -474,7 +474,7 @@ void processReadings_day() {
 /// </summary>
 void addDummyData() {
 #if defined(VM_DEBUG)
-	Serial.printf("\naddDummyData now() = %li\n", now());
+	Serial.printf("\naddDummyData now() = %lui\n", now());
 
 	// 10-min
 	d_Temp_F.addDummy_data_10_min(65, -0.75, 24, 1765412100);

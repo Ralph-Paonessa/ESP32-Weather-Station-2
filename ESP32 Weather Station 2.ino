@@ -333,34 +333,33 @@ void resetInterruptCounts() {
 }
 
 /// <summary>
-/// Recover recent sensor readings from LittleFS.
+/// Recover recent sensor readings from LittleFS. XXX ONLY CODED FOR d_Temp_F!!!
+/// <remarks>XXX ONLY CODED FOR d_Temp_F!!!</remarks>
 /// </summary>
 void recover_data() {
 	unsigned long lastTime = lastReadingTime_fromFile();
+	Serial.printf("recover_data(): lastReadingTime_fromFile = %ul\n", lastTime);
+
 	// 10-min lists
+	Serial.println("recover_data(): 10-min lists");
 	if (d_Temp_F.isDatafile()
 		&& (now() - lastTime) > DATA_RECOVERY_10_MIN_CUTOFF)
 	{
 		d_Temp_F.data_10_min_fromFile();
-
-
 		sd.logStatus("Recovered 10-min data.", millis());
-
-
 	}
 
 	// 60-min lists
+	Serial.println("recover_data(): 60-min lists");
 	if (d_Temp_F.isDatafile()
 		&& (now() - lastTime) > DATA_RECOVERY_60_MIN_CUTOFF)
 	{
-
-
 		d_Temp_F.data_60_min_fromFile();
 		sd.logStatus("Recovered 60-min data.", millis());
-
 	}
 
 	// day lists
+	Serial.println("recover_data(): day lists");
 	if (d_Temp_F.isDatafile()
 		&& (now() - lastTime) > DATA_RECOVERY_DAY_CUTOFF)
 	{
@@ -400,7 +399,8 @@ void setup() {
 	msg += LINE_SEPARATOR_MAJOR + "\n\n";
 	Serial.print(msg);
 
-	//  ==========  CREATE SD CARD   ========== //
+	//  SETUP: ==========  CREATE SD CARD   ========== //
+	Serial.println("SETUP: ==========  CREATE SD CARD   ==========");
 	// (Do this first - need SD card for logging.)
 	_isGood_SDCard = sd.create(SPI_CS_PIN, _isDEBUG_BypassSDCard);
 	// Begin status log entries to SD card.
@@ -414,10 +414,12 @@ void setup() {
 	logDebugStatus();
 	logApp_Settings();
 
-	//  ==========  CREATE WIFI NETWORK   ========== //	
+	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
+	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
 	wifiSetupAndConnect();
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
+	Serial.println("SETUP: ==========  CREATE ASYNC WEB SERVER   ==========");
 	serverRouteHandler();	// Define routes for server requests.
 	sd.logStatus("Async web server routes defined.", millis());
 	server.begin();			// Start async web server.
@@ -425,6 +427,7 @@ void setup() {
 
 
 	// ==========   CREATE GPS AND SYNC TO GET TIME   ========== //
+	Serial.println("SETUP: ==========  CREATE GPS AND SYNC TO GET TIME   ==========");
 	// XXX  Need code to alter power of GPS!!!  XXX
 
 	/* 	Format for setting s serial port:
@@ -454,9 +457,13 @@ void setup() {
 
 	// ==========  CREATE SENSORS  ========== //
 
+	Serial.println("SETUP: ==========  CREATE SENSORS   ==========");
 	sensors_AddLabels();	// Add labels and units to the SensorData instances.
 	sensors_begin();
 	sensors_createFiles();
+
+	// ==========  RECOVER DATA   ==========
+	Serial.println("SETUP: ==========  RECOVER DATA   ==========");
 	// Retrieve recent saved data from LittleFS.
 	recover_data();
 
@@ -465,9 +472,11 @@ void setup() {
 	_oldMonth = month();
 	_oldYear = year();
 
-#if defined(VM_DEBUG)
-	////////  TESTING   ////////
+	//#if defined(VM_DEBUG)
+		////////  TESTING   ////////
+	Serial.println("SETUP: ==========  TESTING   ==========");
 	if (_isDEBUG_addDummyDataLists) {
+		Serial.println("SETUP: ==========  ADD DUMMY DATA   ==========");
 		addDummyData();
 		saveLastReadTime_toFile(now());
 		Serial.println();
@@ -477,7 +486,7 @@ void setup() {
 	if (_isDEBUG_run_test_in_setup) {
 		test.testCodeForSetup3(true);
 	}
-#endif
+	//#endif
 
 	sd.logData(columnNames());	// Write column names to data log.
 	sd.logStatus_indent("DATA COLUMNS:\t" + columnNames());	// Write column names to status log.
@@ -503,6 +512,7 @@ void setup() {
 	// Create interrupts after everything else has completed.
 
 	// ==========  CREATE ANEMOMETER HARDWARE INTERRUPT  ========== //
+	Serial.println("SETUP: ==========  CREATE ANEMOMETER HARDWARE INTERRUPT   ==========");
 	// Anemometer hardware interrupt for detecting rotation.
 	pinMode(WIND_SPEED_PIN, INPUT_PULLUP);
 	attachInterrupt(digitalPinToInterrupt(WIND_SPEED_PIN),
@@ -513,6 +523,7 @@ void setup() {
 	attachInterrupt(digitalPinToInterrupt(FAN_SPEED_PIN), ISR_onFanHalfRotation, FALLING);
 
 	// ==========  CREATE TIMER INTERRUPT  ========== //
+	Serial.println("SETUP: ==========  CREATE TIMER INTERRUPT   ==========");
 	/*
 	 Timer interrupt fires every BASE_PERIOD_SEC to
 	 trigger counts of anemometer and fan rotations.

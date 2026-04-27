@@ -495,10 +495,10 @@ void SensorData::createFiles(bool isConvertZeroToEmpty, unsigned int decimalPlac
 	_decimalPlaces = decimalPlaces;
 #if defined(VM_DEBUG)
 	if (LittleFS.mkdir(SENSOR_DATA_DIR_PATH)) {
-		Serial.printf("Created or found folder %s for %s.\n", SENSOR_DATA_DIR_PATH, _filenamePrefix);
+		Serial.printf("Created or found folder %s for %s.\n", SENSOR_DATA_DIR_PATH.c_str(), _filenamePrefix.c_str());
 	}
 	else {
-		Serial.printf("Failed to create or find folder %s for %s.\n", SENSOR_DATA_DIR_PATH, _filenamePrefix);
+		Serial.printf("Failed to create or find folder %s for %s.\n", SENSOR_DATA_DIR_PATH.c_str(), _filenamePrefix.c_str());
 	}
 #endif
 	if (!fileCreateOrExists(LittleFS, sensorFilepath("_10_min"))) {
@@ -508,7 +508,7 @@ void SensorData::createFiles(bool isConvertZeroToEmpty, unsigned int decimalPlac
 		Serial.printf("ERROR: Could not create or find %s\n", sensorFilepath("_60_min").c_str());
 	}
 	if (!fileCreateOrExists(LittleFS, sensorFilepath("_dayMaxMin"))) {
-		Serial.printf("ERROR: Could not create or find %s\n", sensorFilepath("_dayMaxMin"));
+		Serial.printf("ERROR: Could not create or find %s\n", sensorFilepath("_dayMaxMin").c_str());
 	}
 }
 

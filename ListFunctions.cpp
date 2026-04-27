@@ -241,7 +241,13 @@ list<String> ListFunctions::splitString(const String& str, const char delim) {
 /// List of "time,value" dataPoints retrieved from a delimited string.
 /// </returns>
 list<dataPoint> ListFunctions::listData_fromString(String& str) {
-	list<dataPoint> dPoints;		// List to hold data points.
+	
+
+	list<dataPoint> dPoints;	// List to hold data points.
+	if (str == "") {
+		Serial.println("ListFunctions::listData_fromString: input str is empty");
+		return dPoints;			// empty list of data points.
+	}
 	std::istringstream ss(str.c_str());
 	while (!ss.eof()) {
 		std::string sub;			// empty string to hold substrings

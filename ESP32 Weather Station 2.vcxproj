@@ -96,6 +96,7 @@
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
+    <None Include="README_ProjectStatus.md" />
     <None Include="partitions.csv" />
     <None Include="README.md" />
     <None Include="README_charts.md" />

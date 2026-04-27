@@ -26,6 +26,7 @@
     <None Include="README_Weather_Measurements.md" />
     <None Include="README_wind.md" />
     <None Include="Sensor readings.cd" />
+    <None Include="README_ProjectStatus.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileOperations.cpp">
