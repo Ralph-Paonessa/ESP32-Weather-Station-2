@@ -1,5 +1,5 @@
 #include "App_Settings.h"
-#include "DebugFlags.h"
+//#include "DebugFlags.h" -- moved to main .ino
 #include "PinAssignments.h"
 #include "Utilities.h"
 #include "FileOperations.h"
@@ -278,7 +278,7 @@ void readFan() {
 /// Reads and saves data from sensors.
 /// </summary>
 void readSensors() {
-	unsigned long timeStart = millis();
+	//unsigned long timeStart = millis();
 	if (_isDEBUG_simulateSensorReadings) {
 		// Simulate sensor readings.
 		readSensors_Simulate();
@@ -317,7 +317,7 @@ void readSensors() {
 	dp = dataPoint(now(), insol_norm);
 	d_Insol.addReading(dp);	// % Insolation
 
-	unsigned int timeEnd = millis() - timeStart;
+	//unsigned int timeEnd = millis() - timeStart;
 }
 
 /// <summary>

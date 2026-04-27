@@ -37,9 +37,6 @@
     <ClCompile Include="ListFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Logging.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SDCard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -67,7 +64,7 @@
     <ClCompile Include="WindSpeed2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Weather Station.ino" />
+    <ClCompile Include="ESP32 Weather Station 2.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.ESP32 Weather Station 2.vsarduino.h">
@@ -79,9 +76,6 @@
     <ClInclude Include="DataPoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DebugFlags.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FileOperations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -89,9 +83,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ListFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PinAssignments.h">
@@ -121,6 +112,15 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="board XXX IS THIS OK.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
+    <Text Include="Data\Text.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
+    <Text Include="Data\Sensor data\wind_10_min.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
+    <Text Include="Data\Sensor data\last_time.txt">
       <Filter>Misc Files</Filter>
     </Text>
   </ItemGroup>

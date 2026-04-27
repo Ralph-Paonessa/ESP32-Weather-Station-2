@@ -92,7 +92,7 @@ void SensorData::addReading(dataPoint dp) {
 	*
 	USING A FACTOR TO DEFINE THE OUTLIER RANGE *SUCKS*
 	FOR READINGS NEAR ZERO!!!
-	*
+	*/
 	/*
 	DANGER:
 	On the first pass, _avgMoving = 0, and so the high and low outlier
@@ -502,13 +502,13 @@ void SensorData::createFiles(bool isConvertZeroToEmpty, unsigned int decimalPlac
 	}
 #endif
 	if (!fileCreateOrExists(LittleFS, sensorFilepath("_10_min"))) {
-		Serial.printf("ERROR: Could not create or find %s", sensorFilepath("_10_min").c_str());
+		Serial.printf("ERROR: Could not create or find %s\n", sensorFilepath("_10_min").c_str());
 	}
 	if (!fileCreateOrExists(LittleFS, sensorFilepath("_60_min"))) {
-		Serial.printf("ERROR: Could not create or find %s", sensorFilepath("_60_min").c_str());
+		Serial.printf("ERROR: Could not create or find %s\n", sensorFilepath("_60_min").c_str());
 	}
 	if (!fileCreateOrExists(LittleFS, sensorFilepath("_dayMaxMin"))) {
-		Serial.printf("ERROR: Could not create or find %s", sensorFilepath("_dayMaxMin"));
+		Serial.printf("ERROR: Could not create or find %s\n", sensorFilepath("_dayMaxMin"));
 	}
 }
 

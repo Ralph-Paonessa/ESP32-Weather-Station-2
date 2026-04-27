@@ -223,10 +223,16 @@ void SDCard::logStatus(const String& msg, unsigned long millisec) {
 	}
 }
 
-// Create a file on the SD card, if it doesn't
-// already exist. Returns true on success
+// Returns true on success
 // or if the file already exists; otherwise
 // returns false.
+
+/// <summary>
+/// Creates a file on the SD card if it doesn't
+/// already exist. 
+/// </summary>
+/// <param name="path">File path.</param>
+/// <returns>True is new file created, false if </returns>
 bool SDCard::fileCreateOrExists(const String& path) {
 	if (_isBypassSDCard) {
 		return false;

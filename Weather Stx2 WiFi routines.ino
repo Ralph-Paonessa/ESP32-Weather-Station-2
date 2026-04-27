@@ -12,7 +12,6 @@ WiFiMulti wifiMulti;	// WiFiMulti instance to connect to wifi.
 /// <returns>True if connection is successful.</returns>
 bool wifiConnect(unsigned int timeout_sec) {
 	unsigned long timeStart = millis();
-	bool isConnected = false;
 	// Try to connect for timeout_sec.
 	while (
 		wifiMulti.run(WIFI_CONNECT_TIMEOUT_SEC * 1000) != WL_CONNECTED
@@ -70,6 +69,7 @@ bool checkWifiConnection() {
 		}
 		return isConnected;
 	}
+	return isConnected;
 }
 
 /// <summary>

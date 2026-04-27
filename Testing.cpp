@@ -14,7 +14,7 @@
 void Testing::testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop) {
 	Serial.println(LINE_SEPARATOR);
 	Serial.print("TEST in setup to run for "); Serial.print(runTime_sec); Serial.println(" sec/n");
-	unsigned long timeStart = millis();
+	//unsigned long timeStart = millis();
 	/********************************/
 	/* INSERT DEFINITIONS HERE.     */
 
@@ -62,7 +62,6 @@ void Testing::testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop) 
 void Testing::testCodeForSetup2(bool isInfiniteLoop) {
 	Serial.println(LINE_SEPARATOR);
 	Serial.println("TEST START in setup()");
-	unsigned long timeStart = millis();
 
 	String s2 = "1,64~2,~3,63~4,~5,61";
 	Serial.println("String to convert to list:");
@@ -84,7 +83,7 @@ void Testing::testCodeForSetup2(bool isInfiniteLoop) {
 void Testing::testCodeForSetup3(bool isInfiniteLoop) {
 	Serial.println(LINE_SEPARATOR);
 	Serial.println("TEST START in setup()");
-	unsigned long timeStart = millis();
+	//unsigned long timeStart = millis();
 
 	String s = "1,64~2,~3,63~4,~5,61";
 
@@ -114,7 +113,7 @@ void Testing::testCodeForSetup3(bool isInfiniteLoop) {
 void Testing::testCodeForSetup4(bool isInfiniteLoop) {
 	Serial.println(LINE_SEPARATOR);
 	Serial.println("TEST START in setup()");
-	unsigned long timeStart = millis();
+	//unsigned long timeStart = millis();
 
 	char delimiter = '|';
 	Serial.print("Delimiter = "); Serial.println(delimiter);
@@ -150,7 +149,7 @@ void Testing::testCodeForSetup5(bool isInfiniteLoop) {
 #if defined(VM_DEBUG)
 	Serial.println(LINE_SEPARATOR);
 	Serial.println("TEST START in setup()");
-	unsigned long timeStart = millis();
+	//unsigned long timeStart = millis();
 
 	std::string s = "";
 	if (s.empty()) {

@@ -157,6 +157,7 @@ bool GPSModule::syncToGPS(SDCard& sdCard, bool isSimulate) {
 			}
 		}
 	}
+	return false;
 }
 
 /// <summary>

@@ -76,7 +76,7 @@ void logDeviceStatus() {
 }
 
 /// <summary>
-/// Logs state of debug options.
+/// Logs debug flags that are set.
 /// </summary>
 void logDebugStatus() {
 #if defined(VM_DEBUG)
@@ -145,7 +145,7 @@ void logLittleFsSpaceUsage() {
 }
 
 /// <summary>
-/// LogS the application settings to the STATUS file.
+/// Logs the application settings to the STATUS file.
 /// </summary>
 void logApp_Settings() {
 	String msg = "APP SETTINGS:";
