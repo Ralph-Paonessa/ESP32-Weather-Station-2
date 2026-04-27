@@ -47,8 +47,19 @@ namespace FileOperations {
 	/// <returns>String containing file contents.</returns>
 	String fileRead(fs::FS& fs, const char* path);
 
+	/// <summary>
+	/// Renames file path1 to path2.
+	/// </summary>
+	/// <param name="fs">File system.</param>
+	/// <param name="path1">File to rename.</param>
+	/// <param name="path2">New name.</param>
 	void fileRename(fs::FS& fs, const char* path1, const char* path2);
 
+	/// <summary>
+	/// Deletes file.
+	/// </summary>
+	/// <param name="fs">File system.</param>
+	/// <param name="path">File to delete.</param>
 	void fileDelete(fs::FS& fs, const char* path);
 
 	/// <summary>

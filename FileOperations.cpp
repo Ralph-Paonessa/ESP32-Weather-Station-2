@@ -72,7 +72,8 @@ String FileOperations::fileRead(fs::FS& fs, const char* path) {
 
 	File file = fs.open(path, FILE_READ);
 	if (!file) {
-		Serial.println("ERROR: fileRead failed to open file for reading");
+		Serial.print("ERROR: fileRead failed to open file for reading: ");
+		Serial.println(path);
 		return "";
 	}
 	char stringC[DATA_FILE_BUFFER_SIZE] = {  };	// C-string array to hold values from stream.
@@ -91,14 +92,16 @@ void FileOperations::fileWrite(fs::FS& fs, const char* path, const char* message
 
 	File file = fs.open(path, FILE_WRITE);
 	if (!file) {
-		Serial.println("ERROR: fileWrite Failed to open file for writing");
+		Serial.print("ERROR: fileWrite Failed to open file for writing: ");
+		Serial.println(path);
 		return;
 	}
 	if (file.print(message)) {
 		//Serial.println("fileWrite File written.");
 	}
 	else {
-		Serial.println("ERROR: fileWrite Write failed.");
+		Serial.print("ERROR: fileWrite Write failed: ");
+		Serial.println(path);
 	}
 	file.close();
 }
@@ -108,14 +111,17 @@ void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* messag
 	Serial.printf("fileAppend Appending to file: %s\n", path);
 	File file = fs.open(path, FILE_APPEND);
 	if (!file) {
-		Serial.println("ERROR: fileAppend Failed to open file for appending.");
+		Serial.print("ERROR: fileAppend Failed to open file for appending: ");
+		Serial.println(path);
 		return;
 	}
 	if (file.print(message)) {
-		Serial.println("fileAppend Message appended.");
+		Serial.println("fileAppend Message appended: ");
+		Serial.println(path);
 	}
 	else {
-		Serial.println("ERROR: fileAppend Append failed.");
+		Serial.print("ERROR: fileAppend Append failed: ");
+		Serial.println(path);
 	}
 	file.close();
 }
@@ -126,7 +132,8 @@ void FileOperations::fileRename(fs::FS& fs, const char* path1, const char* path2
 		Serial.println("File renamed.");
 	}
 	else {
-		Serial.println("ERROR: Rename failed.");
+		Serial.print("ERROR: Rename failed: ");
+		Serial.print(path1); Serial.print(" to "); Serial.println(path2);
 	}
 }
 
@@ -136,7 +143,8 @@ void FileOperations::fileDelete(fs::FS& fs, const char* path) {
 		Serial.println("File deleted.");
 	}
 	else {
-		Serial.println("ERROR: Delete failed.");
+		Serial.print("ERROR: Delete failed.");
+		Serial.println(path);
 	}
 }
 
@@ -149,27 +157,21 @@ void FileOperations::fileDelete(fs::FS& fs, const char* path) {
 /// <param name="path">Full path including the filename and extension.</param>
 /// <returns>True on success</returns>
 bool FileOperations::fileCreateOrExists(fs::FS& fs, const String& path) {
-	//if (true)            //(!_isBypassSDCard)
-	//{
-		// If the file doesn't exist, create it.
+	// If the file doesn't exist, create it.
 	if (fs.exists(path)) {
 		Serial.printf("File %s exists.\n", path.c_str());
 		return true;
 	}
-	else {
-		Serial.printf("File %s does not exist.\n", path.c_str());
-	}
-
-	// File does not exist, so create empty file.
+	// File not found, so create new file.
+	Serial.printf("File %s does not exist.\n", path.c_str());
 	File file = fs.open(path, FILE_WRITE);
 	if (!file) {
-		Serial.printf("File %s could not be opened.\n", path.c_str());
+		Serial.printf("File %s could not be created/opened.\n", path.c_str());
 		return false;
 	}
 	else {
-		Serial.printf("File %s was opened and will be closed.\n", path.c_str());
+		Serial.printf("File %s was created/opened and will be closed.\n", path.c_str());
 		file.close();
 		return true;
 	}
-	//}
 }
