@@ -110,8 +110,8 @@ namespace App_Settings {
 	/// The number of (4.0 sec) base periods in a report interval.
 	/// </summary>
 	enum BasePeriodsInInterval {
-		BASE_PERIODS_IN_10_MIN = 150,	//   600 sec
-		BASE_PERIODS_IN_60_MIN = 900,	//	3600 sec
+		BASE_PERIODS_IN_10_MIN = 10,	// XXX SHOULD BE 150!!! XXX //   600 sec
+		BASE_PERIODS_IN_60_MIN = 45,	// XXX SHOULD BE 900!!! XXX //	3600 sec
 		BASE_PERIODS_IN_24_HR = 21600	// 86400 sec
 	};
 

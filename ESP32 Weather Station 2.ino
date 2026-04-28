@@ -131,7 +131,7 @@ bool _isDEBUG_BypassWebServer = false;			// Bypass Web Server.
 bool _isDEBUG_run_test_in_setup = false;		// Run only test code inserted in Setup.
 bool _isDEBUG_run_test_in_loop = false;			// Run test code inserted in Loop.
 bool _isDEBUG_addDummyDataLists = false;		// Add dummy data.
-bool _isDEBUG_simulateSensorReadings = false;	// Add dummy sensor reading values.
+bool _isDEBUG_simulateSensorReadings = true;	// Add dummy sensor reading values.
 bool _isDEBUG_simulateWindReadings = false;		// Add dummy wind reading values.
 bool _isDEBUG_AddDelayInLoop = false;			// Add delay in loop.
 const int _LOOP_DELAY_DEBUG_ms = 100;			// Debug delay in loop, msec.
@@ -333,12 +333,19 @@ void resetInterruptCounts() {
 }
 
 /// <summary>
-/// Recover recent sensor readings from LittleFS. XXX ONLY CODED FOR d_Temp_F!!!
-/// <remarks>XXX ONLY CODED FOR d_Temp_F!!!</remarks>
+/// Read recent sensor readings from LittleFS and load them back into memory.
+/// /// 
+/// XXX ONLY CODED FOR d_Temp_F!!!
+/// /// 
+/// <remarks>Used to recover recent data lost from memory after reboot.
+/// 
+/// XXX ONLY CODED FOR d_Temp_F!!!
+/// 
+/// </remarks>
 /// </summary>
-void recover_data() {
+void recoverData() {
 	unsigned long lastTime = lastReadingTime_fromFile();
-	Serial.printf("recover_data(): lastReadingTime_fromFile = %ul\n", lastTime);
+	Serial.printf("recover_data(): lastReadingTime_fromFile = %uli\n", lastTime);
 
 	// 10-min lists
 	Serial.println("recover_data(): 10-min lists");
@@ -465,7 +472,7 @@ void setup() {
 	// ==========  RECOVER DATA   ==========
 	Serial.println("SETUP: ==========  RECOVER DATA   ==========");
 	// Retrieve recent saved data from LittleFS.
-	recover_data();
+	recoverData();
 
 	// Date info to determine when new day begins.
 	_oldDay = day();
@@ -546,6 +553,8 @@ void setup() {
 	timerAttachInterrupt(timer_base, &ISR_onTimer_count);
 	timerAlarm(timer_base, duration_count, true, 0);		// Trigger every BASE_PERIOD_SEC.
 	*/
+
+	Serial.println("SETUP: ==========  COMPLETED CREATE TIMER INTERRUPT   ==========");
 
 	msg = "CURRENT LOCAL TIME is " + gps.dateTime();
 	(IS_DAYLIGHT_TIME) ? msg = " Daylight time." : msg = " Standard time.";

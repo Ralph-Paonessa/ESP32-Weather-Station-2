@@ -324,6 +324,16 @@ void readSensors() {
 /// Adds simulated values to sensor readings 
 /// (doesn't include wind readings).
 /// </summary>
+/// <remarks>
+/// Has been coded to simulate:
+/// d_Temp_F
+/// d_UVIndex
+/// d_RH
+/// d_Pres_mb
+/// d_Pres_seaLvl_mb
+/// d_IRSky_C
+/// d_Insol
+/// </remarks>
 void readSensors_Simulate() {
 #if defined(VM_DEBUG)
 	dataPoint dp;	// holds reading

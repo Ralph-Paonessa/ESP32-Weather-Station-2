@@ -27,6 +27,18 @@
     <None Include="README_wind.md" />
     <None Include="Sensor readings.cd" />
     <None Include="README_ProjectStatus.md" />
+    <None Include="Data\js\chart.js" />
+    <None Include="Data\js\highcharts.js" />
+    <None Include="Data\html\Admin.html" />
+    <None Include="Data\html\chart.html" />
+    <None Include="Data\html\gps.html" />
+    <None Include="Data\html\sensors.html" />
+    <None Include="Data\html\summary.html" />
+    <None Include="Data\css\highcharts.alt.css" />
+    <None Include="Data\css\highcharts.css" />
+    <None Include="Data\css\highcharts-custom.css" />
+    <None Include="Data\css\style.light.min.css" />
+    <None Include="Data\css\style.min.css" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileOperations.cpp">
@@ -124,5 +136,37 @@
     <Text Include="Data\Sensor data\last_time.txt">
       <Filter>Misc Files</Filter>
     </Text>
+    <Text Include="Data\test1line.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
+    <Text Include="Data\test3lines.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
+    <Text Include="Data\Sensor data\d_Temp_F_10_min.txt">
+      <Filter>Misc Files</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\img\chart-icon-black-150px.png">
+      <Filter>Misc Files</Filter>
+    </Image>
+    <Image Include="Data\img\chart-icon-red-150px.png">
+      <Filter>Misc Files</Filter>
+    </Image>
+    <Image Include="Data\img\favicon-32.png">
+      <Filter>Misc Files</Filter>
+    </Image>
+    <Image Include="Data\img\favicon-180.png">
+      <Filter>Misc Files</Filter>
+    </Image>
+    <Image Include="Data\img\home-icon-black-150px.png">
+      <Filter>Misc Files</Filter>
+    </Image>
+    <Image Include="Data\img\home-icon-red-150px.png">
+      <Filter>Misc Files</Filter>
+    </Image>
+    <Image Include="Data\img\loading.gif">
+      <Filter>Misc Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
