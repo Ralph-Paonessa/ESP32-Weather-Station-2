@@ -1,0 +1,139 @@
+/*  Charts  */
+
+body {
+    background-color: #000;
+}
+
+h1, h2, h3 {
+    color: #b30e0e;
+}
+
+.chart-container {
+    border: 1px solid rgba(0,0,0,.2);
+    margin-bottom: 1em;
+    /*padding: .1em;*/
+}
+
+.highcharts-background {
+    fill: #2f2f2f;
+}
+
+
+
+.highcharts-point {
+    stroke-width: inherit;
+}
+/* Line */
+/*.highcharts-series-0 {
+    stroke: blue;*/ /* point is LIGHT blue */
+    /*color: blue;*/ /* line is DARK blue */
+    /*stroke-width: 10;*/ /* affects size on hover? */
+/*}
+
+.highcharts-series-1 {
+    stroke: darkgreen;*/ /* line color */
+    /*color: darkorange;*/ /* point color not affected? */
+    /*stroke-width: 1;
+}*/
+
+
+.highcharts-graph-0 {
+    width: 0;
+}
+
+.highcharts-graph-1 {
+    width: 0;
+}
+
+.highcharts-data-label text, text.highcharts-data-label {
+    fill: #b30e0e;
+    stroke: #b30e0e;
+    font-size: 2.25em;
+}
+
+.highcharts-title {
+    fill: #b30e0e;
+    font-size: 3em;
+}
+
+/*.highcharts-legend-title {
+    color: goldenrod;
+    fill: goldenrod;
+}
+
+.highcharts-legend-box {
+   
+}*/
+
+.highcharts-axis-labels {
+    font-size: 1.5em;
+}
+
+.cardinalDir {
+    background-color: #2f2f2f;
+}
+
+#cardinal {
+    color: #b30e0e;
+    justify-content: space-evenly;
+}
+
+    #cardinal > div {
+        color: #b30e0e;
+        padding: .1em .5em;
+        border: 1px solid #000;
+        font-size: 2em;
+    }
+
+
+/**********  fiddle  **********/
+
+.highcharts-background {
+    fill: #2f2f2f;
+}
+
+
+
+
+/* Data points */
+
+
+/*  Changes marker color for series-0  */
+/*.highcharts-color-0 {
+    fill: red;
+    stroke-width: 3;*/ /* Outline */
+/*stroke: blue;
+}
+
+.highcharts-color-1 {
+    color: purple;*/ /*  ??  */
+/*fill: green;*/ /*  marker color  */
+/*stroke-width: 0;*/ /*  Affects legend text  */
+/*stroke: #b30e0e;*/ /*  Affects legend text  */
+/*}*/
+
+
+
+
+.highcharts-legend-box {
+/*    color: green;*/
+    fill: #acacac;
+}
+
+.highcharts-data-label text, text.highcharts-data-label {
+    fill: #b30e0e;
+    stroke: #b30e0e;
+    font-size: 2.25em;
+}
+
+/* Tooltips for points */
+.highcharts-tooltip-box {
+    fill: red;
+    fill-opacity: 0.6;
+    stroke-width: 0;
+}
+
+.highcharts-tooltip text {
+    fill: white;
+    text-shadow: 0 0 3px black;
+}
