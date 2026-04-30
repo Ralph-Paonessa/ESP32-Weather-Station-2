@@ -88,6 +88,7 @@
     <ClCompile Include="SensorSimulate.cpp" />
     <ClCompile Include="Testing.cpp" />
     <ClCompile Include="Utilities.cpp" />
+    <ClCompile Include="WiFiTools.cpp" />
     <ClCompile Include="WindDirection.cpp" />
     <ClCompile Include="WindSpeed2.cpp" />
   </ItemGroup>
@@ -127,10 +128,6 @@
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>
     </ClCompile>
-    <ClCompile Include="Weather Stx2 WiFi routines.ino">
-      <FileType>CppCode</FileType>
-      <DeploymentContent>true</DeploymentContent>
-    </ClCompile>
     <ClCompile Include="Weather Stx3 WebServer.ino">
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>
@@ -159,6 +156,7 @@
     <ClInclude Include="SensorSimulate.h" />
     <ClInclude Include="Testing.h" />
     <ClInclude Include="Utilities.h" />
+    <ClInclude Include="WiFiTools.h" />
     <ClInclude Include="WindDirection.h" />
     <ClInclude Include="WindSpeed2.h" />
     <ClInclude Include="__vm\.ESP32 Weather Station 2.vsarduino.h" />

@@ -9,6 +9,7 @@ Rev. October 7, 2023
 
 // ========  ESP32 Libraries  ================  
 
+#include "WiFiTools.h"
 #include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
@@ -137,6 +138,11 @@ bool _isDEBUG_AddDelayInLoop = false;			// Add delay in loop.
 const int _LOOP_DELAY_DEBUG_ms = 100;			// Debug delay in loop, msec.
 
 
+// ==========   SD card module   ==================== //
+SDCard sd;		// SDCard instance that exposes SD card routines. 
+
+//WiFiTools wifT;
+
 //#if defined(VM_DEBUG)
 #include "Testing.h"			// DEBUG AND TESTING
 #include "SensorSimulate.h"
@@ -215,8 +221,8 @@ volatile int _countInterrupts_base = 0;		// Number of accumulated timer interrup
 volatile long _countInterrupts_10_min = 0;	// Number of accumulated timer interrupts for sensor for 10-min averages.
 volatile long _countInterrupts_60_min = 0;	// Number of accumulated timer interrupts for sensor for 60-min averages.
 
-// ==========   SD card module   ==================== //
-SDCard sd;		// SDCard instance that exposes SD card routines. 
+//// ==========   SD card module   ==================== //
+//SDCard sd;		// SDCard instance that exposes SD card routines. 
 
 bool _isGood_SDCard = false;
 bool _isGood_GPS = false;
@@ -345,7 +351,7 @@ void resetInterruptCounts() {
 /// </summary>
 void recoverData() {
 	unsigned long lastTime = lastReadingTime_fromFile();
-	Serial.printf("recover_data(): lastReadingTime_fromFile = %uli\n", lastTime);
+	Serial.printf("recover_data(): lastReadingTime_fromFile = %lu\n", lastTime);
 
 	// 10-min lists
 	Serial.println("recover_data(): 10-min lists");
@@ -392,6 +398,10 @@ void recoverData() {
 //	}
 //}
 
+WiFiTools wifiT;
+
+
+
 /****************************************************************************/
 /******************************      SETUP      *****************************/
 /****************************************************************************/
@@ -417,13 +427,24 @@ void setup() {
 	sd.fileCreateOrExists(LOGFILE_PATH_DATA);
 	sd.fileCreateOrExists(LOGFILE_PATH_STATUS);
 
+
+	wifiT.Initialize(sd);
+
+
 	// Log the settings to the status file.
 	logDebugStatus();
 	logApp_Settings();
 
 	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
 	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
-	wifiSetupAndConnect();
+
+	wifiT.Initialize(sd);
+
+
+	//XXX Should _isDEBUG_BypassWifi be a parameter??
+	//XXX Or should we just skip wifiSetupAndConnect() if it's true?!
+	wifiT.wifiSetupAndConnect(gps.dateTime(), _isDEBUG_BypassWifi);
+
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
 	Serial.println("SETUP: ==========  CREATE ASYNC WEB SERVER   ==========");
@@ -656,7 +677,12 @@ void loop() {
 	*/
 	if (!_isDEBUG_BypassWifi) {
 		if (WiFi.status() != WL_CONNECTED) {
-			checkWifiConnection();
+			wifiT.checkWifiConnection(gps.dateTime());
+
+			// XXX Moved here from WiFiTools::checkWifiConnection()
+			resetInterruptCounts();
+			String msg = "Read cycle skipped after WiFi was lost.";
+			sd.logStatus(msg, gps.dateTime());
 		}
 	}
 
