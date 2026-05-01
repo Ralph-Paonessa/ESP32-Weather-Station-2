@@ -1,11 +1,6 @@
 #include "WiFiTools.h"
 #include <WiFiMulti.h>
 #include <HardwareSerial.h>
-// 
-// 
-// 
-
-//WiFiTools::WiFiTools() {}
 
 void WiFiTools::Initialize(SDCard& sd)
 {
@@ -71,16 +66,6 @@ bool WiFiTools::checkWifiConnection(String dateTime) {
 			msg += String((millis() - timeStart) / 1000., 3) + "s";
 			_sd.logStatus(msg, dateTime);
 		}
-		//// Reset timer interrupt counts because of delays
-		//// that occurred while reconnecting wifi.
-		//// XXX resetInterruptCounts() NOT IN THIS SCOPE!!!
-		//if (isResetTimerCounts) {
-		//	resetInterruptCounts();
-		//	String msg = "Read cycle skipped after WiFi was lost.";
-		//	_sd.logStatus(msg, dateTime);
-		//	//isResetTimerCounts = false;	// Reset flag.
-		//}
-		//return isConnected;
 	}
 	return isConnected;
 }

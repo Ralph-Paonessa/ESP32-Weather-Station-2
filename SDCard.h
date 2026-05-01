@@ -19,6 +19,8 @@
 
 #include <SPI.h>
 
+#include "Utilities.h"
+
 #include "App_Settings.h"
 using namespace App_Settings;
 
@@ -34,22 +36,6 @@ private:
 	int _SPI_CS_pin;	// SPI pin number for SD card.
 	bool _isBypassSDCard = false;
 
-	/*/// <summary>
-	/// Writes to the SD card file, overwriting existing data.
-	/// </summary>
-	/// <param name="fs">File system object.</param>
-	/// <param name="path">Target file path with name.</param>
-	/// <param name="message">String to write.</param>
-	void fileWrite(fs::FS& fs, const char* path, const char* message);*/
-	
-	/*/// <summary>
-	/// Appends data to an SD card file.
-	/// </summary>
-	/// <param name="fs">File system object.</param>
-	/// <param name="path">Target file path with name.</param>
-	/// <param name="message">String to write.</param>
-	void fileAppend(fs::FS& fs, const char* path, const char* message);*/
-
 public:
 	/// <summary>
 	/// Creates SD card instance. 
@@ -63,16 +49,6 @@ public:
 	/// <param name="isBypass">Set true to bypass SD card operations.</param>
 	/// <returns>True if successful SD card initialization.</returns>
 	bool create(int SPI_CS_pin, bool isBypass);
-
-	/// <summary>
-	/// Sets SDCard module to bypass logging to the card.
-	/// </summary>
-	void setBypass();
-
-	/// <summary>
-	/// Sets SDCard module to not bypass logging to the card.
-	/// </summary>
-	void cancelBypass();
 
 	/// <summary>
 	/// Create the file if it does not exist.
@@ -120,6 +96,49 @@ public:
 	/// <param name="msg">Message to log.</param>
 	/// <param name="millisec">Milliseconds since start).</param>
 	void logStatus(const String& msg, unsigned long millisec);
+		
+	// <summary>
+	/// Logs summary of devices status.
+	/// </summary>
+	void logDeviceStatus(
+		String gpsDateTime,
+		bool isDaylightTime,
+		//bool wiFi_isConnected,
+		int gpsTimeZoneOffset,
+		bool isGood_SDCard,
+		bool isGood_LittleFS,
+		bool isGood_GPS,
+		bool isGood_Temp,
+		bool isGood_PRH,
+		bool isGood_UV);
+
+	// <summary>
+	/// Logs state of debug options.
+	/// </summary>
+	void logDebugStatus(
+		bool isDEBUG_BypassGPS,
+		bool isDEBUG_BypassWifi,
+		bool isDEBUG_BypassSDCard,
+		bool isDEBUG_ListLittleFS,
+		bool isDEBUG_BypassWebServer,
+		bool isDEBUG_run_test_in_setup,
+		bool isDEBUG_run_test_in_loop,
+		bool isDEBUG_addDummyDataLists,
+		bool isDEBUG_simulateSensorReadings,
+		bool isDEBUG_simulateWindReadings,
+		bool isDEBUG_AddDelayInLoop,
+		bool LOOP_DELAY_DEBUG_ms);
+
+	// <summary>
+	/// Logs space used by LittleFS.
+	/// </summary>
+	void logLittleFsSpaceUsage();
+
+	// <summary>
+	/// Logs the application settings to the STATUS file.
+	/// </summary>
+	void logApp_Settings();
+
 };
 
 #endif

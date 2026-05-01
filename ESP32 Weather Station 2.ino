@@ -141,8 +141,6 @@ const int _LOOP_DELAY_DEBUG_ms = 100;			// Debug delay in loop, msec.
 // ==========   SD card module   ==================== //
 SDCard sd;		// SDCard instance that exposes SD card routines. 
 
-//WiFiTools wifT;
-
 //#if defined(VM_DEBUG)
 #include "Testing.h"			// DEBUG AND TESTING
 #include "SensorSimulate.h"
@@ -211,7 +209,7 @@ bool _isGood_WindSpeed = false;
 bool _isGood_PMS = false;
 //bool _isGood_SDCard = false;
 bool _isGood_Solar = false;
-bool _isGood_LITTLEFS = false;
+bool _isGood_LittleFS = false;
 bool _isGood_fan = false;
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -398,7 +396,7 @@ void recoverData() {
 //	}
 //}
 
-WiFiTools wifiT;
+WiFiTools wifi;
 
 
 
@@ -428,22 +426,34 @@ void setup() {
 	sd.fileCreateOrExists(LOGFILE_PATH_STATUS);
 
 
-	wifiT.Initialize(sd);
+	wifi.Initialize(sd);
 
 
 	// Log the settings to the status file.
-	logDebugStatus();
-	logApp_Settings();
+	sd.logDebugStatus(
+		_isDEBUG_BypassGPS,
+		_isDEBUG_BypassWifi,
+		_isDEBUG_BypassSDCard,
+		_isDEBUG_ListLittleFS,
+		_isDEBUG_BypassWebServer,
+		_isDEBUG_run_test_in_setup,
+		_isDEBUG_run_test_in_loop,
+		_isDEBUG_addDummyDataLists,
+		_isDEBUG_simulateSensorReadings,
+		_isDEBUG_simulateWindReadings,
+		_isDEBUG_AddDelayInLoop,
+		_LOOP_DELAY_DEBUG_ms);
+	sd.logApp_Settings();
 
 	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
 	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
 
-	wifiT.Initialize(sd);
+	wifi.Initialize(sd);
 
 
 	//XXX Should _isDEBUG_BypassWifi be a parameter??
 	//XXX Or should we just skip wifiSetupAndConnect() if it's true?!
-	wifiT.wifiSetupAndConnect(gps.dateTime(), _isDEBUG_BypassWifi);
+	wifi.wifiSetupAndConnect(gps.dateTime(), _isDEBUG_BypassWifi);
 
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
@@ -677,7 +687,7 @@ void loop() {
 	*/
 	if (!_isDEBUG_BypassWifi) {
 		if (WiFi.status() != WL_CONNECTED) {
-			wifiT.checkWifiConnection(gps.dateTime());
+			wifi.checkWifiConnection(gps.dateTime());
 
 			// XXX Moved here from WiFiTools::checkWifiConnection()
 			resetInterruptCounts();

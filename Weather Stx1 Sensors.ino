@@ -1,4 +1,5 @@
 #include "App_Settings.h"
+#include "Logging.h"
 //#include "DebugFlags.h" -- moved to main .ino
 #include "PinAssignments.h"
 #include "Utilities.h"
@@ -23,6 +24,13 @@ WindSpeed windSpeed(
 	WIND_SPEED_OUTLIER_DELTA);	// WindSpeed instance for wind.
 SensorData windGust;
 WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
+
+//
+//// ==========   LOGGING   ========================== //
+//// Create logging object from Logging.h library.
+//SDLog logging;
+
+
 
 
 // ==========   SENSORS   ========================== //
@@ -161,19 +169,29 @@ void sensors_begin() {
 		sd.logStatus(msg, millis());
 	}
 	else {
-		_isGood_LITTLEFS = true;
+		_isGood_LittleFS = true;
 		String msg = "LittleFS mounted.";
 		sd.logStatus(msg, millis());
 	}
 	// Log used and available space.
-	logLittleFsSpaceUsage();
+	sd.logLittleFsSpaceUsage();
 
 	if (_isDEBUG_ListLittleFS) {
 		dirList(LittleFS, "/", 5);
 	}
 
 	sd.logStatus("Device initialization complete.", millis());
-	logDeviceStatus();
+	sd.logDeviceStatus(
+		gps.dateTime(),
+		gps.isDaylightTime(),
+		//wiFi_isConnected,		XXX NOT CODED YET!
+		gps.timeZoneOffset(),     //timeZoneOffset,
+		_isGood_SDCard,
+		_isGood_LittleFS,
+		_isGood_GPS,
+		_isGood_Temp,
+		_isGood_PRH,
+		_isGood_UV);
 }
 
 /******   WIND READINGS    ******/

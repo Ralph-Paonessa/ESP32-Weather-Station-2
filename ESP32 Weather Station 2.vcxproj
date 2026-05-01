@@ -120,10 +120,6 @@
     <None Include="Sensor readings.cd" />
     <None Include="src\arduino folders read me.txt">
     </None>
-    <ClCompile Include="Weather Stx0 Logging.ino">
-      <FileType>CppCode</FileType>
-      <DeploymentContent>true</DeploymentContent>
-    </ClCompile>
     <ClCompile Include="Weather Stx1 Sensors.ino">
       <FileType>CppCode</FileType>
       <DeploymentContent>true</DeploymentContent>

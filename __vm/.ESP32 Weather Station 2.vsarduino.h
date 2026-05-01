@@ -18,7 +18,6 @@
 #include <arduino.h>
 #include <pins_arduino.h> 
 #include "..\ESP32 Weather Station 2.ino"
-#include "..\Weather Stx0 Logging.ino"
 #include "..\Weather Stx1 Sensors.ino"
 #include "..\Weather Stx3 WebServer.ino"
 #include "..\Weather Stx4 WebServer Processor.ino"

@@ -65,7 +65,6 @@
     <ClCompile Include="Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Weather Stx0 Logging.ino" />
     <ClCompile Include="Weather Stx1 Sensors.ino" />
     <ClCompile Include="Weather Stx3 WebServer.ino" />
     <ClCompile Include="Weather Stx4 WebServer Processor.ino" />

@@ -26,9 +26,9 @@ namespace App_Settings {
 
 	const float			BASE_PERIOD_SEC = 4;	// Period to sample anemometer rotations (sec).
 
-	const unsigned int	DATA_RECOVERY_10_MIN_CUTOFF = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older.
-	const unsigned int	DATA_RECOVERY_60_MIN_CUTOFF = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older.
-	const unsigned int	DATA_RECOVERY_DAY_CUTOFF = 3 * SECONDS_PER_DAY;			// Recover day data no older.
+	const unsigned int	DATA_RECOVERY_10_MIN_CUTOFF = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than this.
+	const unsigned int	DATA_RECOVERY_60_MIN_CUTOFF = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than this.
+	const unsigned int	DATA_RECOVERY_DAY_CUTOFF = 3 * SECONDS_PER_DAY;			// Recover day data no older than this.
 
 	/* GPS sync parameters */
 

@@ -20,23 +20,13 @@ class WiFiTools {
 private:
 	SDCard _sd;
 
-	//int _SPI_CS_pin;	// SPI pin number for SD card.
-	//bool _isBypassSDCard = false;
-
-
 public:
-	/*/// <summary>
-	/// Creates WiFiTools instance. 
-	/// </summary>
-	WiFiTools();*/
-
 
 	/// <summary>
 	/// Specifying an SD card for logging.
 	/// </summary>
 	/// <param name="sd">An SDCard entity.</param>
 	void Initialize(SDCard& sd);
-
 
 
 	// <summary>
@@ -85,4 +75,3 @@ public:
 };
 
 #endif
-
