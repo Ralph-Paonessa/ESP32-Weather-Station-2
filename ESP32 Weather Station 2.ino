@@ -4,7 +4,7 @@ Custom weather station control software.
 
 Ralph Paonessa
 August 10, 2022
-Rev. October 7, 2023
+Rev. May 5, 2026
 ******************************************/
 
 // ========  ESP32 Libraries  ================  
@@ -60,6 +60,7 @@ Rev. October 7, 2023
 
 //#include <WiFiUdp.h>
 #include <ESPAsyncWebServer.h>
+
 
 
 // XXX THESE AREN'T FOUND!!!
@@ -124,9 +125,9 @@ using namespace FileOperations;
 
 /*****************      DEBUGGING FLAGS      ******************/
 
-bool _isDEBUG_BypassGPS = true;					// Bypass gps syncing.
+bool _isDEBUG_BypassGPS = true;				// Bypass gps syncing.
 bool _isDEBUG_BypassWifi = false;				// Bypass WiFi connect.	 XXX FAILS!!!
-bool _isDEBUG_BypassSDCard = true;				// Bypass SD card.
+bool _isDEBUG_BypassSDCard = false;				// Bypass SD card.
 bool _isDEBUG_ListLittleFS = true;				// List contents of LittleFS.
 bool _isDEBUG_BypassWebServer = false;			// Bypass Web Server.
 bool _isDEBUG_run_test_in_setup = false;		// Run only test code inserted in Setup.
@@ -227,6 +228,9 @@ bool _isGood_GPS = false;
 
 // ==========   Async Web Server   ================== //
 AsyncWebServer server(80);	// Async web server instance on port 80.
+
+
+
 
 // ==========   u-blox NEO-6M GPS   ========================== //
 // GPS module instance. 
@@ -464,6 +468,8 @@ void setup() {
 	sd.logStatus("Async web server beginning.", millis());
 
 
+
+
 	// ==========   CREATE GPS AND SYNC TO GET TIME   ========== //
 	Serial.println("SETUP: ==========  CREATE GPS AND SYNC TO GET TIME   ==========");
 	// XXX  Need code to alter power of GPS!!!  XXX
@@ -696,14 +702,14 @@ void loop() {
 		}
 	}
 
-	//#if defined(VM_DEBUG)
-		// Add delay for DEBUG.
+#if defined(VM_DEBUG)
+	// Add delay for DEBUG.
 	if (_isDEBUG_AddDelayInLoop) {
 		vTaskDelay(_LOOP_DELAY_DEBUG_ms / portTICK_PERIOD_MS);
 	}
-	//#endif
+#endif
 
-		// Watch for excessive processing time in loop.
+	// Watch for excessive processing time in loop.
 	if (millis() - _timeStart_Loop > LOOP_TIME_WARNING_THRESHOLD_MS) {
 		String msg = "WARNING: Loop " + String(millis() - _timeStart_Loop) + "ms";
 		sd.logStatus(msg, gps.dateTime());

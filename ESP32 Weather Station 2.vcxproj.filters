@@ -66,8 +66,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Weather Stx1 Sensors.ino" />
-    <ClCompile Include="Weather Stx3 WebServer.ino" />
-    <ClCompile Include="Weather Stx4 WebServer Processor.ino" />
     <ClCompile Include="Weather Stx6 Outputs.ino" />
     <ClCompile Include="WindDirection.cpp">
       <Filter>Source Files</Filter>
@@ -79,6 +77,8 @@
     <ClCompile Include="WiFiTools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Weather Stx3 WebServer.ino" />
+    <ClCompile Include="Weather Stx4 WebServer Processor.ino" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.ESP32 Weather Station 2.vsarduino.h">

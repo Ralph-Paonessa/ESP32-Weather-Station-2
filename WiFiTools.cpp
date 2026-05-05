@@ -1,6 +1,7 @@
 #include "WiFiTools.h"
 #include <WiFiMulti.h>
 #include <HardwareSerial.h>
+#include "SDCard.h"
 
 void WiFiTools::Initialize(SDCard& sd)
 {
