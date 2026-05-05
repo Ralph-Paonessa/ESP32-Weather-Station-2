@@ -17,7 +17,12 @@ using std::list;
 using namespace ListFunctions;
 using namespace App_Settings;
 // File system
-#include <LittleFS.h>
+
+
+//// XXX Native for ESP32 now!!!
+//#include <LittleFS.h>
+
+
 #include "FileOperations.h"
 using namespace FileOperations;
 
@@ -34,21 +39,21 @@ protected:		// Protected items are accessible by inherited classes.
 	/// <param name="fileSuffix">Suffix to append to file name.</param>
 	String sensorFilepath(String fileSuffix);
 
-	String _label, _filenamePrefix;		// Identifying info.
+	String _label, _filenamePrefix;	// Identifying info.
 	String _units, _units_html;		// Units used.
 
-	dataPoint _dataPointLastAdded;		// Data point (time, value) of most recent reading.
+	dataPoint _dataPointLastAdded;	// Data point (time, value) of most recent reading.
 
 	float _sumReadings;				// Accumulating sum of readings.
 	unsigned int _countReadings;	// Number of readings in average.
 
 	// Samples required for smoothing avg.
-	const unsigned int COUNT_FOR_SMOOTH = 10;
+	static constexpr unsigned int COUNT_FOR_SMOOTH = 10;
 
 	float _avg_10_min = 0;			// Average over 10 min.
 	float _avg_60_min = 0;			// Average over 60 min.
 
-	const float VAL_LIMIT = 999999;	// No reading absolute value will ever be greater.
+	static constexpr float VAL_LIMIT = 999999;	// No reading absolute value will ever be greater.
 
 	/// <summary>
 	/// Updates saved min and max values for 10-min period and today.
@@ -76,7 +81,7 @@ protected:		// Protected items are accessible by inherited classes.
 	/// </summary>
 	void clear_10_min();
 
-	bool _isDatafile = true;		// Set true to save periodic data in LittleFS file system.
+	bool _isDatafile = true;			// Set true to save periodic data in LittleFS file system.
 	bool _isReportDayMaxOnly = false;	// Set true to save maxima but not minima on LittleFS file system.
 	bool _isUseSmoothing;				// Set true to smooth data with moving avg and reject outliers.
 	float _outlierDelta;				// Factor to determine if reading is an outlier.
@@ -94,8 +99,8 @@ protected:		// Protected items are accessible by inherited classes.
 
 	list<dataPoint> _data_10_min;		// List of Data_Points at 10-min intervals.
 	list<dataPoint> _data_60_min;		// List of Data_Points at 60-min intervals.
-	list<dataPoint> _data_dayMin;	// List of daily minima.
-	list<dataPoint> _data_dayMax;	// List of daily maxima.
+	list<dataPoint> _data_dayMin;		// List of daily minima.
+	list<dataPoint> _data_dayMax;		// List of daily maxima.
 
 public:
 

@@ -31,8 +31,8 @@ private:
 	float _calibrationFactor;			// Anemometer calibration factor to convert rotations to speed.
 
 	// For identification of gusts.
-	const float GUST_THRESHOLD = 18.41;	// WindSpeed must exceed this to be a gust.
-	const float GUST_SPREAD = 10.36;	// WindSpeed must exceed low by this amount to be a gust.
+	static constexpr float GUST_THRESHOLD = 18.41;	// WindSpeed must exceed this to be a gust.
+	static constexpr float GUST_SPREAD = 10.36;	// WindSpeed must exceed low by this amount to be a gust.
 
 public:
 
