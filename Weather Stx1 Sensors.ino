@@ -353,8 +353,8 @@ void readSensors() {
 /// d_Insol
 /// </remarks>
 void readSensors_Simulate() {
-#if defined(VM_DEBUG)
-	dataPoint dp;	// holds reading
+//#if defined(VM_DEBUG)
+	dataPoint dp;	// holds reading (Values changed and reused for each sensor!)
 	// Temperature.
 	dp = dataPoint(now(), dummy_Temp_F.sawtooth(10, 0.02, 20));
 	d_Temp_F.addReading(dp);
@@ -368,7 +368,7 @@ void readSensors_Simulate() {
 	// P, RH
 	dp = dataPoint(now(), dummy_RH.sawtooth(0, 0.05, 50));
 	d_RH.addReading(dp);
-	dp = dataPoint(now(), dummy_Pres_mb.linear(3, 0.1) / 100);
+	dp = dataPoint(now(), dummy_Pres_mb.linear(1000, 0.1) / 100);
 	d_Pres_mb.addReading(dp);			// Raw pressure in mb (hectopascals)
 	//dp = dataPoint(now(), dummy_Temp_for_RH_C.linear(10, 0.02));
 	//d_Temp_for_RH_C.addReading(dp);		// Temp (C) of P, RH sensor.
@@ -386,7 +386,7 @@ void readSensors_Simulate() {
 	float insol_norm = insol_norm_pct(dummy_Insol.linear(0, 0.01), INSOL_REFERENCE_MAX);
 	dp = dataPoint(now(), insol_norm);
 	d_Insol.addReading(dp);	// % Insolation
-#endif
+//#endif
 }
 
 /// <summary>

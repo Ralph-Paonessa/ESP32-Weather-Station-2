@@ -3,7 +3,7 @@
 /// <summary>
 /// Prints opening header to serial port when app starts.
 /// </summary>
-void PrintHeader() {
+void printHeader() {
 #if defined(VM_DEBUG)
 	Serial.println();
 	Serial.println(LINE_SEPARATOR);

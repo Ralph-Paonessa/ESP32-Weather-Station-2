@@ -12,100 +12,9 @@ Rev. May 5, 2026
 #include "WiFiTools.h"
 #include <Arduino.h>
 #include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
-
-// ESP Async Web Server
-//#include <FSImpl.h>
-//#include <vfs_api.h>
-//#include <BluetoothSerial.h>
-//#include <BTAddress.h>
-//#include <BTAdvertisedDevice.h>
-//#include <BTScan.h>
-//#include <dummy.h>
-//#include <DNSServer.h>
-//#include <Console.h>
-//#include <LiquidCrystal.h>
-//#include <Wire.h>
-//#include <TimeLib.h>
-
-//#include <Adafruit_SPIDevice.h>
-//#include <Adafruit_I2CRegister.h>
-//#include <Adafruit_I2CDevice.h>
-//#include <Adafruit_GenericDevice.h>
-//#include <Adafruit_BusIO_Register.h>
-//#include <Adafruit_Sensor.h>
-
-//#include <Arduino_BuiltIn.h>
-//#include <AsyncEventSource.h>
-//#include <AsyncJson.h>
-//#include <AsyncWebSocket.h>
-
-//#include <SHA1Builder.h>
-
-// XXX NOT FOUND!
-//#include <PBKDF2_HMACBuilder.h>
-//#include <SHA2Builder.h>
-//#include <SHA3Builder.h>
-
-//#include <AsyncUDP.h>
-//#include <AsyncTCP.h>
-//#include <WiFiAP.h>
-//#include <WiFiClient.h>
-//#include <WiFiGeneric.h>
-//#include <WiFiScan.h>
-//#include <WiFiServer.h>
-#include "Logging.h"
-
-//#include <WiFiSTA.h>    // IPv6Address  not defined???
-
-//#include <WiFiUdp.h>
 #include <ESPAsyncWebServer.h>
 
-
-
-// XXX THESE AREN'T FOUND!!!
-//#include <AsyncWebSynchronization.h>
-//#include <SPIFFSEditor.h>
-//#include <StringArray.h>
-
-
-//#include <WebAuthentication.h>
-//#include <WebHandlerImpl.h>
-//#include <WebResponseImpl.h>
-//#include <WebResponseImpl.h>
-//#include <AsyncTCP.h>
-
-// Sensors
-#include <SparkFun_VEML6075_Arduino_Library.h>
-
-// MLX90614 IR sensor 
-// #include <Adafruit_MLX90614.h> // duplicate?
-
-// DS18B20 digital temperature sensor
-#include <DallasTemperature.h> 
-#include <OneWire.h>
-
-#include <Adafruit_BME280.h>
-
-// File system
-//#include <LittleFS.h>
-
-// WiFi
-//#include <WiFi.h>
-//#include <WiFiAP.h>
-//#include <WiFiClient.h>
-//#include <WiFiGeneric.h>
-#include <WiFiMulti.h>
-//#include <WiFiScan.h>
-//#include <WiFiServer.h>
-//#include <WiFiSTA.h>
-//#include <WiFiType.h>
-//#include <WiFiUdp.h>
-
 // ========  Custom Libraries  ================  
-
-//#include <list>
-//using std::list;
 
 #include "App_settings.h"
 using namespace App_Settings;
@@ -120,8 +29,6 @@ using namespace FileOperations;
 #include "SensorData.h"
 #include "WindSpeed2.h"
 #include "WindDirection.h"
-
-//#include "DebugFlags.h" -- moved to main .ino
 
 /*****************      DEBUGGING FLAGS      ******************/
 
@@ -145,6 +52,7 @@ SDCard sd;		// SDCard instance that exposes SD card routines.
 //#if defined(VM_DEBUG)
 #include "Testing.h"			// DEBUG AND TESTING
 #include "SensorSimulate.h"
+#include <WiFiMulti.h>
 Testing test;					// class for test routings
 //#endif
 
