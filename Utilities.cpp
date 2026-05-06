@@ -5,6 +5,28 @@
 #include "Utilities.h"
 
 /// <summary>
+/// Prints line to serial port during VM_DEBUG. Includes CRLF.
+/// </summary>
+/// <param name="msg">Message to print.</param>
+void Utilities::serial_println_Debug(const String& prefix, const char* msg) {
+#if defined(VM_DEBUG)
+	Serial.print(prefix);
+	Serial.println(msg);
+#endif
+}
+
+/// <summary>
+/// Prints text to serial port during VM_DEBUG. No CRLF.
+/// </summary>
+/// <param name="msg">Message to print.</param>
+void Utilities::serial_print_Debug(const String& prefix, const char* msg) {
+#if defined(VM_DEBUG)
+	Serial.print(prefix);
+	Serial.print(msg);
+#endif
+}
+
+/// <summary>
 /// Converts millibars to inches of mercury.
 /// </summary>
 /// <param name="p_mb">Pressure in millibars.</param>

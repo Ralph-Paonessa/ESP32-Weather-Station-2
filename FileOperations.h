@@ -18,8 +18,10 @@ used with both SD cards and LittleFS.
 #include <FS.h>
 #include <LittleFS.h>
 #include "App_Settings.h"
-
 using namespace App_Settings;
+
+#include "Utilities.h"
+using namespace Utilities;
 
 /// <summary>
 /// Exposes methods that operate on files.

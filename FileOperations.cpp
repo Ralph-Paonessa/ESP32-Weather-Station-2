@@ -3,6 +3,7 @@
 // 
 
 #include "FileOperations.h"
+#include "Utilities.h"
 
 /// <summary>
 /// Lists contents of directory.
@@ -112,21 +113,21 @@ void FileOperations::fileWrite(fs::FS& fs, const char* path, const char* message
 	file.close();
 }
 
-
-void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* message) {
-	Serial.printf("fileAppend Appending to file: %s\n", path);
+void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* msg) {
+	//Serial.printf("FileOperations::fileAppend to file: %s\n", path);
 	File file = fs.open(path, FILE_APPEND);
 	if (!file) {
-		Serial.print("ERROR: fileAppend Failed to open file for appending: ");
+		Serial.print("ERROR: FileOperations::fileAppend failed to open file: ");
 		Serial.println(path);
-		return;
+		return;		// file did not open!
 	}
-	if (file.print(message)) {
-		Serial.println("fileAppend Message appended: ");
-		Serial.println(path);
+	// File opened. Append msg.
+	if (file.print(msg)) {
+		serial_println_Debug("FileOperations::fileAppend to file = ", path);
+		serial_println_Debug("msg = ", msg); 
 	}
 	else {
-		Serial.print("ERROR: fileAppend Append failed: ");
+		Serial.print("ERROR: fileAppend failed: ");
 		Serial.println(path);
 	}
 	file.close();
