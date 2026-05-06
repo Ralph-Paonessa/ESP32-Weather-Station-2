@@ -94,20 +94,20 @@ String FileOperations::fileRead(fs::FS& fs, const char* path) {
 }
 
 
-void FileOperations::fileWrite(fs::FS& fs, const char* path, const char* message) {
-	Serial.printf("Writing file: %s\n", path);
+void FileOperations::fileWrite(fs::FS& fs, const char* path, const char* msg) {
 
 	File file = fs.open(path, FILE_WRITE);
 	if (!file) {
-		Serial.print("ERROR: fileWrite Failed to open file for writing: ");
+		Serial.print("ERROR: FileOperations::fileWrite Failed to open file for writing: ");
 		Serial.println(path);
 		return;
 	}
-	if (file.print(message)) {
-		//Serial.println("fileWrite File written.");
+	if (file.print(msg)) {
+		serial_println_DEBUG("FileOperations::fileWrite to file ", path);
+		serial_println_DEBUG("write msg = ", msg);
 	}
 	else {
-		Serial.print("ERROR: fileWrite Write failed: ");
+		Serial.print("ERROR: FileOperations::fileWrite Write failed: ");
 		Serial.println(path);
 	}
 	file.close();
@@ -117,17 +117,17 @@ void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* msg) {
 	//Serial.printf("FileOperations::fileAppend to file: %s\n", path);
 	File file = fs.open(path, FILE_APPEND);
 	if (!file) {
-		Serial.print("ERROR: FileOperations::fileAppend failed to open file: ");
+		Serial.print("ERROR: FileOperations::fileAppend failed to open file ");
 		Serial.println(path);
 		return;		// file did not open!
 	}
 	// File opened. Append msg.
 	if (file.print(msg)) {
-		serial_println_Debug("FileOperations::fileAppend to file = ", path);
-		serial_println_Debug("msg = ", msg); 
+		serial_println_DEBUG("FileOperations::fileAppend to file ", path);
+		serial_println_DEBUG("append msg = ", msg); 
 	}
 	else {
-		Serial.print("ERROR: fileAppend failed: ");
+		Serial.print("ERROR: fileAppend failed to ");
 		Serial.println(path);
 	}
 	file.close();

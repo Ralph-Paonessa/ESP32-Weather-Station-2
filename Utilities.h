@@ -16,18 +16,18 @@
 namespace Utilities {
 	
 	/// <summary>
-	/// Prints line to serial port during VM_DEBUG. Includes CRLF.
+	/// Prints line to serial port during VM_DEBUG.
 	/// </summary>
 	/// <param name="prefix">Prefix for message.</param>
 	/// <param name="msg">Message to print.</param>
-	void serial_println_Debug(const String& prefix, const char* msg);
+	void serial_println_DEBUG(const String& prefix, const char* msg);
 
 	/// <summary>
-	/// Prints text to serial port during VM_DEBUG. No CRLF.
+	/// Prints text to serial port during VM_DEBUG.
 	/// </summary>
 	/// <param name="prefix">Prefix for message.</param>
 	/// <param name="msg">Message to print.</param>
-	void serial_print_Debug(const String& prefix, const char* msg);
+	void serial_print_DEBUG(const String& prefix, const char* msg);
 
 	/// <summary>
 	/// Converts millibars to inches of mercury.

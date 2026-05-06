@@ -80,15 +80,15 @@ namespace FileOperations {
 	/// </summary>
 	/// <param name="fs">File system to use.</param>
 	/// <param name="path">Target file path with name.</param>
-	/// <param name="message">String to write.</param>
-	void fileWrite(fs::FS& fs, const char* path, const char* message);
+	/// <param name="msg">String to write.</param>
+	void fileWrite(fs::FS& fs, const char* path, const char* msg);
 
 	/// <summary>
 	/// Appends data to a file.
 	/// </summary>
 	/// <param name="fs">File system to use.</param>
 	/// <param name="path">Target file path with name.</param>
-	/// <param name="message">String to write.</param>
+	/// <param name="msg">String to write.</param>
 	void fileAppend(fs::FS& fs, const char* path, const char* message);
 
 }

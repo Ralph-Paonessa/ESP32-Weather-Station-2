@@ -320,6 +320,7 @@ void SensorData::data_10_min_fromFile() {
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
 		String delim = fileRead(LittleFS, sensorFilepath("_10_min").c_str());
+		serial_println_DEBUG("SensorData::data_10_min_fromFile: " + _filenamePrefix + " :", delim.c_str());
 		_data_10_min = listData_fromString(delim);
 	}
 }
@@ -334,6 +335,7 @@ void SensorData::data_60_min_fromFile() {
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
 		String delim = fileRead(LittleFS, sensorFilepath("_60_min").c_str());
+		serial_println_DEBUG("SensorData::data_60_min_fromFile: " + _filenamePrefix + " :", delim.c_str());
 		_data_60_min = listData_fromString(delim);
 	}
 }
@@ -348,7 +350,7 @@ void SensorData::data_dayMaxMin_fromFile() {
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
 		String delim = fileRead(LittleFS, sensorFilepath("_10_min").c_str());
-
+		serial_println_DEBUG("SensorData::data_dayMaxMin_fromFile: " + _filenamePrefix + " :", delim.c_str());
 		list<String> parts = splitString(delim, '|');
 		int index = 0;
 		for (list<String>::iterator it = parts.begin(); it != parts.end(); ++it) {

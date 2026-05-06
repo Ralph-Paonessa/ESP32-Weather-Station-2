@@ -5,10 +5,10 @@
 #include "Utilities.h"
 
 /// <summary>
-/// Prints line to serial port during VM_DEBUG. Includes CRLF.
+/// Prints line to serial port during VM_DEBUG.
 /// </summary>
 /// <param name="msg">Message to print.</param>
-void Utilities::serial_println_Debug(const String& prefix, const char* msg) {
+void Utilities::serial_println_DEBUG(const String& prefix, const char* msg) {
 #if defined(VM_DEBUG)
 	Serial.print(prefix);
 	Serial.println(msg);
@@ -16,10 +16,10 @@ void Utilities::serial_println_Debug(const String& prefix, const char* msg) {
 }
 
 /// <summary>
-/// Prints text to serial port during VM_DEBUG. No CRLF.
+/// Prints text to serial port during VM_DEBUG.
 /// </summary>
 /// <param name="msg">Message to print.</param>
-void Utilities::serial_print_Debug(const String& prefix, const char* msg) {
+void Utilities::serial_print_DEBUG(const String& prefix, const char* msg) {
 #if defined(VM_DEBUG)
 	Serial.print(prefix);
 	Serial.print(msg);
