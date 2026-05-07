@@ -26,7 +26,7 @@ namespace App_Settings {
 	constexpr unsigned long MILLISECONDS_PER_MINUTE = MILLISEC_PER_SECOND * SECONDS_PER_MINUTE;		// 60,000 ms
 	constexpr float			DEGREES_PER_RADIAN = 57.2957795130823;	// Degrees in 1 radian.
 
-	constexpr float			BASE_PERIOD_SEC = 4;	// Period to sample anemometer rotations (sec).
+	constexpr unsigned int	BASE_PERIOD_SEC = 4;	// Period to sample anemometer rotations (sec). Used for all sensors!
 
 	constexpr unsigned int	DATA_RECOVERY_10_MIN_CUTOFF = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than this.
 	constexpr unsigned int	DATA_RECOVERY_60_MIN_CUTOFF = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than this.
@@ -35,8 +35,8 @@ namespace App_Settings {
 	/* GPS sync parameters */
 
 	constexpr unsigned long GPS_BAUD_RATE = 9600;		// NEO-6M 9600
-	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 3;// Minimum number of GPS satellites before syncing.
-	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 3;	// Minimum GPS cycles before syncing.
+	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 5;// Minimum number of GPS satellites before syncing.
+	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 4;	// Minimum GPS cycles before syncing.
 	constexpr unsigned int	GPS_CYCLE_DELAY_SEC = 2;	// Delay before getting another GPS fix, sec.
 	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 50;	// Max number of GPS cycles before quitting.
 	constexpr float			GPS_MAX_ALLOWED_HDOP = 4;	// Minimum HDOP precision for syncing.
@@ -51,7 +51,7 @@ namespace App_Settings {
 	constexpr int	UTC_OFFSET_HOURS = -8;
 	constexpr bool	IS_DAYLIGHT_TIME = true;
 
-	constexpr float WIFI_CONNECT_TIMEOUT_SEC = 5;		// Timeout for connecting to WiFi SSID, sec.
+	constexpr float WIFI_CONNECT_TIMEOUT_SEC = 10;		// Timeout for connecting to WiFi SSID, sec.
 	constexpr float WIFI_CONNECT_TIMEOUT_LOST_SEC = 60;	// Timeout for connecting to WiFi SSID, sec.
 
 	constexpr unsigned int FAN_DUTY_PERCENT = 30;		// PWM duty cycle for fan speed.
@@ -59,7 +59,7 @@ namespace App_Settings {
 	const String	SENSOR_DATA_DIR_PATH = "/Sensor data";	// Absolute path to sensor data files directory.
 	const String	SENSOR_DATA_TIME_FILE_PATH = "/Sensor data/last_time.txt";	// Absolute path to sensor read time file.
 
-	constexpr int		DATA_FILE_BUFFER_SIZE = 1024;	// Size of the buffer when reading a readings data file from file system.
+	constexpr int	DATA_FILE_BUFFER_SIZE = 1024;	// Size of the buffer when reading a readings data file from file system.
 
 	const String LOGFILE_PATH_DATA = "/data.txt";
 
@@ -112,26 +112,33 @@ namespace App_Settings {
 	/// The number of (4.0 sec) base periods in a report interval.
 	/// </summary>
 	enum BasePeriodsInInterval {
-		BASE_PERIODS_IN_10_MIN = 10,	// XXX SHOULD BE 150!!! XXX //   600 sec
-		BASE_PERIODS_IN_60_MIN = 45,	// XXX SHOULD BE 900!!! XXX //	3600 sec
+#if defined(VM_DEBUG)
+		BASE_PERIODS_IN_10_MIN = 150,	// XXX SHOULD BE 150!!! XXX //   600 sec
+		BASE_PERIODS_IN_60_MIN = 900,	// XXX SHOULD BE 900!!! XXX //	3600 sec
 		BASE_PERIODS_IN_24_HR = 21600	// 86400 sec
+#else
+		BASE_PERIODS_IN_10_MIN = 10 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC,
+		BASE_PERIODS_IN_60_MIN = 60 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC, 
+		BASE_PERIODS_IN_24_HR = 24 * SECONDS_PER_HOUR / BASE_PERIOD_SEC
 	};
+#endif
+};
 
-	/// <summary>
-	/// Enumerates data charts requested from the web server.
-	/// </summary>
-	enum chartRequested {
-		CHART_NONE,
-		CHART_WIND_SPEED,
-		CHART_WIND_GUST,
-		CHART_WIND_DIRECTION,
-		CHART_TEMPERATURE_F,
-		CHART_PRESSURE_SEA_LEVEL,
-		CHART_RELATIVE_HUMIDITY,
-		CHART_UV_INDEX,
-		CHART_INSOLATION,
-		CHART_IR_SKY
-	};
+/// <summary>
+/// Enumerates data charts requested from the web server.
+/// </summary>
+enum chartRequested {
+	CHART_NONE,
+	CHART_WIND_SPEED,
+	CHART_WIND_GUST,
+	CHART_WIND_DIRECTION,
+	CHART_TEMPERATURE_F,
+	CHART_PRESSURE_SEA_LEVEL,
+	CHART_RELATIVE_HUMIDITY,
+	CHART_UV_INDEX,
+	CHART_INSOLATION,
+	CHART_IR_SKY
+};
 }
 
 #endif

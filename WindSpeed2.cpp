@@ -36,7 +36,7 @@ WindSpeed::WindSpeed(
 /// <param name="rotations"> Number of rotations.</param>
 /// <param name="period">Time period of rotations, sec.</param>
 /// <returns>Wind speed, mph</returns>
-float WindSpeed::speedInstant(int rotations, float period)
+float WindSpeed::speedInstant(int rotations, unsigned int period)
 {
 	/*************************************************************
 	Davis anemometer formula:

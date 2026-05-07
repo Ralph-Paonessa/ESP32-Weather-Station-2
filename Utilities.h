@@ -81,7 +81,7 @@ namespace Utilities {
 	/// <param name="countHalfRots">Count of half-rotations.</param>
 	/// <param name="periodOfRotation">Period of rotations (sec).</param>
 	/// <returns>Fan rpm.</returns>
-	float fanRPM(int countHalfRots, float periodOfRotation);
+	float fanRPM(int countHalfRots, unsigned int periodOfRotation);
 
 	/// <summary>
 	/// Returns "OK" or "ERROR" string from bool.

@@ -96,7 +96,7 @@ float Utilities::temperature_C(float tempF) {
 /// <param name="countHalfRots">Count of half-rotations.</param>
 /// <param name="periodOfRotation">Period of rotations (sec).</param>
 /// <returns>Fan rpm.</returns>
-float Utilities::fanRPM(int countHalfRots, float periodOfRotation) {
+float Utilities::fanRPM(int countHalfRots, unsigned int periodOfRotation) {
 	// fan rot/min = (fan counts)/(FAN_PERIOD sec) * (1 rot / 2 counts) * (60 sec/min)
 	return (countHalfRots / periodOfRotation / 2 * 60);
 }

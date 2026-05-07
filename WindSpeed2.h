@@ -61,7 +61,7 @@ public:
 	/// <param name="rotations"> Number of rotations.</param>
 	/// <param name="period">Time period of rotations, sec.</param>
 	/// <returns>Wind speed, mph</returns>
-	float speedInstant(int rotations, float period);
+	float speedInstant(int rotations, unsigned int period);
 		
 	/// <summary>
 	/// Checks for and returns a gust datPoint if the speed satisfies 
