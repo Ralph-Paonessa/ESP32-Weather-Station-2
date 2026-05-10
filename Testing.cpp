@@ -25,10 +25,10 @@ void Testing::testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop) 
 	/********************************/
 	/* INSERT TEST CODE HERE.       */
 
-	/*Serial.println("d_Temp_F.data_10_min_string():");
-	Serial.println(d_Temp_F.data_10_min_string()); Serial.println();
+	/*Serial.println("d_TempF.data_10_min_string():");
+	Serial.println(d_TempF.data_10_min_string()); Serial.println();
 
-	list<dataPoint> dpList = d_Temp_F.recovered_data_10_min();
+	list<dataPoint> dpList = d_TempF.recovered_data_10_min();
 	String s = listToString_data(dpList);
 	Serial.println("String from list from flash:");
 	Serial.println(s);*/

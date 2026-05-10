@@ -82,8 +82,8 @@ public:
 	void logStatus_indent(const String& msg);
 
 	/// <summary>
-	/// Writes line prefixed by date to status 
-	/// log (and serial monitor if VM_DEBUG).
+	/// Writes line prefixed by date to SD card status 
+	/// log (and to serial monitor if VM_DEBUG).
 	/// </summary>
 	/// <param name="msg">Message to log.</param>
 	/// <param name="dateString">Date and time string to include.</param>
