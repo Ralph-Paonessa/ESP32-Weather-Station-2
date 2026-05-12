@@ -16,6 +16,7 @@
 #include <Adafruit_BME280.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <HardwareSerial.h>
 
 WindSpeed windSpeed(
 	DAVIS_SPEED_CAL_FACTOR,
@@ -24,13 +25,6 @@ WindSpeed windSpeed(
 	WIND_SPEED_OUTLIER_DELTA);	// WindSpeed instance for wind.
 SensorData windGust;
 WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
-
-//
-//// ==========   LOGGING   ========================== //
-//// Create logging object from Logging.h library.
-//SDLog logging;
-
-
 
 
 // ==========   SENSORS   ========================== //
@@ -117,7 +111,17 @@ void sensors_begin() {
 	}
 	//  ---------------  DS18B20 T sensor   ---------------
 	sensor_T.begin();
-	// Find DS18B20 temperature.
+	// Reduce resolution to speed readings.
+	sensor_T.setResolution(9);
+	/*
+	Resolution	Precision	Max. time
+	----------	---------	---------
+	9-bit		0.5°C		93.75 ms
+	10-bit		0.25°C		187.5 ms
+	11-bit		0.125°C		375.0 ms
+	12-bit		0.0625°C	750.0 ms (Default)
+	*/
+	// Find DS18B20 sensor.
 	if (countOneWireDevices() < 1) {
 		_isGood_Temp = false;
 		String msg = "WARNING: DS18B20 T sensor not found.";
@@ -128,6 +132,7 @@ void sensors_begin() {
 		String msg = "DS18B20 T sensor found.";
 		sd.logStatus(msg, millis());
 	}
+
 	//  ---------------  VEML6075 UV sensor   ---------------
 	// The VEML6075 begin returns true on success
 	// or false on failure to communicate.
@@ -214,8 +219,6 @@ void readWind() {
 	dataPoint dpGust = windSpeed.gust(dpSpeed, avg);
 	windGust.addReading(dpGust);
 
-
-
 	// Read wind direction.
 	float windAngle = windAngleReading();
 	windDir.addReading(now(), windAngle, speed);	// weighted by speed
@@ -279,7 +282,6 @@ void readWind_Simulate() {
 #endif
 }
 
-
 /// <summary>
 /// Reads and saves fan speed.
 /// </summary>
@@ -293,49 +295,78 @@ void readFan() {
 }
 
 /// <summary>
-/// Reads and saves data from sensors.
+/// Reads and saves data from a sensor specified by index.
 /// </summary>
-void readSensors() {
+/// <param name="index">Indicates sensor to read.</param>
+void readSensors(int index) {
 	//unsigned long timeStart = millis();
 	if (_isDEBUG_simulateSensorReadings) {
 		// Simulate sensor readings.
 		readSensors_Simulate();
 		return;
 	}
-	dataPoint dp;	// holds successive readings
-	// Temperature.
-	dp = dataPoint(now(), read_Temp_F_DS18B20());
-	d_Temp_F.addReading(dp);
-	// UV readings.
-	dp = dataPoint(now(), sensor_UV.uva());
-	d_UVA.addReading(dp);
-	dp = dataPoint(now(), sensor_UV.uvb());
-	d_UVB.addReading(dp);
-	dp = dataPoint(now(), sensor_UV.index());
-	d_UVIndex.addReading(dp);
-	// P, RH
-	dp = dataPoint(now(), sensor_PRH.readHumidity());
-	d_RH.addReading(dp);
-	dp = dataPoint(now(), sensor_PRH.readPressure() / 100);
-	d_Pres_mb.addReading(dp);			// Raw pressure in mb (hectopascals)
-	dp = dataPoint(now(), sensor_PRH.readTemperature());
-	d_Temp_for_RH_C.addReading(dp);		// Temp (C) of P, RH sensor.
-	// P adjusted to sea level.
-	float psl = pressureAtSeaLevel(
-		d_Pres_mb.valueLastAdded(),
-		gps.data.altitude(),
-		d_Temp_for_RH_C.valueLastAdded());
-	dp = dataPoint(now(), psl);
-	d_Pres_seaLvl_mb.addReading(dp);
-	// IR sky
-	dp = dataPoint(now(), sensor_IR.readObjectTempC());
-	d_IRSky_C.addReading(dp);
-	// Insolation/
-	float insol_norm = insol_norm_pct(readInsol_mV(), INSOL_REFERENCE_MAX);
-	dp = dataPoint(now(), insol_norm);
-	d_Insol.addReading(dp);	// % Insolation
+	//unsigned long start = millis();
 
-	//unsigned int timeEnd = millis() - timeStart;
+	// Read sensor specified by index.
+	switch (index)
+	{
+	case 0:
+		// Temperature
+		d_TempF.addReading(dataPoint(now(), read_Temp_F_DS18B20()));
+		break;
+	case 1:
+		// UV A
+		d_UVA.addReading(dataPoint(now(), sensor_UV.uva()));
+		break;
+	case 2:
+		// UV B
+		d_UVB.addReading(dataPoint(now(), sensor_UV.uvb()));
+		break;
+	case 3:
+		// UV Index
+		d_UVIndex.addReading(dataPoint(now(), sensor_UV.index()));
+		break;
+	case 4:
+		// Raw pressure in mb (hectopascals)
+		d_Pres_mb.addReading(dataPoint(now(), sensor_PRH.readHumidity()));
+		break;
+	case 5:
+		// RH
+		d_RH.addReading(dataPoint(now(), sensor_PRH.readHumidity()));
+		break;
+	case 6:
+		// Temp (C) of P, RH sensor.
+		d_TempC_for_RH.addReading(dataPoint(now(), sensor_PRH.readTemperature()));
+		break;
+	case 7:
+		// P adjusted to sea level.
+	{
+		float psl = pressureAtSeaLevel(
+			d_Pres_mb.valueLastAdded(),
+			gps.data.altitude(),
+			d_TempC_for_RH.valueLastAdded());
+		d_Pres_seaLvl_mb.addReading(dataPoint(now(), psl));
+		break;
+	}
+	case 8:
+		// IR sky
+		d_IRSky_C.addReading(dataPoint(now(), sensor_IR.readObjectTempC()));
+		break;
+	case 9:
+	{
+		// Insolation/
+		float insol_norm = insol_norm_pct(readInsol_mV(), INSOL_REFERENCE_MAX);
+		d_Insol.addReading(dataPoint(now(), insol_norm));	// % Insolation
+		break;
+	}
+	default:
+	{
+		String msg = "Error: readSensors index out of range = " + index;
+		sd.logStatus(msg, gps.dateTime());
+	}
+	}
+	//unsigned long elapsed = millis() - start;	
+	//Serial.printf("Sensor %i", index); Serial.printf(" %li ms\n", elapsed);
 }
 
 /// <summary>
@@ -344,7 +375,7 @@ void readSensors() {
 /// </summary>
 /// <remarks>
 /// Has been coded to simulate:
-/// d_Temp_F
+/// d_TempF
 /// d_UVIndex
 /// d_RH
 /// d_Pres_mb
@@ -353,11 +384,11 @@ void readSensors() {
 /// d_Insol
 /// </remarks>
 void readSensors_Simulate() {
-//#if defined(VM_DEBUG)
+	//#if defined(VM_DEBUG)
 	dataPoint dp;	// holds reading (Values changed and reused for each sensor!)
 	// Temperature.
 	dp = dataPoint(now(), dummy_Temp_F.sawtooth(10, 0.02, 20));
-	d_Temp_F.addReading(dp);
+	d_TempF.addReading(dp);
 	// UV readings.
 	/*dp = dataPoint(now(), dummy_UVA.linear(3, 0.1));
 	d_UVA.addReading(dp);
@@ -371,7 +402,7 @@ void readSensors_Simulate() {
 	dp = dataPoint(now(), dummy_Pres_mb.linear(1000, 0.1) / 100);
 	d_Pres_mb.addReading(dp);			// Raw pressure in mb (hectopascals)
 	//dp = dataPoint(now(), dummy_Temp_for_RH_C.linear(10, 0.02));
-	//d_Temp_for_RH_C.addReading(dp);		// Temp (C) of P, RH sensor.
+	//d_TempC_for_RH.addReading(dp);		// Temp (C) of P, RH sensor.
 	// P adjusted to sea level.
 	float psl = pressureAtSeaLevel(
 		dummy_Pres_seaLvl_mb.linear(950, 0.01),
@@ -386,11 +417,11 @@ void readSensors_Simulate() {
 	float insol_norm = insol_norm_pct(dummy_Insol.linear(0, 0.01), INSOL_REFERENCE_MAX);
 	dp = dataPoint(now(), insol_norm);
 	d_Insol.addReading(dp);	// % Insolation
-//#endif
+	//#endif
 }
 
 /// <summary>
-/// Saves last read t to LittleFS.
+/// Saves last read time to LittleFS.
 /// </summary>
 /// <param name="t">Time to save.</param>
 void saveLastReadTime_toFile(unsigned long t) {
@@ -401,9 +432,9 @@ void saveLastReadTime_toFile(unsigned long t) {
 }
 
 /// <summary>
-/// Gets last reading t from LittleFS.
+/// Gets last reading time from LittleFS.
 /// </summary>
-/// <returns>Saved t of last reading.</returns>
+/// <returns>Saved time of last reading.</returns>
 unsigned long lastReadingTime_fromFile()
 {
 	// Read from LittleFS
@@ -414,31 +445,6 @@ unsigned long lastReadingTime_fromFile()
 	//	return 0;
 }
 
-///// <summary>
-///// Saves last read t to LittleFS.
-///// </summary>
-///// <param name="t">Time to save.</param>
-//void saveLastReadTime_toFile(unsigned long t) {
-//	// Save in LittleFS
-//	//if (_isDatafile) {
-//	fileWrite(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str(), String(t).c_str());
-//	///}
-//}
-//
-///// <summary>
-///// Gets last reading t from LittleFS.
-///// </summary>
-///// <returns>Saved t of last reading.</returns>
-//unsigned long lastReadingTime_fromFile()
-//{
-//	// Read from LittleFS
-//	//if (_isDatafile) {
-//	return fileRead(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str()).toInt();
-//	//}
-//	//else {
-//	//	return 0;
-//}
-
 /// <summary>
 /// Saves 10-min averages of all sensor data 
 /// to lists.
@@ -447,10 +453,10 @@ void processReadings_10_min() {
 	windSpeed.process_data_10_min();
 	windGust.process_data_10_min();
 	windDir.process_data_10_min();
-	d_Temp_F.process_data_10_min();
+	d_TempF.process_data_10_min();
 	d_Pres_mb.process_data_10_min();		// Just save avg_10?
 	d_Pres_seaLvl_mb.process_data_10_min();
-	d_Temp_for_RH_C.process_data_10_min();	// Just save avg_10?
+	d_TempC_for_RH.process_data_10_min();	// Just save avg_10?
 	d_RH.process_data_10_min();
 	d_UVA.process_data_10_min();
 	d_UVB.process_data_10_min();
@@ -469,7 +475,7 @@ void processReadings_60_min() {
 	windSpeed.process_data_60_min();
 	windGust.process_data_60_min();
 	windDir.process_data_60_min();
-	d_Temp_F.process_data_60_min();
+	d_TempF.process_data_60_min();
 	d_Pres_seaLvl_mb.process_data_60_min();
 	d_RH.process_data_60_min();
 	d_UVA.process_data_60_min();
@@ -485,7 +491,7 @@ void processReadings_60_min() {
 void processReadings_day() {
 	windSpeed.process_data_day();
 	windDir.process_data_day();
-	d_Temp_F.process_data_day();
+	d_TempF.process_data_day();
 	d_Pres_seaLvl_mb.process_data_day();
 	d_RH.process_data_day();
 	d_UVA.process_data_day();
@@ -505,7 +511,7 @@ void addDummyData() {
 	Serial.printf("\naddDummyData now() = %lui\n", now());
 
 	// 10-min
-	d_Temp_F.addDummy_data_10_min(65, -0.75, 24, 1765412100);
+	d_TempF.addDummy_data_10_min(65, -0.75, 24, 1765412100);
 	d_Pres_mb.addDummy_data_10_min(991, 1, 24, 1765412100);
 	d_Pres_seaLvl_mb.addDummy_data_10_min(991, 1, 24, 1765412100);
 	d_RH.addDummy_data_10_min(20, .5, 24, 1765412100);
@@ -519,7 +525,7 @@ void addDummyData() {
 	processReadings_10_min();
 
 	// 60-min
-	d_Temp_F.addDummy_data_60_min(65, 0.1, 24, 1765412100);
+	d_TempF.addDummy_data_60_min(65, 0.1, 24, 1765412100);
 	d_Pres_mb.addDummy_data_60_min(989, 1.5, 24, 1765412100);
 	d_Pres_seaLvl_mb.addDummy_data_60_min(991, 2, 24, 1765412100);
 	d_RH.addDummy_data_60_min(20, .5, 24, 1765412100);
@@ -533,7 +539,7 @@ void addDummyData() {
 	processReadings_60_min();
 
 	// daily maxima
-	d_Temp_F.addDummy_data_dayMax(65, 1, 10, 1765412100);
+	d_TempF.addDummy_data_dayMax(65, 1, 10, 1765412100);
 	d_Pres_mb.addDummy_data_dayMax(989, 1.5, 24, 1765412100);
 	d_Pres_seaLvl_mb.addDummy_data_dayMax(991, 2, 24, 1765412100);
 	d_RH.addDummy_data_dayMax(20, .5, 24, 1765412100);
@@ -545,7 +551,7 @@ void addDummyData() {
 	d_UVIndex.addDummy_data_dayMax(0, 0.5, 24, 1765412100);
 
 	// daily minima
-	d_Temp_F.addDummy_data_dayMin(45, -1, 10, 1765412400);
+	d_TempF.addDummy_data_dayMin(45, -1, 10, 1765412400);
 	d_Pres_mb.addDummy_data_dayMin(989, 1.5, 24, 1765412100);
 	d_Pres_seaLvl_mb.addDummy_data_dayMin(991, 2, 24, 1765412100);
 	d_RH.addDummy_data_dayMin(20, .5, 24, 1765412100);
@@ -566,14 +572,13 @@ void addDummyData() {
 /// </summary>
 void sensors_AddLabels()
 {
-
 	windSpeed.addLabels("Wind Speed", "wind", "mph");
 	windDir.addLabels("Wind direction", "windDir", "", "&deg;");
 	windGust.addLabels("Wind Gust", "gust", "mph");
-	d_Temp_F.addLabels("Temperature", "temp", "F", "&deg;F");
+	d_TempF.addLabels("Temperature", "temp", "F", "&deg;F");
 	d_Pres_mb.addLabels("Pressure (abs)", "presAbs", "mb");
 	d_Pres_seaLvl_mb.addLabels("Pressure (SL)", "presSeaLvl", "mb");
-	d_Temp_for_RH_C.addLabels("Temp for RH", "tForRH", "C", "&degC;");
+	d_TempC_for_RH.addLabels("Temp for RH", "tForRH", "C", "&degC;");
 	d_RH.addLabels("Rel. Humidity", "RH", "%", "&percnt;");
 	d_IRSky_C.addLabels("Sky Temperature", "skyTemp", "C", "&degC;");
 	d_UVA.addLabels("UV A Radiation", "uvA", "");
@@ -592,10 +597,10 @@ void sensors_createFiles()
 	windSpeed.createFiles();
 	windDir.createFiles();
 	windGust.createFiles();
-	d_Temp_F.createFiles();
+	d_TempF.createFiles();
 	//d_Pres_mb.createFiles();
 	d_Pres_seaLvl_mb.createFiles();
-	//d_Temp_for_RH_C.createFiles(); 
+	//d_TempC_for_RH.createFiles(); 
 	d_RH.createFiles();
 	d_IRSky_C.createFiles();
 	//d_UVA.createFiles();         

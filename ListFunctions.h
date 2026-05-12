@@ -149,7 +149,7 @@ namespace ListFunctions {
 	/// <returns>
 	/// List of "time,value" dataPoints retrieved from a delimited string.
 	/// </returns>
-	list<dataPoint> listData_fromString(String& str);
+	list<dataPoint> list_dataPoints_fromString(String& str);
 
 	/// <summary>
 	/// Prints out the elements of a list of C++ std::string.

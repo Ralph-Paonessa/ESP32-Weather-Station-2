@@ -273,7 +273,7 @@ void SensorData::process_data_day() {
 /// Recovers list of sensor data points from a file.
 /// </summary>
 /// <param name="period">The type based on the period.</param>
-void SensorData::recover_data_fromFile(dataPeriod period) {
+void SensorData::recover_data_fromFile_NOT_USED(dataPeriod period) {
 
 	if (_isDatafile) {
 		String str;
@@ -281,17 +281,13 @@ void SensorData::recover_data_fromFile(dataPeriod period) {
 		{
 		case App_Settings::PERIOD_10_MIN:
 			// Get 10-min data from file system and place in memory.
-
-			// Read file from flash LittleFS.
 			str = fileRead(LittleFS, sensorFilepath("_10_min").c_str());
-			_data_10_min = listData_fromString(str);
+			_data_10_min = list_dataPoints_fromString(str);
 			break;
 		case App_Settings::PERIOD_60_MIN:
 			// Get 60-min data from file system and place in memory.
-			// Read file from flash LittleFS.
 			str = fileRead(LittleFS, sensorFilepath("_60_min").c_str());
-			_data_60_min = listData_fromString(str);
-
+			_data_60_min = list_dataPoints_fromString(str);
 			break;
 		case App_Settings::PERIOD_DAY:
 			// Get 10-min data from file system and place in memory.
@@ -315,13 +311,17 @@ void SensorData::recover_data_fromFile(dataPeriod period) {
 /// them to initialize 10-min list in memory. Used to retrieve 
 /// any data lost at reboot.
 /// </summary>
+/// <remarks>
+/// LIMIT SIZE OF LIST?! Shouldn't be necessary if 
+/// saved data list never exceeds max size!
+/// </remarks>
 void SensorData::data_10_min_fromFile() {
 	// Get 10-min data from file system and place in memory.
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
 		String delim = fileRead(LittleFS, sensorFilepath("_10_min").c_str());
 		serial_println_DEBUG("SensorData::data_10_min_fromFile: " + _filenamePrefix + " :", delim.c_str());
-		_data_10_min = listData_fromString(delim);
+		_data_10_min = list_dataPoints_fromString(delim);
 	}
 }
 
@@ -336,7 +336,7 @@ void SensorData::data_60_min_fromFile() {
 		// Read file from flash LittleFS.
 		String delim = fileRead(LittleFS, sensorFilepath("_60_min").c_str());
 		serial_println_DEBUG("SensorData::data_60_min_fromFile: " + _filenamePrefix + " :", delim.c_str());
-		_data_60_min = listData_fromString(delim);
+		_data_60_min = list_dataPoints_fromString(delim);
 	}
 }
 
@@ -359,11 +359,11 @@ void SensorData::data_dayMaxMin_fromFile() {
 			switch (index) {
 			case 0:
 				// maxima list.
-				_data_dayMax = listData_fromString(s);
+				_data_dayMax = list_dataPoints_fromString(s);
 				break;
 			case 1:
 				// minima list.							
-				_data_dayMin = listData_fromString(s);
+				_data_dayMin = list_dataPoints_fromString(s);
 				break;
 			default:
 				// Unexpected index!

@@ -66,7 +66,7 @@ void Testing::testCodeForSetup2(bool isInfiniteLoop) {
 	String s2 = "1,64~2,~3,63~4,~5,61";
 	Serial.println("String to convert to list:");
 	Serial.println(s2);
-	list<dataPoint> dpList2 = listData_fromString(s2);
+	list<dataPoint> dpList2 = list_dataPoints_fromString(s2);
 	Serial.println("String derived from list of data points:");
 	Serial.println(listToString_data(dpList2));
 
@@ -95,8 +95,8 @@ void Testing::testCodeForSetup3(bool isInfiniteLoop) {
 	// Print the list elements.
 	listPrint(sList);
 
-	Serial.println("Convert using listData_fromString:");
-	listPrint(listData_fromString(s));
+	Serial.println("Convert using list_dataPoints_fromString:");
+	listPrint(list_dataPoints_fromString(s));
 
 	Serial.println("TEST COMPLETE");
 	Serial.println(LINE_SEPARATOR);

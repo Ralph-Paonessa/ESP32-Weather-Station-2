@@ -266,7 +266,7 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", d_IRSky_C.data_10_min_string().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_Temp_F.data_10_min_string().c_str());
+					request->send(200, "text/plain", d_TempF.data_10_min_string().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
 					request->send(200, "text/plain", d_Pres_seaLvl_mb.data_10_min_string().c_str());
@@ -312,7 +312,7 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", d_IRSky_C.data_60_min_string().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_Temp_F.data_60_min_string().c_str());
+					request->send(200, "text/plain", d_TempF.data_60_min_string().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
 					request->send(200, "text/plain", d_Pres_seaLvl_mb.data_60_min_string().c_str());
@@ -358,7 +358,7 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", d_IRSky_C.data_dayMaxMin_string().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_Temp_F.data_dayMaxMin_string().c_str());
+					request->send(200, "text/plain", d_TempF.data_dayMaxMin_string().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
 					request->send(200, "text/plain", d_Pres_seaLvl_mb.data_dayMaxMin_string().c_str());
@@ -401,7 +401,7 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", d_IRSky_C.data_dayMax_string().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_Temp_F.data_dayMax_string().c_str());
+					request->send(200, "text/plain", d_TempF.data_dayMax_string().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
 					request->send(200, "text/plain", d_Pres_seaLvl_mb.data_dayMax_string().c_str());
@@ -444,8 +444,8 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", d_IRSky_C.data_dayMin_string().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					//request->send(200, "text/plain", d_Temp_F.data_dayMin_string().c_str());
-					request->send(200, "text/plain", d_Temp_F.data_dayMin_string().c_str());
+					//request->send(200, "text/plain", d_TempF.data_dayMin_string().c_str());
+					request->send(200, "text/plain", d_TempF.data_dayMin_string().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
 					request->send(200, "text/plain", d_Pres_seaLvl_mb.data_dayMin_string().c_str());

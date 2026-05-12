@@ -15,6 +15,7 @@
 /// Exposes parameters for weather station.
 /// </summary>
 namespace App_Settings {
+	// Conversion constants.
 	constexpr unsigned int	SECONDS_PER_MINUTE = 60;
 	constexpr unsigned int	MINUTES_PER_HOUR = 60;
 	constexpr unsigned int	MILLISEC_PER_SECOND = 1000;
@@ -26,11 +27,13 @@ namespace App_Settings {
 	constexpr unsigned long MILLISECONDS_PER_MINUTE = MILLISEC_PER_SECOND * SECONDS_PER_MINUTE;		// 60,000 ms
 	constexpr float			DEGREES_PER_RADIAN = 57.2957795130823;	// Degrees in 1 radian.
 
-	constexpr unsigned int	BASE_PERIOD_SEC = 4;	// Period to sample anemometer rotations (sec). Used for all sensors!
+	// Period to sample anemometer rots. Also 
+	// triggers read of other sensors.
+	constexpr unsigned int	BASE_PERIOD_SEC = 4;	// Current default 4 sec.
 
-	constexpr unsigned int	DATA_RECOVERY_10_MIN_CUTOFF = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than this.
-	constexpr unsigned int	DATA_RECOVERY_60_MIN_CUTOFF = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than this.
-	constexpr unsigned int	DATA_RECOVERY_DAY_CUTOFF = 3 * SECONDS_PER_DAY;			// Recover day data no older than this.
+	constexpr unsigned int	DATA_RECOVERY_10_MIN_AGE_LIMIT = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than this.
+	constexpr unsigned int	DATA_RECOVERY_60_MIN_AGE_LIMIT = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than this.
+	constexpr unsigned int	DATA_RECOVERY_DAY_AGE_LIMIT = 3 * SECONDS_PER_DAY;			// Recover day data no older than this.
 
 	/* GPS sync parameters */
 
@@ -39,7 +42,7 @@ namespace App_Settings {
 	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 4;	// Minimum GPS cycles before syncing.
 	constexpr unsigned int	GPS_CYCLE_DELAY_SEC = 2;	// Delay before getting another GPS fix, sec.
 	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 50;	// Max number of GPS cycles before quitting.
-	constexpr float			GPS_MAX_ALLOWED_HDOP = 4;	// Minimum HDOP precision for syncing.
+	constexpr float			GPS_MAX_ALLOWED_HDOP = 2;	// Minimum HDOP precision for syncing.
 
 	constexpr unsigned int	GPS_DUMMY_HOUR = 23;		// Hour for dummy GPS time.
 	constexpr unsigned int	GPS_DUMMY_MIN = 05;			// Minute for dummy GPS time.
@@ -85,7 +88,7 @@ namespace App_Settings {
 	constexpr unsigned int WIND_SPEED_NUMBER_IN_MOVING_AVG = 5;
 
 
-	constexpr unsigned int LOOP_TIME_WARNING_THRESHOLD_MS = 2000;
+	constexpr unsigned int LOOP_TIME_WARNING_THRESHOLD_MS = 120;
 
 	/// <summary>
 	/// Enumerate lists of sensor data of different periods.
@@ -102,43 +105,41 @@ namespace App_Settings {
 	/// Max size of data lists.
 	/// </summary>
 	enum speedListSize {
-		SIZE_RAW_LIST = 30,		// AT LEAST 30 (for 2-min avg)!
 		SIZE_10_MIN_LIST = 24,	// AT LEAST 6 (for 60-min avg)!
 		SIZE_60_MIN_LIST = 24,	// AT LEAST 12 (for 12-hr avg)!
 		SIZE_DAY_LIST = 30		// Hold data for 30 days.
 	};
 
 	/// <summary>
-	/// The number of (4.0 sec) base periods in a report interval.
+	/// The number of base periods in a report interval. (Assume 4s BASE_PERIOD_SEC)
 	/// </summary>
 	enum BasePeriodsInInterval {
 #if defined(VM_DEBUG)
-		BASE_PERIODS_IN_10_MIN = 150,	// XXX SHOULD BE 150!!! XXX //   600 sec
-		BASE_PERIODS_IN_60_MIN = 900,	// XXX SHOULD BE 900!!! XXX //	3600 sec
-		BASE_PERIODS_IN_24_HR = 21600	// 86400 sec
+		BASE_PERIODS_IN_10_MIN = 150,	// XXX SHOULD BE 150 for BASE 4s
+		BASE_PERIODS_IN_60_MIN = 900,	// XXX SHOULD BE 900 for BASE 4s
+		BASE_PERIODS_IN_24_HR = 21600	// XXX SHOULD BE 21600 for BASE 4s
 #else
 		BASE_PERIODS_IN_10_MIN = 10 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC,
-		BASE_PERIODS_IN_60_MIN = 60 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC, 
+		BASE_PERIODS_IN_60_MIN = 60 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC,
 		BASE_PERIODS_IN_24_HR = 24 * SECONDS_PER_HOUR / BASE_PERIOD_SEC
-	};
 #endif
-};
+	};
 
-/// <summary>
-/// Enumerates data charts requested from the web server.
-/// </summary>
-enum chartRequested {
-	CHART_NONE,
-	CHART_WIND_SPEED,
-	CHART_WIND_GUST,
-	CHART_WIND_DIRECTION,
-	CHART_TEMPERATURE_F,
-	CHART_PRESSURE_SEA_LEVEL,
-	CHART_RELATIVE_HUMIDITY,
-	CHART_UV_INDEX,
-	CHART_INSOLATION,
-	CHART_IR_SKY
-};
+	/// <summary>
+	/// Enumerates data charts requested from the web server.
+	/// </summary>
+	enum chartRequested {
+		CHART_NONE,
+		CHART_WIND_SPEED,
+		CHART_WIND_GUST,
+		CHART_WIND_DIRECTION,
+		CHART_TEMPERATURE_F,
+		CHART_PRESSURE_SEA_LEVEL,
+		CHART_RELATIVE_HUMIDITY,
+		CHART_UV_INDEX,
+		CHART_INSOLATION,
+		CHART_IR_SKY
+	};
 }
 
 #endif

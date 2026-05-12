@@ -3,6 +3,8 @@
 // 
 
 #include "Utilities.h"
+#include "DataPoint.h"
+#include <HardwareSerial.h>
 
 /// <summary>
 /// Prints line to serial port during VM_DEBUG.
@@ -10,8 +12,19 @@
 /// <param name="msg">Message to print.</param>
 void Utilities::serial_println_DEBUG(const String& prefix, const char* msg) {
 #if defined(VM_DEBUG)
-	Serial.print(prefix);
+	Serial.print(prefix); Serial.print(" ");
 	Serial.println(msg);
+#endif
+}
+
+/// <summary>
+/// Prints dataPoint time and value to serial port during VM_DEBUG.
+/// </summary>
+/// <param name="msg">A dataPoint struct holding (time, value).</param>
+void Utilities::serial_println_DEBUG(const String& prefix, const dataPoint dp) {
+#if defined(VM_DEBUG)
+	Serial.print(prefix); Serial.print(" ");
+	Serial.printf("(%lui", dp.time); Serial.printf(", %.1f)\n", dp.value);
 #endif
 }
 
@@ -21,7 +34,7 @@ void Utilities::serial_println_DEBUG(const String& prefix, const char* msg) {
 /// <param name="msg">Message to print.</param>
 void Utilities::serial_print_DEBUG(const String& prefix, const char* msg) {
 #if defined(VM_DEBUG)
-	Serial.print(prefix);
+	Serial.print(prefix); Serial.print(" ");
 	Serial.print(msg);
 #endif
 }

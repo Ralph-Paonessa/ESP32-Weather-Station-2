@@ -9,6 +9,7 @@
 #include "WProgram.h"
 #endif
 #include <WString.h>
+#include "DataPoint.h"
 
 /// <summary>
 /// Exposes functions for processing weather data.
@@ -21,6 +22,13 @@ namespace Utilities {
 	/// <param name="prefix">Prefix for message.</param>
 	/// <param name="msg">Message to print.</param>
 	void serial_println_DEBUG(const String& prefix, const char* msg);
+
+	/// <summary>
+	/// Prints dataPoint time and value to serial port during VM_DEBUG.
+	/// </summary>
+	/// <param name="prefix">Prefix for message.</param>
+	/// <param name="msg">A dataPoint struct holding (time, value).</param>
+	void serial_println_DEBUG(const String& prefix, dataPoint dp);
 
 	/// <summary>
 	/// Prints text to serial port during VM_DEBUG.

@@ -169,7 +169,7 @@ public:
 	/// Recovers list of data points from a file.
 	/// </summary>
 	/// <param name="dataType">The type based on the period.</param>
-	void recover_data_fromFile(dataPeriod dataType);
+	void recover_data_fromFile_NOT_USED(dataPeriod dataType);
 
 	/// <summary>
 	/// Data point (time, value) of latest sensor reading.
@@ -373,6 +373,10 @@ public:
 	/// them to initialize 10-min list. Used to retrieve 
 	/// any data lost at reboot.
 	/// </summary>
+	/// <remarks>
+	/// LIMIT SIZE OF LIST?! Shouldn't be necessary if 
+	/// saved data list never exceeds max size!
+	/// </remarks> 
 	void data_10_min_fromFile();
 
 	/// <summary>

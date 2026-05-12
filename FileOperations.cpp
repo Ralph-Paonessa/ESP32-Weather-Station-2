@@ -114,7 +114,6 @@ void FileOperations::fileWrite(fs::FS& fs, const char* path, const char* msg) {
 }
 
 void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* msg) {
-	//Serial.printf("FileOperations::fileAppend to file: %s\n", path);
 	File file = fs.open(path, FILE_APPEND);
 	if (!file) {
 		Serial.print("ERROR: FileOperations::fileAppend failed to open file ");

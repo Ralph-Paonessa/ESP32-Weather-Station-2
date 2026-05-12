@@ -20,18 +20,18 @@ void printHeader() {
 /// </summary>
 /// <returns>String</returns>
 String columnNames() {
-	String s = "Time";									// (1)
-	s += "\tT, F";										// (1)
-	s += "\tP, mb, sea lvl\tP, mb, abs";				// (2)
-	s += "\tRH %\tBME T, C";							// (2)
-	s += "\tSolar, %";									// (1)
-	s += "\tUV - A\tUV - B\tUV Index";					// (3)
-	s += "\tIR sky temp, C";							// (1)
-	s += "\tWind speed, 10-min, mph\tGust, mph";		// (2)
-	s += "\tMax speed Instant, mph";					// (1)
-	s += "\tWind vane, deg\tWind from";					// (2)
-	s += "\tFan rpm";									// (1)
-	return s;											// (18 total)
+	String s = "Time";				// (1)
+	s += "\t\t\tT, F";				// (1)
+	s += "\tP, mbSL\tP, mbAB";		// (2)
+	s += "\tRH %\tBME T,C";			// (2)
+	s += "\tSolar%";				// (1)
+	s += "\tUV-A\tUV-B\tUV idx";	// (3)
+	s += "\tIR, C";					// (1)
+	s += "\tWind10\tGust";			// (2)
+	s += "\tMax";					// (1)
+	s += "\tVane\tFrom";			// (2)
+	s += "\tFan rpm";				// (1)
+	return s;						// (18 total)
 }
 
 /// <summary>
@@ -43,13 +43,13 @@ String sensorsDataString_current() {
 	// time (1)
 	String s = gps.dateTime();
 	// temperature (1)
-	s += "\t" + String(d_Temp_F.valueLastAdded());
+	s += "\t" + String(d_TempF.valueLastAdded());
 	// pressure (2)
 	s += "\t" + String(d_Pres_seaLvl_mb.valueLastAdded());	// mb adjusted to sea level
 	s += "\t" + String(d_Pres_mb.valueLastAdded());			// absolute mb (hPa)
 	// RH (2)
 	s += "\t" + String(d_RH.valueLastAdded());				// %RH
-	s += "\t" + String(d_Temp_for_RH_C.valueLastAdded());	// temp recorded by BME280
+	s += "\t" + String(d_TempC_for_RH.valueLastAdded());	// temp recorded by BME280
 	// Solar (1)
 	s += "\t" + String(d_Insol.valueLastAdded());			// PV solar cell %
 	// UV (3)
@@ -92,13 +92,13 @@ String sensorsDataString_10_min() {
 	// time (1)
 	String s = gps.dateTime();
 	// temperature (1)
-	s += "\t" + String(d_Temp_F.avg_10_min());
+	s += "\t" + String(d_TempF.avg_10_min());
 	// pressure (2)
 	s += "\t" + String(d_Pres_seaLvl_mb.avg_10_min());	// mb adjusted to sea level
 	s += "\t" + String(d_Pres_mb.avg_10_min());			// absolute mb (hPa)
 	// RH (2)
 	s += "\t" + String(d_RH.avg_10_min());				// %RH
-	s += "\t" + String(d_Temp_for_RH_C.avg_10_min());	// temp recorded by BME280
+	s += "\t" + String(d_TempC_for_RH.avg_10_min());	// temp recorded by BME280
 	// Solar (1)
 	s += "\t" + String(d_Insol.avg_10_min());			// PV solar cell mV
 	// UV (3)
@@ -160,7 +160,7 @@ void PrintColumnHeadings() {
 void PrintSensorOutputs() {
 #if defined(VM_DEBUG)
 	// Temperature.
-	Serial.print(d_Temp_F.valueLastAdded(), 1);
+	Serial.print(d_TempF.valueLastAdded(), 1);
 	Serial.print(F("ºF")); Serial.print(F("\t"));
 	// Adjust to sea level:
 	Serial.print(d_Pres_seaLvl_mb.valueLastAdded(), 1);
@@ -169,7 +169,7 @@ void PrintSensorOutputs() {
 	Serial.print(d_Pres_mb.valueLastAdded(), 1); Serial.print(F(" mb\t"));
 	// Relative Humidity
 	Serial.print(d_RH.valueLastAdded(), 1); Serial.print(F(" % \t\t"));
-	Serial.print(d_Temp_for_RH_C.valueLastAdded()); Serial.print(F("ºC\t\t"));
+	Serial.print(d_TempC_for_RH.valueLastAdded()); Serial.print(F("ºC\t\t"));
 	// Solar radiation.
 	Serial.print(d_Insol.valueLastAdded(), 1); Serial.print(F(" mV\t"));
 	// UV sensor.

@@ -41,7 +41,7 @@ String processor(const String& var) {
 		return String(gps.dayName());
 	}
 	if (var == "TEMPERATURE_F")
-		return String(d_Temp_F.avg_now(), 0);
+		return String(d_TempF.avg_now(), 0);
 	if (var == "WIND_SPEED") {
 		return String(windSpeed.avg_now(), 0);	// 10-min avg
 	}
@@ -103,7 +103,7 @@ String processor(const String& var) {
 	///  DAILY MAXIMA  ///////////////////
 
 	if (var == "TEMPERATURE_F_HI") {
-		return String(d_Temp_F.max_today().value, 0);
+		return String(d_TempF.max_today().value, 0);
 	}
 	if (var == "WIND_SPEED_HI") {
 		return String(windSpeed.max_today().value, 0);
@@ -154,7 +154,7 @@ String processor(const String& var) {
 	///  DAILY MINIMA  ///////////////////
 
 	if (var == "TEMPERATURE_F_LO") {
-		return String(d_Temp_F.min_today().value, 0);
+		return String(d_TempF.min_today().value, 0);
 	}
 	if (var == "WIND_SPEED_LO") {
 		return String(windSpeed.min_today().value, 0);	// 10-min avg
@@ -244,7 +244,7 @@ String processor(const String& var) {
 		case CHART_IR_SKY:
 			return String(d_IRSky_C.label() + ", " + d_IRSky_C.units_html());
 		case CHART_TEMPERATURE_F:
-			return String(d_Temp_F.label() + ", " + d_Temp_F.units_html());
+			return String(d_TempF.label() + ", " + d_TempF.units_html());
 		case CHART_PRESSURE_SEA_LEVEL:
 			return String(d_Pres_seaLvl_mb.label() + ", " + d_Pres_seaLvl_mb.units());
 		case CHART_RELATIVE_HUMIDITY:
@@ -275,7 +275,7 @@ String processor(const String& var) {
 		case CHART_IR_SKY:
 			return String(d_IRSky_C.label());
 		case CHART_TEMPERATURE_F:
-			return String(d_Temp_F.label());
+			return String(d_TempF.label());
 		case CHART_PRESSURE_SEA_LEVEL:
 			return String(d_Pres_seaLvl_mb.label());
 		case CHART_RELATIVE_HUMIDITY:

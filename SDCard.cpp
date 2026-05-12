@@ -252,12 +252,12 @@ void SDCard::logDebugStatus(
 	bool isDEBUG_simulateWindReadings,
 	bool isDEBUG_AddDelayInLoop,
 	bool LOOP_DELAY_DEBUG_ms) {
-#if defined(VM_DEBUG)
-	logStatus("Compiled as DEBUG BUILD");
-#else
-	logStatus("Compiled as RELEASE BUILD");
-	Serial.print("Compiled as RELEASE BUILD\n");
-#endif
+//#if defined(VM_DEBUG)
+//	logStatus("Compiled as DEBUG BUILD");
+//#else
+//	logStatus("Compiled as RELEASE BUILD");
+//	Serial.print("Compiled as RELEASE BUILD\n");
+//#endif
 	logStatus(LINE_SEPARATOR);
 	logStatus("DEBUG FLAGS SET:");
 	if (isDEBUG_BypassGPS) {
