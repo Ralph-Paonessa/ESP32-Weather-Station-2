@@ -371,10 +371,10 @@ void readSensors(int index) {
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
-//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
 	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
-//#endif
+#endif
 }
 
 /// <summary>

@@ -27,7 +27,7 @@ String columnNames() {
 	s += "\tSolar%";				// (1)
 	s += "\tUV-A\tUV-B\tUV idx";	// (3)
 	s += "\tIR, C";					// (1)
-	s += "\tWind10\tGust";			// (2)
+	s += "\tWind10\t\tGust";		// (2)
 	s += "\tMax";					// (1)
 	s += "\tVane\tFrom";			// (2)
 	s += "\tFan rpm";				// (1)
@@ -115,7 +115,7 @@ String sensorsDataString_10_min() {
 	// Wind speed (3)
 	s += "\t" + String(windSpeed.avg_10_min());
 	s += "\t" + String(windGust.max_10_min().value);
-	s += "\tmax?";	// + String(windSpeed.max_last_10_min);  XXX  ???
+	s += "\t\tmax?";	// + String(windSpeed.max_last_10_min);  XXX  ???
 	// Wind direction (2)
 	if (windSpeed.avg_10_min() >= WIND_DIR_SPEED_THRESHOLD)
 	{
