@@ -36,12 +36,11 @@ const bool isRECOVER_FILESYS_DATA = false;			// Recover data from file system.
 
 /*****************      DEBUGGING FLAGS      ******************/
 
-const bool _isDEBUG_BypassGPS = true;				// Bypass gps syncing.
+const bool _isDEBUG_BypassGPS = false;				// Bypass gps syncing.
 const bool _isDEBUG_BypassWifi = false;				// Bypass WiFi connect.	 XXX FAILS!!!
 const bool _isDEBUG_BypassSDCard = false;			// Bypass SD card.
 const bool _isDEBUG_ListLittleFS = true;			// List contents of LittleFS.
 const bool _isDEBUG_BypassWebServer = false;		// Bypass Web Server.
-
 const bool _isDEBUG_run_test_in_setup = false;		// Run only test code inserted in Setup.
 const bool _isDEBUG_run_test_in_loop = false;		// Run test code inserted in Loop.
 const bool _isDEBUG_addDummyDataLists = false;		// Add dummy data.
@@ -49,7 +48,6 @@ const bool _isDEBUG_simulateSensorReadings = false;	// Add dummy sensor reading 
 const bool _isDEBUG_simulateWindReadings = false;	// Add dummy wind reading values.
 const bool _isDEBUG_AddDelayInLoop = false;			// Add delay in loop.
 const int _LOOP_DELAY_DEBUG_ms = 100;				// Debug delay in loop, msec.
-
 
 
 // ==========   SD card module   ==================== //
@@ -508,8 +506,8 @@ void loop() {
 		// Read data for other sensors one at a time.
 		readSensors(_index);
 		_index++;
-		if (_index > 9) {
-			_index = 0;
+		if (_index > COUNT_SENSORS_TO_READ - 1) {
+			_index = 0;		// Restart cycle.
 		};
 		portENTER_CRITICAL_ISR(&timerMux_base);
 		_countInterrupts_base--;	// Base timer interrupt handled.
@@ -600,7 +598,7 @@ void loop() {
 	//#endif
 
 		// Watch for excessive processing time in loop.
-	if (millis() - _time_start_current_loop > LOOP_TIME_WARNING_THRESHOLD_MS) {
+	if (millis() - _time_start_current_loop > LOOP_TIME_WARN_THRESHOLD_MS) {
 		String msg = "Loop " + String(millis() - _time_start_current_loop) + "ms";
 		sd.logStatus(msg, gps.dateTime());
 		//Serial.printf("long loop %lims\n", millis() - _time_start_current_loop);

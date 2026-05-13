@@ -66,7 +66,7 @@ void WindDirection::addReading(long time, float degrees, float speed) {
 	_dataPointLastAdded = dataPoint(time, degrees);
 	///////////_timeLastAdded = time;
 	// Only record direction for speeds greater than threshold.
-	if (speed >= WIND_DIRECTION_SPEED_THRESHOLD) {
+	if (speed >= WIND_DIR_SPEED_THRESHOLD) {
 		degrees -= _offsetAngle;	// Adjust for any offset.
 		// Converts angle into North and East components of
 		// the direction vector and sums each component.

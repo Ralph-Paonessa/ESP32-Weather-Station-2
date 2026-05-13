@@ -350,8 +350,8 @@ void SDCard::logApp_Settings() {
 	logStatus_indent(msg);
 	msg = "VANE_OFFSET: " + String(VANE_OFFSET);
 	logStatus_indent(msg);
-	msg = "WIND_DIRECTION_SPEED_THRESHOLD: " + String(WIND_DIRECTION_SPEED_THRESHOLD);
+	msg = "WIND_DIR_SPEED_THRESHOLD: " + String(WIND_DIR_SPEED_THRESHOLD);
 	logStatus_indent(msg);
-	msg = "LOOP_TIME_WARNING_THRESHOLD_MS: " + String(LOOP_TIME_WARNING_THRESHOLD_MS);
+	msg = "LOOP_TIME_WARN_THRESHOLD_MS: " + String(LOOP_TIME_WARN_THRESHOLD_MS);
 	logStatus_indent(msg);
 }

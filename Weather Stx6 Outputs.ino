@@ -117,7 +117,7 @@ String sensorsDataString_10_min() {
 	s += "\t" + String(windGust.max_10_min().value);
 	s += "\tmax?";	// + String(windSpeed.max_last_10_min);  XXX  ???
 	// Wind direction (2)
-	if (windSpeed.avg_10_min() >= WIND_DIRECTION_SPEED_THRESHOLD)
+	if (windSpeed.avg_10_min() >= WIND_DIR_SPEED_THRESHOLD)
 	{
 		s += "\t" + String(windDir.avg_10_min());
 		s += "\t" + windDir.directionCardinal();

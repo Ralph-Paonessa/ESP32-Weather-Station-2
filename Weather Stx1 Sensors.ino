@@ -18,11 +18,12 @@
 #include <DallasTemperature.h>
 #include <HardwareSerial.h>
 
+// WindSpeed instance for wind.
 WindSpeed windSpeed(
 	DAVIS_SPEED_CAL_FACTOR,
 	true,
-	WIND_SPEED_NUMBER_IN_MOVING_AVG,
-	WIND_SPEED_OUTLIER_DELTA);	// WindSpeed instance for wind.
+	WIND_SPEEDS_IN_MOVING_AVG,
+	WIND_SPEED_OUTLIER_DELTA);
 SensorData windGust;
 WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
 
@@ -305,7 +306,7 @@ void readSensors(int index) {
 		readSensors_Simulate();
 		return;
 	}
-	//unsigned long start = millis();
+	unsigned long start_usec = micros();	// debugging
 
 	// Read sensor specified by index.
 	switch (index)
@@ -327,20 +328,21 @@ void readSensors(int index) {
 		d_UVIndex.addReading(dataPoint(now(), sensor_UV.index()));
 		break;
 	case 4:
+	{
 		// Raw pressure in mb (hectopascals)
-		d_Pres_mb.addReading(dataPoint(now(), sensor_PRH.readHumidity()));
+		float pRaw = sensor_PRH.readPressure() / 100;	// Convert Pa to mb (hPa)!
+		d_Pres_mb.addReading(dataPoint(now(), pRaw));
 		break;
+	}
 	case 5:
-		// RH
-		d_RH.addReading(dataPoint(now(), sensor_PRH.readHumidity()));
-		break;
-	case 6:
-		// Temp (C) of P, RH sensor.
+	{
+		//float temp = sensor_PRH.readTemperature();
 		d_TempC_for_RH.addReading(dataPoint(now(), sensor_PRH.readTemperature()));
 		break;
-	case 7:
-		// P adjusted to sea level.
+	}
+	case 6:
 	{
+		// P adjusted to sea level.
 		float psl = pressureAtSeaLevel(
 			d_Pres_mb.valueLastAdded(),
 			gps.data.altitude(),
@@ -348,6 +350,10 @@ void readSensors(int index) {
 		d_Pres_seaLvl_mb.addReading(dataPoint(now(), psl));
 		break;
 	}
+	case 7:
+		// RH
+		d_RH.addReading(dataPoint(now(), sensor_PRH.readHumidity()));
+		break;
 	case 8:
 		// IR sky
 		d_IRSky_C.addReading(dataPoint(now(), sensor_IR.readObjectTempC()));
@@ -361,12 +367,14 @@ void readSensors(int index) {
 	}
 	default:
 	{
-		String msg = "Error: readSensors index out of range = " + index;
+		String msg = "Error: readSensors index out of range = " + String(index);
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
-	//unsigned long elapsed = millis() - start;	
-	//Serial.printf("Sensor %i", index); Serial.printf(" %li ms\n", elapsed);
+//#if defined(VM_DEBUG)
+	float elapsed = (micros() - start_usec) / 1000.;
+	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
+//#endif
 }
 
 /// <summary>
