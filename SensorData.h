@@ -12,9 +12,9 @@
 #include <list>
 using std::list;
 #include "dataPoint.h"
-#include "ListFunctions.h"
+#include "DataPointLists.h"
 #include "App_settings.h"
-using namespace ListFunctions;
+using namespace DataPoint_Lists;
 using namespace App_Settings;
 // File system
 
@@ -131,12 +131,11 @@ public:
 	/// intervals.
 	/// </summary>
 	/// <param name="isConvertZeroToEmpty">
-	/// Set to true to convert zero to empty in output strings.
+	/// Set to true to convert zero to empty in output strings. (Default is true.)
 	/// </param>
-	/// <param name="decimalPlaces">Decimal places in output strings.
+	/// <param name="decimalPlaces">Decimal places in output strings. (Default is 0.)
 	/// </param>
-	void createFiles(bool isConvertZeroToEmpty = true,
-		unsigned int decimalPlaces = 0);
+	void createFiles(bool isConvertZeroToEmpty = true, unsigned int decimalPlaces = 0);
 
 	/// <summary>
 	/// Adds (time, value) dataPoint, accumulates average, 

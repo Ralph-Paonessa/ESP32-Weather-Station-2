@@ -70,7 +70,7 @@ Implements a GPSModule class that handles both GPS interactions and system timek
 ### SDCard.h, SDCard.cpp
 Implements an SDCard class with methods to read and write to an SD card. 
 
-### ListFunctions.h, ListFunctions.cpp
+### DataPointLists.h, DataPointLists.cpp
 Implements methods to deal with C++ std::list operations, 
 which are used to hold, analyze, average, and otherwise operate on lists 
 of weather station data.
