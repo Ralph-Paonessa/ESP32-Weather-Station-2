@@ -1,7 +1,7 @@
-// ListFunctions.h
+// DataPoint_Lists.h
 
-#ifndef _LISTFUNCTIONS_h
-#define _LISTFUNCTIONS_h
+#ifndef _DATAPOINTLISTS_h
+#define _DATAPOINTLISTS_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
@@ -18,7 +18,7 @@ using std::list;
 /// <summary>
 /// Exposes methods that operate on lists.
 /// </summary>
-namespace ListFunctions {
+namespace DataPoint_Lists {
 
 	/// <summary>
 	/// Adds dataPoint to list and limits list size. (If adding 
@@ -27,7 +27,7 @@ namespace ListFunctions {
 	/// <param name="targetList">List of dataPoints to add to.</param>
 	/// <param name="dp">dataPoint to add.</param>
 	/// <param name="numElements">Maximum allowed elements in list.</param>
-	void addToList(list<dataPoint>& targetList, dataPoint val, int numElements);
+	void addDataPoint_to_List(list<dataPoint>& targetList, dataPoint val, int numElements);
 
 	/// <summary>
 	/// Adds values to list and limits list size. (If adding 
@@ -36,7 +36,7 @@ namespace ListFunctions {
 	/// <param name="targetList">List of values to add to.</param>
 	/// <param name="val">Value to add.</param>
 	/// <param name="numElements">Maximum allowed elements in list.</param>
-	void addToList(list<float>& targetList, float val, int numElements);
+	void addDataPoint_to_List(list<float>& targetList, float val, int numElements);
 
 	/// <summary>
 	/// Returns the average of the last values of members 
@@ -72,13 +72,13 @@ namespace ListFunctions {
 	float listMaximum(list<dataPoint>& targetList, int numElements);
 
 	/// <summary>
-/// Converts a list of data points to a string of "time, value" 
-/// pairs, each delimited by "," separate points delimited by 
-/// "~". Such as "t1,v1~t2,v2~t3,v3".
-/// </summary>
-/// <param name="targetList">List of dataPoint.</param>
-/// <returns>Delimited string of multiple (time, value) data points.</returns>
-	String listToString_data(list<dataPoint>& targetList);
+	/// Converts a list of data points to a string of "time, value" 
+	/// pairs, each delimited by "," separate points delimited by 
+	/// "~". Such as "t1,v1~t2,v2~t3,v3".
+	/// </summary>
+	/// <param name="targetList">List of dataPoint.</param>
+	/// <returns>Delimited string of multiple (time, value) data points.</returns>
+	String getString_from_List(list<dataPoint>& targetList);
 
 	/// <summary>
 	/// Converts a list of dataPoints to a string of 
@@ -91,7 +91,7 @@ namespace ListFunctions {
 	/// <param name="decimalPlaces">Decimal places to display.</param>
 	/// <returns>
 	/// Comma-separated "time,value" pairs delimited by "~"</returns>
-	String listToString_data(
+	String getString_from_List(
 		list<dataPoint>& targetList,
 		bool isConvertZeroToEmpty,
 		unsigned int decimalPlaces);
@@ -110,7 +110,7 @@ namespace ListFunctions {
 	/// <param name="decimalPlaces">
 	/// Decimal places to display.</param>
 	/// <returns>Two String lists, respectively delimited by "|".</returns>
-	String listToString_data(
+	String getString_from_List(
 		list<dataPoint>& targetList_hi,
 		list<dataPoint>& targetList_lo,
 		bool isConvertZeroToEmpty,
@@ -122,7 +122,7 @@ namespace ListFunctions {
 	///// <param name="str">String to split.</param>
 	///// <param name="delim">Delimiter character.</param>
 	///// <returns>List of substrings after splitting.</returns>
-	//list<std::string> splitString(const String& str, const char delimiter);
+	//list<std::string> getStringList_from_String(const String& str, const char delimiter);
 
 
 	/// <summary>
@@ -131,7 +131,7 @@ namespace ListFunctions {
 	/// <param name="str">String to split.</param>
 	/// <param name="delim">Delimiter char, such as ','.</param>
 	/// <returns>List of Strings after splitting.</returns>
-	list<String> splitString(const String& str, const char delimiter);
+	list<String> getStringList_from_String(const String& str, const char delimiter);
 
 	/// <summary>
 	/// Splits a delimited string into a list of Arduino String.
@@ -139,7 +139,7 @@ namespace ListFunctions {
 	/// <param name="str">String to split.</param>
 	/// <param name="delim">Delimiter char, such as ','.</param>
 	/// <returns>List of Strings after splitting.</returns>
-	list<String> splitString(const String& str, const char delimiter);
+	list<String> getStringList_from_String(const String& str, const char delimiter);
 
 	/// <summary>
 	/// Returns a list of dataPoints retrieved from a delimited 
@@ -149,25 +149,25 @@ namespace ListFunctions {
 	/// <returns>
 	/// List of "time,value" dataPoints retrieved from a delimited string.
 	/// </returns>
-	list<dataPoint> list_dataPoints_fromString(String& str);
+	list<dataPoint> getDataPoints_from_String(String& str);
 
 	/// <summary>
 	/// Prints out the elements of a list of C++ std::string.
 	/// </summary>
 	/// <param name="targetList">The list to print.</param>
-	void listPrint(list<std::string> targetList);
+	void print_List(list<std::string> targetList);
 
 	/// <summary>
 	/// Prints out the elements of a list of Arduino String.
 	/// </summary>
 	/// <param name="targetList">The list to print.</param>
-	void listPrint(list<String> targetList);
+	void print_List(list<String> targetList);
 
 	/// <summary>
 	/// Prints out the (time, value) elements of a list of datPoint.
 	/// </summary>
 	/// <param name="targetList">The list to print.</param>
-	void listPrint(list<dataPoint> targetList);
+	void print_List(list<dataPoint> targetList);
 
 };
 

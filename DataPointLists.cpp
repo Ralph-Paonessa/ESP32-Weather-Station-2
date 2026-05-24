@@ -2,7 +2,7 @@
 // 
 // 
 
-#include "ListFunctions.h"
+#include "DataPointLists.h"
 
 #include <sstream>
 #include <string>
@@ -18,7 +18,7 @@ using std::string;
 /// <param name="targetList">List of dataPoints to add to.</param>
 /// <param name="dp">dataPoint to add.</param>
 /// <param name="numElements">Maximum allowed elements in list.</param>
-void ListFunctions::addToList(list<dataPoint>& targetList, dataPoint dp, int numElements) {
+void DataPoint_Lists::addDataPoint_to_List(list<dataPoint>& targetList, dataPoint dp, int numElements) {
 	targetList.push_back(dp);		// Add to list (raw).
 	if (targetList.size() > numElements) {
 		targetList.pop_front();		// If too many, remove the first.
@@ -32,7 +32,7 @@ void ListFunctions::addToList(list<dataPoint>& targetList, dataPoint dp, int num
 /// <param name="targetList">List of values to add to.</param>
 /// <param name="val">Value to add.</param>
 /// <param name="numElements">Maximum allowed elements in list.</param>
-void ListFunctions::addToList(list<float>& targetList, float val, int numElements) {
+void DataPoint_Lists::addDataPoint_to_List(list<float>& targetList, float val, int numElements) {
 	targetList.push_back(val);		// Add value to list.
 	if (targetList.size() > numElements) {
 		targetList.pop_front();		// If too many, remove the first.
@@ -49,7 +49,7 @@ void ListFunctions::addToList(list<float>& targetList, float val, int numElement
 /// The number of elements at the end of the list to average.
 /// </param>
 /// <returns>Average value.</returns>
-float ListFunctions::listAverage(list<dataPoint>& targetList, int numToAverage) {
+float DataPoint_Lists::listAverage(list<dataPoint>& targetList, int numToAverage) {
 	// Ensure we don't iterate past the first element.
 	if (numToAverage > targetList.size()) {
 		numToAverage = targetList.size();
@@ -76,7 +76,7 @@ float ListFunctions::listAverage(list<dataPoint>& targetList, int numToAverage) 
 /// The number of elements at the end of the list to average.
 /// </param>
 /// <returns>Average value.</returns>
-float ListFunctions::listAverage(list<float>& targetList, int numToAverage) {
+float DataPoint_Lists::listAverage(list<float>& targetList, int numToAverage) {
 	// Ensure we don't iterate past the first element.
 	if (numToAverage > targetList.size()) {
 		numToAverage = targetList.size();
@@ -98,7 +98,7 @@ float ListFunctions::listAverage(list<float>& targetList, int numToAverage) {
 /// <param name="targetList">List of dataPoint to check.</param>
 /// <param name="numElements">Number of elements to check, starting from end.</param>
 /// <returns>Largest value of a list</returns>
-float ListFunctions::listMaximum(list<dataPoint>& targetList, int numElements) {
+float DataPoint_Lists::listMaximum(list<dataPoint>& targetList, int numElements) {
 	// Ensure we don't iterate past the first element.
 	if (numElements > targetList.size()) {
 		numElements = targetList.size();
@@ -124,7 +124,7 @@ float ListFunctions::listMaximum(list<dataPoint>& targetList, int numElements) {
 /// </summary>
 /// <param name="targetList">List of dataPoint.</param>
 /// <returns>Delimited string of multiple (time, value) data points.</returns>
-String ListFunctions::listToString_data(list<dataPoint>& targetList) {
+String DataPoint_Lists::getString_from_List(list<dataPoint>& targetList) {
 	String s = "";
 	if (targetList.size() == 0) {
 		return s + "[-EMPTY-]";
@@ -148,7 +148,7 @@ String ListFunctions::listToString_data(list<dataPoint>& targetList) {
 /// <param name="decimalPlaces">Decimal places to display.</param>
 /// <returns>
 /// Comma-separated "time,value" pairs delimited by "~"</returns>
-String ListFunctions::listToString_data(
+String DataPoint_Lists::getString_from_List(
 	list<dataPoint>& targetList,
 	bool isConvertZeroToEmpty,
 	unsigned int decimalPlaces)
@@ -185,7 +185,7 @@ String ListFunctions::listToString_data(
 /// Decimal places to display.</param>
 /// <returns>Two String lists, respectively delimited by "|".
 /// </returns>
-String ListFunctions::listToString_data(
+String DataPoint_Lists::getString_from_List(
 	list<dataPoint>& targetList_hi,
 	list<dataPoint>& targetList_lo,
 	bool isConvertZeroToEmpty,
@@ -193,7 +193,7 @@ String ListFunctions::listToString_data(
 {
 	String s = "";
 	if (!targetList_hi.size() == 0) {
-		s += listToString_data(
+		s += getString_from_List(
 			targetList_hi,
 			isConvertZeroToEmpty,
 			decimalPlaces);
@@ -203,7 +203,7 @@ String ListFunctions::listToString_data(
 	}
 	s += "|";	// delimiter between lists
 	if ((!targetList_lo.size() == 0)) {
-		s += listToString_data(
+		s += getString_from_List(
 			targetList_lo,
 			isConvertZeroToEmpty,
 			decimalPlaces);
@@ -220,7 +220,7 @@ String ListFunctions::listToString_data(
 /// <param name="str">String to split.</param>
 /// <param name="str">Delimiter char, such as ','.</param>
 /// <returns>List of Strings after splitting.</returns>
-list<String> ListFunctions::splitString(const String& str, const char delim) {
+list<String> DataPoint_Lists::getStringList_from_String(const String& str, const char delim) {
 	list<String> substrings;
 	std::istringstream ss(str.c_str());	// Convert input String to stream.
 	while (!ss.eof()) {
@@ -240,12 +240,12 @@ list<String> ListFunctions::splitString(const String& str, const char delim) {
 /// <returns>
 /// List of "time,value" dataPoints retrieved from a delimited string.
 /// </returns>
-list<dataPoint> ListFunctions::list_dataPoints_fromString(String& str) {
+list<dataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
 	
 
 	list<dataPoint> dPoints;	// List to hold data points.
 	if (str == "") {
-		Serial.println("ListFunctions::list_dataPoints_fromString: input str is empty");
+		Serial.println("DataPoint_Lists::getDataPoints_from_String: input str is empty");
 		return dPoints;			// empty list of data points.
 	}
 	std::istringstream ss(str.c_str());
@@ -269,7 +269,7 @@ list<dataPoint> ListFunctions::list_dataPoints_fromString(String& str) {
 	return dPoints;
 }
 
-void ListFunctions::listPrint(list<std::string> targetList) {
+void DataPoint_Lists::print_List(list<std::string> targetList) {
 	Serial.println("List elements:");
 	for (list<std::string>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
 		std::string s = *it;
@@ -277,7 +277,7 @@ void ListFunctions::listPrint(list<std::string> targetList) {
 	}
 }
 
-void ListFunctions::listPrint(list<String> targetList) {
+void DataPoint_Lists::print_List(list<String> targetList) {
 	Serial.println("List elements:");
 	for (list<String>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
 		String s = *it;
@@ -285,7 +285,7 @@ void ListFunctions::listPrint(list<String> targetList) {
 	}
 }
 
-void ListFunctions::listPrint(list<dataPoint> targetList) {
+void DataPoint_Lists::print_List(list<dataPoint> targetList) {
 	Serial.println("List elements:");
 	for (list<dataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
 		dataPoint dp = *it;
