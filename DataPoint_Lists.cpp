@@ -2,10 +2,11 @@
 // 
 // 
 
-#include "DataPointLists.h"
+#include "DataPoint_Lists.h"
 
 #include <sstream>
 #include <string>
+#include "GPSModule.h"
 using std::list;
 using std::string;
 
@@ -241,8 +242,6 @@ list<String> DataPoint_Lists::getStringList_from_String(const String& str, const
 /// List of "time,value" dataPoints retrieved from a delimited string.
 /// </returns>
 list<dataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
-	
-
 	list<dataPoint> dPoints;	// List to hold data points.
 	if (str == "") {
 		Serial.println("DataPoint_Lists::getDataPoints_from_String: input str is empty");
@@ -269,26 +268,34 @@ list<dataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
 	return dPoints;
 }
 
-void DataPoint_Lists::print_List(list<std::string> targetList) {
-	Serial.println("List elements:");
-	for (list<std::string>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
-		std::string s = *it;
-		Serial.println(s.c_str());
-	}
-}
-
+// XXX  CONFUSION ABOUT String vs std::string!!?  XXXX
 void DataPoint_Lists::print_List(list<String> targetList) {
 	Serial.println("List elements:");
 	for (list<String>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
 		String s = *it;
-		Serial.println(s);
+		Serial.println(s.c_str());
 	}
 }
 
-void DataPoint_Lists::print_List(list<dataPoint> targetList) {
-	Serial.println("List elements:");
+/// <summary>
+/// Prints the elements of a list of DataPoints.
+/// </summary>
+/// <param name="targetList">The list to print.</param>
+/// <param name="isConvertTime_to_String">
+/// Set true to output numeric (Unix) time as string.
+/// </param>
+void DataPoint_Lists::print_List(list<dataPoint> targetList, bool isConvertTime_to_String) {
 	for (list<dataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
 		dataPoint dp = *it;
-		Serial.println("(" + String(dp.time) + ", " + String(dp.value) + ")");
+		String t;
+		if (isConvertTime_to_String) {
+			// Date-time string format.
+			t = GPSModule::dateTime(dp.time);
+		}
+		else {
+			// Numeric (Unix) format.
+			t = String(dp.time);
+		}
+		Serial.println("(" + t + ", " + String(dp.value) + ")");
 	}
 }

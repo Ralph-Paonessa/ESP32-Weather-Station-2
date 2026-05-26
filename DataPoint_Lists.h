@@ -1,7 +1,7 @@
 // DataPoint_Lists.h
 
-#ifndef _DATAPOINTLISTS_h
-#define _DATAPOINTLISTS_h
+#ifndef _DATAPOINT_LISTS_h
+#define _DATAPOINT_LISTS_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
@@ -116,23 +116,6 @@ namespace DataPoint_Lists {
 		bool isConvertZeroToEmpty,
 		unsigned int decimalPlaces);
 
-	///// <summary>
-	///// Splits a delimited string into a list of C++ std::string.
-	///// </summary>
-	///// <param name="str">String to split.</param>
-	///// <param name="delim">Delimiter character.</param>
-	///// <returns>List of substrings after splitting.</returns>
-	//list<std::string> getStringList_from_String(const String& str, const char delimiter);
-
-
-	/// <summary>
-	/// Splits a delimited string into a list of Arduino String.
-	/// </summary>
-	/// <param name="str">String to split.</param>
-	/// <param name="delim">Delimiter char, such as ','.</param>
-	/// <returns>List of Strings after splitting.</returns>
-	list<String> getStringList_from_String(const String& str, const char delimiter);
-
 	/// <summary>
 	/// Splits a delimited string into a list of Arduino String.
 	/// </summary>
@@ -152,22 +135,23 @@ namespace DataPoint_Lists {
 	list<dataPoint> getDataPoints_from_String(String& str);
 
 	/// <summary>
-	/// Prints out the elements of a list of C++ std::string.
+	/// Prints the elements of a list of C++ std::string.
 	/// </summary>
 	/// <param name="targetList">The list to print.</param>
 	void print_List(list<std::string> targetList);
 
 	/// <summary>
-	/// Prints out the elements of a list of Arduino String.
+	/// Prints the elements of a list of Arduino String.
 	/// </summary>
 	/// <param name="targetList">The list to print.</param>
 	void print_List(list<String> targetList);
 
 	/// <summary>
-	/// Prints out the (time, value) elements of a list of datPoint.
+	/// Prints the elements of a list of DataPoints.
 	/// </summary>
 	/// <param name="targetList">The list to print.</param>
-	void print_List(list<dataPoint> targetList);
+	/// <param name="isConvertTime_to_String">Set true to output numeric (Unix) time as string.</param>
+	void print_List(list<dataPoint> targetList, bool isConvertTime_to_String = false);
 
 };
 
