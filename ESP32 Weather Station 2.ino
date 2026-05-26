@@ -9,6 +9,7 @@ Rev. May 5, 2026
 
 // ========  ESP32 Libraries  ================  
 
+#include <TimeLib.h>
 #include "WiFiTools.h"
 #include <Arduino.h>
 #include "freertos/FreeRTOS.h"	// for delay in loop???
@@ -36,12 +37,12 @@ const bool isRECOVER_FILESYS_DATA = false;			// Recover data from file system.
 
 /*****************      DEBUGGING FLAGS      ******************/
 
-const bool _isDEBUG_BypassGPS = false;				// Bypass gps syncing.
+const bool _isDEBUG_BypassGPS = true;				// Bypass gps syncing.
 const bool _isDEBUG_BypassWifi = false;				// Bypass WiFi connect.	 XXX FAILS!!!
 const bool _isDEBUG_BypassSDCard = false;			// Bypass SD card.
 const bool _isDEBUG_ListLittleFS = true;			// List contents of LittleFS.
 const bool _isDEBUG_BypassWebServer = false;		// Bypass Web Server.
-const bool _isDEBUG_run_test_in_setup = false;		// Run only test code inserted in Setup.
+const bool _isDEBUG_run_test_in_setup = true;		// Run only test code inserted in Setup.
 const bool _isDEBUG_run_test_in_loop = false;		// Run test code inserted in Loop.
 const bool _isDEBUG_addDummyDataLists = false;		// Add dummy data.
 const bool _isDEBUG_simulateSensorReadings = false;	// Add dummy sensor reading values.
@@ -69,19 +70,12 @@ SDCard sd;		// SDCard instance that exposes SD card routines.
 #include <freertos/task.h>
 #include <freertos/portmacro.h>
 #include <cstddef>
-Testing test;					// class for test routings
+//Testing test;					// class for test routings
 //#endif
 
+// ==========   CREATE SENSOR OBJECTS   ==================== //
 
-//char _char_global_buffer[2048] = {  };			// Globally-defined character array buffer.
-
-/*
-SensorData instances to average readings.
-Wind speed handled by WindSpeed.
-Wind direction handled by WindDirection.
-*/
-
-SensorData d_TempF;				// Temperature readings.
+SensorData d_TempF;					// Temperature readings.
 SensorData d_Pres_mb(false);		// Pressure readings.
 SensorData d_Pres_seaLvl_mb;		// Pressure readings adjusted to sea level.
 SensorData d_TempC_for_RH(false);	// Temperature on pressure sensor.
@@ -92,6 +86,65 @@ SensorData d_UVIndex;				// UV Index readings.
 SensorData d_Insol(true, true);		// Insolation readings (no minima).
 SensorData d_IRSky_C;				// IR sky temperature readings.
 SensorData d_fanRPM(false);			// Fan RPM readings.
+
+/*
+SensorData instances to average readings.
+Wind speed handled by WindSpeed.
+Wind direction handled by WindDirection.
+*/
+
+// WindSpeed instance for wind.
+WindSpeed windSpeed(
+	DAVIS_SPEED_CAL_FACTOR,
+	true,
+	WIND_SPEEDS_IN_MOVING_AVG,
+	WIND_SPEED_OUTLIER_DELTA);
+SensorData windGust;
+WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
+
+/// <summary>
+/// Adds labels and units to SensorData instances.
+/// </summary>
+void sensors_AddLabels()
+{
+	windSpeed.addLabels("Wind Speed", "wind", "mph");
+	windDir.addLabels("Wind direction", "windDir", "", "&deg;");
+	windGust.addLabels("Wind Gust", "gust", "mph");
+	d_TempF.addLabels("Temperature", "temp", "F", "&deg;F");
+	d_Pres_mb.addLabels("Pressure (abs)", "presAbs", "mb");
+	d_Pres_seaLvl_mb.addLabels("Pressure (SL)", "presSeaLvl", "mb");
+	d_TempC_for_RH.addLabels("Temp for RH", "tForRH", "C", "&degC;");
+	d_RH.addLabels("Rel. Humidity", "RH", "%", "&percnt;");
+	d_IRSky_C.addLabels("Sky Temperature", "skyTemp", "C", "&degC;");
+	d_UVA.addLabels("UV A Radiation", "uvA", "");
+	d_UVB.addLabels("UV B Radiation", "uvB", "");
+	d_UVIndex.addLabels("UV Index", "uvIndex", "");
+	d_Insol.addLabels("Insolation", "sun", "%", "&percnt;");
+	d_fanRPM.addLabels("Aspirator Fan speedInstant", "fanSpeed", "rpm");
+}
+
+/// <summary>
+/// Creates data files for selected SensorData instances 
+/// that save chart data on the file system.
+/// </summary>
+void sensors_createFiles()
+{
+	windSpeed.createFiles();
+	windDir.createFiles();
+	windGust.createFiles();
+	d_TempF.createFiles();
+	//d_Pres_mb.createFiles();
+	d_Pres_seaLvl_mb.createFiles();
+	//d_TempC_for_RH.createFiles(); 
+	d_RH.createFiles();
+	d_IRSky_C.createFiles();
+	//d_UVA.createFiles();         
+	//d_UVB.createFiles();         
+	d_UVIndex.createFiles();
+	d_Insol.createFiles();
+	//d_fanRPM.createFiles();      
+}
+
 
 //#if defined(VM_DEBUG)
 SensorSimulate dummy_Temp_F;			// Temperature readings.
@@ -224,6 +277,33 @@ void IRAM_ATTR ISR_onRotation_anem() {
 }
 // ========   END Davis Anemometer 6410  =================  //
 
+// ========   Setup LittleFS   =================  //
+
+/// <summary>
+/// Initializes and mounts LittleFS filesystem. 
+/// Logs mount success or failure, records used/available space, 
+/// sets the _isGood_LittleFS flag on success, and optionally 
+/// lists the root directory when debugging is enabled.
+/// </summary>
+void littleFS_initialize() {
+	if (!LittleFS.begin()) {
+		String msg = "ERROR: LittleFS didn't mount.";
+		sd.logStatus(msg, millis());
+	}
+	else {
+		_isGood_LittleFS = true;
+		String msg = "LittleFS mounted.";
+		sd.logStatus(msg, millis());
+	}
+	// Log used and available space.
+	sd.logLittleFsSpaceUsage();
+
+	if (_isDEBUG_ListLittleFS) {
+		dirList(LittleFS, "/", 5);
+	}
+}
+
+
 /// <summary>
 /// Read recent sensor readings from LittleFS and load them back into memory.
 /// /// 
@@ -244,27 +324,27 @@ void recoverData() {
 	if (d_TempF.isDatafile()
 		&& (now() - lastTime) > DATA_RECOVERY_10_MIN_AGE_LIMIT)
 	{
-		d_TempF.data_10_min_fromFile();
+		d_TempF.recover_data_10_min_from_file();
 		sd.logStatus("Recovered 10-min data.", millis());
 	}
 
-	//// 60-min lists
-	//Serial.println("recover_data(): 60-min lists");
-	//if (d_TempF.isDatafile()
-	//	&& (now() - lastTime) > DATA_RECOVERY_60_MIN_AGE_LIMIT)
-	//{
-	//	d_TempF.data_60_min_fromFile();
-	//	sd.logStatus("Recovered 60-min data.", millis());
-	//}
+	// 60-min lists
+	Serial.println("recover_data(): 60-min lists");
+	if (d_TempF.isDatafile()
+		&& (now() - lastTime) > DATA_RECOVERY_60_MIN_AGE_LIMIT)
+	{
+		d_TempF.recover_data_60_min_from_file();
+		sd.logStatus("Recovered 60-min data.", millis());
+	}
 
-	//// day lists
-	//Serial.println("recover_data(): day lists");
-	//if (d_TempF.isDatafile()
-	//	&& (now() - lastTime) > DATA_RECOVERY_DAY_AGE_LIMIT)
-	//{
-	//	d_TempF.data_dayMaxMin_fromFile();
-	//	sd.logStatus("Recovered dayMaxMin data.", millis());
-	//}
+	// day lists
+	Serial.println("recover_data(): day lists");
+	if (d_TempF.isDatafile()
+		&& (now() - lastTime) > DATA_RECOVERY_DAY_AGE_LIMIT)
+	{
+		d_TempF.recover_data_dayMaxMin_from_file();
+		sd.logStatus("Recovered dayMaxMin data.", millis());
+	}
 }
 
 
@@ -311,7 +391,6 @@ void setup() {
 
 	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
 	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
-
 	wifi.Initialize(sd);
 
 	//XXX Should _isDEBUG_BypassWifi be a parameter??
@@ -354,6 +433,39 @@ void setup() {
 		sd.logStatus(msg, millis());
 	}
 
+
+	// ==========  SETUP LittleFS  ========== //
+	Serial.println("SETUP: ==========  SETUP LittleFS   ==========");
+	littleFS_initialize();
+
+
+	//#if defined(VM_DEBUG)
+	////////  TESTING   ////////
+	Serial.println("SETUP: ==========  TESTING   ==========");
+	if (_isDEBUG_addDummyDataLists) {
+		Serial.println("SETUP: ==========  ADD DUMMY DATA   ==========");
+		addDummyData();
+		saveLastReadTime_toFile(now());
+		Serial.println();
+		Serial.println("XXX  saveLastReadTime_toFile(now())  XXX");
+		Serial.println();
+	}
+
+	if (_isDEBUG_run_test_in_setup) {
+		//// File contents.
+		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/RH_10_min.txt");
+		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/wind_10_min.txt");
+		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/windDir_10_min.txt");
+		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/d_Temp_F_10_min.txt");
+		//Testing::.testCodeForSetup_printFileContents(true, "/Sensor data/skyTemp_10_min.txt");
+
+		Testing::testCodeForSetup_convert_DelimString_to_ListOfDataPoints(false);
+		Testing::testCodeForSetup_list_dataPoints_fromString(false);
+		Testing::testCodeForSetup_getStringList_from_String(true);
+	}
+	//#endif
+
+
 	// ==========  CREATE SENSORS  ========== //
 
 	Serial.println("SETUP: ==========  CREATE SENSORS   ==========");
@@ -376,21 +488,6 @@ void setup() {
 	_oldMonth = month();
 	_oldYear = year();
 
-	//#if defined(VM_DEBUG)
-		////////  TESTING   ////////
-	Serial.println("SETUP: ==========  TESTING   ==========");
-	if (_isDEBUG_addDummyDataLists) {
-		Serial.println("SETUP: ==========  ADD DUMMY DATA   ==========");
-		addDummyData();
-		saveLastReadTime_toFile(now());
-		Serial.println();
-		Serial.println("XXX  saveLastReadTime_toFile(now())  XXX");
-		Serial.println();
-	}
-	if (_isDEBUG_run_test_in_setup) {
-		test.testCodeForSetup3(true);
-	}
-	//#endif
 
 	sd.logData(columnNames());	// Write column names to data log.
 	sd.logStatus_indent("DATA COLUMNS:\t" + columnNames());	// Write column names to status log.

@@ -47,7 +47,7 @@
     <ClCompile Include="GPSModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ListFunctions.cpp">
+    <ClCompile Include="DataPoint_Lists.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SDCard.cpp">
@@ -96,7 +96,7 @@
     <ClInclude Include="GPSModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ListFunctions.h">
+    <ClInclude Include="DataPoint_Lists.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PinAssignments.h">

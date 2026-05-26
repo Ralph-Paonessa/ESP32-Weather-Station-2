@@ -18,15 +18,6 @@
 #include <DallasTemperature.h>
 #include <HardwareSerial.h>
 
-// WindSpeed instance for wind.
-WindSpeed windSpeed(
-	DAVIS_SPEED_CAL_FACTOR,
-	true,
-	WIND_SPEEDS_IN_MOVING_AVG,
-	WIND_SPEED_OUTLIER_DELTA);
-SensorData windGust;
-WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
-
 
 // ==========   SENSORS   ========================== //
 
@@ -168,23 +159,6 @@ void sensors_begin() {
 	sd.logStatus(msg, millis());
 	_isGood_WindDir = true;      // How can this be tested?? XXX
 	_isGood_WindSpeed = true;
-
-	//  ---------------  Create LittleFS   ---------------
-	if (!LittleFS.begin()) {
-		String msg = "ERROR: LittleFS didn't mount.";
-		sd.logStatus(msg, millis());
-	}
-	else {
-		_isGood_LittleFS = true;
-		String msg = "LittleFS mounted.";
-		sd.logStatus(msg, millis());
-	}
-	// Log used and available space.
-	sd.logLittleFsSpaceUsage();
-
-	if (_isDEBUG_ListLittleFS) {
-		dirList(LittleFS, "/", 5);
-	}
 
 	sd.logStatus("Device initialization complete.", millis());
 	sd.logDeviceStatus(
@@ -573,47 +547,4 @@ void addDummyData() {
 	processReadings_day();
 
 #endif
-}
-
-/// <summary>
-/// Adds labels and units to SensorData instances.
-/// </summary>
-void sensors_AddLabels()
-{
-	windSpeed.addLabels("Wind Speed", "wind", "mph");
-	windDir.addLabels("Wind direction", "windDir", "", "&deg;");
-	windGust.addLabels("Wind Gust", "gust", "mph");
-	d_TempF.addLabels("Temperature", "temp", "F", "&deg;F");
-	d_Pres_mb.addLabels("Pressure (abs)", "presAbs", "mb");
-	d_Pres_seaLvl_mb.addLabels("Pressure (SL)", "presSeaLvl", "mb");
-	d_TempC_for_RH.addLabels("Temp for RH", "tForRH", "C", "&degC;");
-	d_RH.addLabels("Rel. Humidity", "RH", "%", "&percnt;");
-	d_IRSky_C.addLabels("Sky Temperature", "skyTemp", "C", "&degC;");
-	d_UVA.addLabels("UV A Radiation", "uvA", "");
-	d_UVB.addLabels("UV B Radiation", "uvB", "");
-	d_UVIndex.addLabels("UV Index", "uvIndex", "");
-	d_Insol.addLabels("Insolation", "sun", "%", "&percnt;");
-	d_fanRPM.addLabels("Aspirator Fan speedInstant", "fanSpeed", "rpm");
-}
-
-/// <summary>
-/// Creates data files for selected SensorData instances 
-/// that save chart data on the file system.
-/// </summary>
-void sensors_createFiles()
-{
-	windSpeed.createFiles();
-	windDir.createFiles();
-	windGust.createFiles();
-	d_TempF.createFiles();
-	//d_Pres_mb.createFiles();
-	d_Pres_seaLvl_mb.createFiles();
-	//d_TempC_for_RH.createFiles(); 
-	d_RH.createFiles();
-	d_IRSky_C.createFiles();
-	//d_UVA.createFiles();         
-	//d_UVB.createFiles();         
-	d_UVIndex.createFiles();
-	d_Insol.createFiles();
-	//d_fanRPM.createFiles();      
 }
