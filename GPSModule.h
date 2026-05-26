@@ -207,10 +207,18 @@ public:
 	bool syncToGPS(SDCard& sdCard, bool isSimulate);
 
 	/// <summary>
-	/// Returns current date and time string.
+	/// Returns current (GPS-synced) date and time as String.
 	/// </summary>
 	/// <returns>Date and time as "yyyy-mm-dd hh:mm"</returns>
 	String dateTime();
+
+	/// <summary>
+	/// Converts provided numeric (Unix) time as date and time String.
+	/// </summary>
+	/// <param name="t_num">Numeric (Unix) time.</param>
+	/// <returns>Date and time as "yyyy-mm-dd hh:mm"</returns>
+	/// <remarks>Static function can be used without instance of GPSModule.</remarks>
+	static String dateTime(time_t t_num);
 
 	/// <summary>
 	/// Returns current time.

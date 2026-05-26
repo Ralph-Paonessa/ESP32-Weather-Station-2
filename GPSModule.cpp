@@ -500,6 +500,32 @@ String GPSModule::dateTime() {
 	return s;
 }
 
+
+/// <summary>
+/// Converts provided numeric (Unix) time as date and time String.
+/// </summary>
+/// <param name="t_num">Numeric (Unix) time.</param>
+/// <returns>Date and time as "yyyy-mm-dd hh:mm"</returns>
+String GPSModule::dateTime(time_t t_num) {	
+	String s = String(year(t_num)) + "-";
+	// Month.
+	if (month(t_num) < 10) { s += "0"; }
+	s += String(month(t_num)) + "-";
+	// Day.
+	if (day(t_num) < 10) { s += "0"; }
+	s += String(day(t_num)) + " ";
+	// Hour.
+	if (hour(t_num) < 10) { s += "0"; }
+	s += String(hour(t_num));
+	s += ":";
+	// Minute.
+	if (minute(t_num) < 10) { s += "0"; }
+	s += String(minute(t_num));
+	return s;
+}
+
+
+
 /// <summary>
 /// Returns current system time as "hh:mm".
 /// </summary>
