@@ -60,9 +60,9 @@ namespace App_Settings {
 	const String	LOGFILE_PATH_DATA = "/data.txt";	// Data file path on SD card.
 	const String	LOGFILE_PATH_STATUS = "/log.txt";	// Log file path on SD card.
 
-	const String	LINE_SEPARATOR_LOG_BEGINS = "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
-	const String	LINE_SEPARATOR_MAJOR = "=====================================================";
-	const String	LINE_SEPARATOR = "-------------------------------------------------";
+	const String	LINE_SEPARATOR_LOG_BEGINS = "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
+	const String	LINE_SEPARATOR_MAJOR = "=======================================";
+	const String	LINE_SEPARATOR = "-----------------------------------";
 
 	/*
 	ESTIMATE of max. achievable insolation, for

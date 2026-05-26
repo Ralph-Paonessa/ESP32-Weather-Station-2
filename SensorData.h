@@ -12,7 +12,7 @@
 #include <list>
 using std::list;
 #include "dataPoint.h"
-#include "DataPointLists.h"
+#include "DataPoint_Lists.h"
 #include "App_settings.h"
 using namespace DataPoint_Lists;
 using namespace App_Settings;
@@ -27,7 +27,7 @@ using namespace App_Settings;
 using namespace FileOperations;
 
 /// <summary>
-/// Exposes methods to read and process sensor data.
+/// Object that reads and processes data for a sensor.
 /// </summary>
 class SensorData {
 
@@ -37,7 +37,7 @@ protected:		// Protected items are accessible by inherited classes.
 	/// Returns a sensor data text-file path.
 	/// </summary>
 	/// <param name="fileSuffix">Suffix to append to file name.</param>
-	String sensorFilepath(String fileSuffix);
+	String _sensorFilepath(String fileSuffix);
 
 	String _label, _filenamePrefix;	// Identifying info.
 	String _units, _units_html;		// Units used.
@@ -59,7 +59,7 @@ protected:		// Protected items are accessible by inherited classes.
 	/// Updates saved min and max values for 10-min period and today.
 	/// </summary>
 	/// <param name="dp">Data point with value to evaluate.</param>
-	void updateMinMax(dataPoint dp);
+	void _updateMinMax(dataPoint dp);
 
 	// Initialize at impossible extremes.
 
@@ -79,7 +79,7 @@ protected:		// Protected items are accessible by inherited classes.
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.
 	/// </summary>
-	void clear_10_min();
+	void _clear_10_min();
 
 	bool _isDatafile = true;			// Set true to save periodic data in LittleFS file system.
 	bool _isReportDayMaxOnly = false;	// Set true to save maxima but not minima on LittleFS file system.
@@ -97,10 +97,10 @@ protected:		// Protected items are accessible by inherited classes.
 
 	bool isOutlier(dataPoint dp);
 
-	list<dataPoint> _data_10_min;		// List of Data_Points at 10-min intervals.
-	list<dataPoint> _data_60_min;		// List of Data_Points at 60-min intervals.
-	list<dataPoint> _data_dayMin;		// List of daily minima.
-	list<dataPoint> _data_dayMax;		// List of daily maxima.
+	list<dataPoint> _dataPoints_10_min;		// List of Data_Points at 10-min intervals.
+	list<dataPoint> _dataPoints_60_min;		// List of Data_Points at 60-min intervals.
+	list<dataPoint> _dataPoints_dayMin;		// List of daily minima.
+	list<dataPoint> _dataPoints_dayMax;		// List of daily maxima.
 
 public:
 
@@ -163,12 +163,11 @@ public:
 	/// </summary>
 	void process_data_day();
 
-
 	/// <summary>
 	/// Recovers list of data points from a file.
 	/// </summary>
 	/// <param name="dataType">The type based on the period.</param>
-	void recover_data_fromFile_NOT_USED(dataPeriod dataType);
+	void XXX_recover_data_fromFile(dataPeriod dataType);
 
 	/// <summary>
 	/// Data point (time, value) of latest sensor reading.
@@ -258,25 +257,25 @@ public:
 	/// List of (time, value) dataPoints at 10-min intervals.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> data_10_min();
+	list<dataPoint> dataPoints_10_min();
 
 	/// <summary>
 	/// List of (time, value) dataPoints at 60-min intervals.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> data_60_min();
+	list<dataPoint> dataPoints_60_min();
 
 	/// <summary>
 	/// List of (time, value) dataPoints of daily minima.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> data_day_minima();
+	list<dataPoint> dataPoints_day_minima();
 
 	/// <summary>
 	/// List of (time, value) dataPoints of daily maxima.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> data_day_maxima();
+	list<dataPoint> dataPoints_day_maxima();
 
 	/// <summary>
 	/// Adds label information to the data.
@@ -334,29 +333,29 @@ public:
 	/// Returns list of 10-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>List of 10-min dataPoints as delimited string.</returns>
-	String data_10_min_string();
+	String dataString_10_min();
 
 	/// <summary>
 	/// Returns list of 60-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>List of 60-min dataPoints as delimited string.</returns>
-	String data_60_min_string();
+	String dataString_60_min();
 
 	/// <summary>
 	/// Returns list of 60-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>Delimited string of two (time, value) lists, separated by "|".</returns>
-	String data_dayMaxMin_string();
+	String dataString_dayMaxMin();
 
 	/// <summary>
 	/// Returns list of daily maxima dataPoints as delimited string.
 	/// </summary>
-	String data_dayMax_string();
+	String dataString_dayMax();
 
 	/// <summary>
 	/// Returns list of daily minima dataPoints as delimited string.
 	/// </summary>
-	String data_dayMin_string();
+	String dataString_dayMin();
 
 
 	/******     DATA FROM FILE SYSTEM     ******/
@@ -376,33 +375,33 @@ public:
 	/// LIMIT SIZE OF LIST?! Shouldn't be necessary if 
 	/// saved data list never exceeds max size!
 	/// </remarks> 
-	void data_10_min_fromFile();
+	void recover_data_10_min_from_file();
 
 	/// <summary>
 	/// Retrieves data points from stored file uses 
 	/// them to initialize 60-min list. Used to retrieve 
 	/// any data lost at reboot.
 	/// </summary>
-	void data_60_min_fromFile();
+	void recover_data_60_min_from_file();
 
 	/// <summary>
 	/// Retrieves data points from stored file uses 
 	/// them to initialize day list. Used to retrieve 
 	/// any data lost at reboot.
 	/// </summary>
-	void data_dayMaxMin_fromFile();
+	void recover_data_dayMaxMin_from_file();
 
 	/// <summary>
 	/// Returns delimited String of 10-min data from file.
 	/// </summary>
 	/// <returns>Delimited String of 10-min data</returns>
-	String data_10_min_stringFile();
+	String XXX_get_data_10_min_string_from_file();
 
 	/// <summary>
 	/// Returns delimited String of 60-min data from file.
 	/// </summary>
 	/// <returns>Delimited String of 60-min data</returns>
-	String data_60_min_stringFile();
+	String XXX_get_data_60_min_string_from_file();
 
 	/// <summary>
 	/// Returns delimited String of day data from file.

@@ -267,7 +267,7 @@ void SDCard::logDebugStatus(
 		logStatus_indent("BYPASS WIFI");
 	}
 	if (isDEBUG_ListLittleFS) {
-		logStatus_indent("LIST LittleFS CONTENTS");
+		logStatus_indent("LIST LittleFS FILES");
 	}
 	if (isDEBUG_BypassSDCard) {
 		Serial.println("BYPASS SD CARD");	// Can't log to SD!

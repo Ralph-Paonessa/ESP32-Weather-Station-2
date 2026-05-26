@@ -55,7 +55,7 @@ public:
 	/// <summary>
 	/// Clears all direction values and averages.
 	/// </summary>
-	void clear_10_min();
+	void _clear_10_min();
 
 	/// <summary>
 	/// Adds wind direction reading for calculating 10-min 
