@@ -46,7 +46,7 @@ String processor(const String& var) {
 		return String(windSpeed.avg_now(), 0);	// 10-min avg
 	}
 	if (var == "WIND_GUST") {
-		return String(windGust.max_10_min().value, 0);	// 10-min max for gusts
+		return String(windGust.max_10_min_dp().value, 0);	// 10-min max for gusts
 	}
 	if (var == "WIND_DIRECTION") {
 		return String(windDir.directionCardinal());		// avg since last cleared (<= 10 min)
@@ -103,29 +103,29 @@ String processor(const String& var) {
 	///  DAILY MAXIMA  ///////////////////
 
 	if (var == "TEMPERATURE_F_HI") {
-		return String(d_TempF.max_today().value, 0);
+		return String(d_TempF.max_today_dp().value, 0);
 	}
 	if (var == "WIND_SPEED_HI") {
-		return String(windSpeed.max_today().value, 0);
+		return String(windSpeed.max_today_dp().value, 0);
 	}
 	if (var == "WIND_GUST_HI") {
-		return String(windGust.max_today().value, 0);
+		return String(windGust.max_today_dp().value, 0);
 	}
 	if (var == "WIND_ANGLE_HI") {
 		return "??";		// avg since last cleared (<= 10 min)
 	}
 	if (var == "PRESSURE_MB_SL_HI") {
-		return String(d_Pres_seaLvl_mb.max_today().value, 0);
+		return String(d_Pres_seaLvl_mb.max_today_dp().value, 0);
 	}
 	if (var == "INSOLATION_PERCENT_HI") {
-		return String(d_Insol.max_today().value, 0);
+		return String(d_Insol.max_today_dp().value, 0);
 	}
 	if (var == "REL_HUMIDITY_HI") {
-		return String(d_RH.max_today().value, 0);
+		return String(d_RH.max_today_dp().value, 0);
 	}
 	if (var == "UV_A_HI") {
 		if (_isGood_UV) {
-			return String(d_UVA.max_today().value, 0);
+			return String(d_UVA.max_today_dp().value, 0);
 		}
 		else {
 			return String("na");
@@ -133,7 +133,7 @@ String processor(const String& var) {
 	}
 	if (var == "UV_B_HI") {
 		if (_isGood_UV) {
-			return String(d_UVB.max_today().value, 0);
+			return String(d_UVB.max_today_dp().value, 0);
 		}
 		else {
 			return String("na");
@@ -141,35 +141,35 @@ String processor(const String& var) {
 	}
 	if (var == "UV_INDEX_HI") {
 		if (_isGood_UV) {
-			return String(d_UVIndex.max_today().value, 1);
+			return String(d_UVIndex.max_today_dp().value, 1);
 		}
 		else {
 			return String("na");
 		}
 	}
 	if (var == "IR_T_SKY_HI") {
-		return String(d_IRSky_C.max_today().value, 0);
+		return String(d_IRSky_C.max_today_dp().value, 0);
 	}
 
 	///  DAILY MINIMA  ///////////////////
 
 	if (var == "TEMPERATURE_F_LO") {
-		return String(d_TempF.min_today().value, 0);
+		return String(d_TempF.min_today_dp().value, 0);
 	}
 	if (var == "WIND_SPEED_LO") {
-		return String(windSpeed.min_today().value, 0);	// 10-min avg
+		return String(windSpeed.min_today_dp().value, 0);	// 10-min avg
 	}
 	if (var == "WIND_GUST_LO") {
-		return String(windGust.min_today().value, 0);
+		return String(windGust.min_today_dp().value, 0);
 	}
 	if (var == "PRESSURE_MB_SL_LO") {
-		return String(d_Pres_seaLvl_mb.min_today().value, 0);
+		return String(d_Pres_seaLvl_mb.min_today_dp().value, 0);
 	}
 	if (var == "REL_HUMIDITY_LO") {
-		return String(d_RH.min_today().value, 0);
+		return String(d_RH.min_today_dp().value, 0);
 	}
 	if (var == "IR_T_SKY_LO") {
-		return String(d_IRSky_C.min_today().value, 0);
+		return String(d_IRSky_C.min_today_dp().value, 0);
 	}
 
 	///  GPS DATA   ////////////////////////

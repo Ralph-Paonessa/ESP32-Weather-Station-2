@@ -65,7 +65,7 @@ String sensorsDataString_current() {
 	s += "\t" + String(d_IRSky_C.valueLastAdded());
 	// Wind speed (3)
 	s += "\t" + String(windSpeed.avg_10_min());
-	s += "\t" + String(windGust.max_10_min().value);
+	s += "\t" + String(windGust.max_10_min_dp().value);
 	s += "\tna";	// + String(windSpeed.max_last_10_min);  XXX  ???
 	// Wind direction (2)
 	if (windSpeed.avg_10_min() > 0.5)
@@ -114,7 +114,7 @@ String sensorsDataString_10_min() {
 	s += "\t" + String(d_IRSky_C.avg_10_min());
 	// Wind speed (3)
 	s += "\t" + String(windSpeed.avg_10_min());
-	s += "\t" + String(windGust.max_10_min().value);
+	s += "\t" + String(windGust.max_10_min_dp().value);
 	s += "\t\tmax?";	// + String(windSpeed.max_last_10_min);  XXX  ???
 	// Wind direction (2)
 	if (windSpeed.avg_10_min() >= WIND_DIR_SPEED_THRESHOLD)
@@ -194,7 +194,7 @@ void PrintSensorOutputs() {
 	Serial.print(windSpeed.avg_10_min(), 1);
 	Serial.print(F(" mph  \t"));
 
-	Serial.print(windGust.max_10_min().value, 1);
+	Serial.print(windGust.max_10_min_dp().value, 1);
 	Serial.print(F(" mph  \t"));
 
 	// Wind direction.

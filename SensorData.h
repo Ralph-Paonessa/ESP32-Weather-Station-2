@@ -16,13 +16,6 @@ using std::list;
 #include "App_settings.h"
 using namespace DataPoint_Lists;
 using namespace App_Settings;
-// File system
-
-
-//// XXX Native for ESP32 now!!!
-//#include <LittleFS.h>
-
-
 #include "FileOperations.h"
 using namespace FileOperations;
 
@@ -47,9 +40,6 @@ protected:		// Protected items are accessible by inherited classes.
 	float _sumReadings = 0;			// Accumulating sum of readings.
 	unsigned int _countReadings = 0;// Number of readings in average.
 
-	// Samples required for smoothing avg.
-	static constexpr unsigned int COUNT_FOR_SMOOTH = 10;
-
 	float _avg_10_min = 0;			// Average over 10 min.
 	float _avg_60_min = 0;			// Average over 60 min.
 
@@ -63,18 +53,18 @@ protected:		// Protected items are accessible by inherited classes.
 
 	// Initialize at impossible extremes.
 
-	DataPoint _min_today = DataPoint(0, VAL_LIMIT);		// Today's minimum.
-	DataPoint _max_today = DataPoint(0, -VAL_LIMIT);	// Today's maximum.
+	DataPoint _min_today_dp = DataPoint(0, VAL_LIMIT);		// Today's minimum.
+	DataPoint _max_today_dp = DataPoint(0, -VAL_LIMIT);	// Today's maximum.
 
 	/// <summary>
 	/// Minimum sensor reading in the current 10-min period.
 	/// </summary>
-	DataPoint _min_10_min = DataPoint(0, VAL_LIMIT);	// Initialize at high extreme.
+	DataPoint _min_10_min_dp = DataPoint(0, VAL_LIMIT);	// Initialize at high extreme.
 
 	/// <summary>
 	/// Maximum sensor reading in the current 10-min period.
 	/// </summary>
-	DataPoint _max_10_min = DataPoint(0, -VAL_LIMIT);	// Initialize at low extreme.
+	DataPoint _max_10_min_dp = DataPoint(0, -VAL_LIMIT);	// Initialize at low extreme.
 
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.
@@ -83,19 +73,8 @@ protected:		// Protected items are accessible by inherited classes.
 
 	bool _isDatafile = true;			// Set true to save periodic data in LittleFS file system.
 	bool _isReportDayMaxOnly = false;	// Set true to save maxima but not minima on LittleFS file system.
-	//bool _isUseSmoothing;				// Set true to smooth data with moving avg and reject outliers.
-	//float _outlierDelta;				// Factor to determine if reading is an outlier.
-	//list<float> _avg_moving_List;		// Moving avg of latest reading values.
-	//float _avg_moving = 0;				// Moving average value.
-	//unsigned int _avgMoving_Num;		// Maximum number of values to average.
-
 	bool _isConvertZeroToEmpty = true;	//
 	unsigned int _decimalPlaces = 0;	//
-
-	//bool _isMovingAvgStarted = false;	// Flag to indicate first cycle.
-
-
-	//bool isOutlier(DataPoint dp);
 
 	list<DataPoint> _dataPoints_10_min;		// List of Data_Points at 10-min intervals.
 	list<DataPoint> _dataPoints_60_min;		// List of Data_Points at 60-min intervals.
@@ -120,12 +99,7 @@ public:
 	/// Number of points in moving avg.</param>
 	/// <param name="outlierDelta">
 	/// Range applied to moving avg for outlier rejection.</param>
-	SensorData(bool isDataInFileSys = true,
-		bool isReportDailyMaxOnly = false
-		//bool isUseMovingAvg = true,
-		//unsigned int numSmoothPoints = 5,
-		//float outlierDelta = 1.75
-		);
+	SensorData(bool isDataInFileSys = true,	bool isReportDailyMaxOnly = false);
 
 	/// <summary>
 	/// Creates files that hold sensor data points at various 
@@ -147,13 +121,15 @@ public:
 
 	/// <summary>
 	/// Calculates 10-min avg and saves data to 10-min 
-	/// list. Writes this list to file system.
+	/// list. Writes this list to file system. WARNING: This 
+	/// will RESET ACCUMULATED SUMS for 10-min avg and reset 
+	/// 10-min min and max.
 	/// </summary>
 	void process_data_10_min();
 
 	/// <summary>
-	/// Calculates 60-min avg and saves data to 10-min 
-/// list. Writes this list to file system.
+	/// Calculates 60-min avg and saves data to 60-min 
+	/// list. Writes this list to file system.
 	/// </summary>
 	void process_data_60_min();
 
@@ -231,7 +207,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) minimum 
 	/// reading in current 10-min period.</returns>
-	DataPoint min_10_min();	// Minimum over 10-min period.
+	DataPoint min_10_min_dp();	// Minimum over 10-min period.
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 
@@ -241,7 +217,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) maximum 
 	/// reading in current 10-min period.</returns>
-	DataPoint max_10_min();// Maximum over 10-min period.
+	DataPoint max_10_min_dp();// Maximum over 10-min period.
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 
@@ -250,7 +226,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) of today's 
 	/// minimum reading.</returns>
-	DataPoint min_today();
+	DataPoint min_today_dp();
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 
@@ -259,7 +235,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) of today's 
 	/// maximum reading.</returns>
-	DataPoint max_today();
+	DataPoint max_today_dp();
 
 	/// <summary>
 	/// List of (time, value) dataPoints at 10-min intervals.
@@ -341,29 +317,29 @@ public:
 	/// Returns list of 10-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>List of 10-min dataPoints as delimited string.</returns>
-	String dataString_10_min();
+	String getData_10_min_as_String();
 
 	/// <summary>
 	/// Returns list of 60-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>List of 60-min dataPoints as delimited string.</returns>
-	String dataString_60_min();
+	String getData_60_min_as_String();
 
 	/// <summary>
 	/// Returns list of 60-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>Delimited string of two (time, value) lists, separated by "|".</returns>
-	String dataString_dayMaxMin();
+	String getData_dayMaxMin_as_String();
 
 	/// <summary>
 	/// Returns list of daily maxima dataPoints as delimited string.
 	/// </summary>
-	String dataString_dayMax();
+	String getData_dayMax_as_String();
 
 	/// <summary>
 	/// Returns list of daily minima dataPoints as delimited string.
 	/// </summary>
-	String dataString_dayMin();
+	String getData_dayMin_as_String();
 
 
 	/******     DATA FROM FILE SYSTEM     ******/
@@ -398,24 +374,6 @@ public:
 	/// any data lost at reboot.
 	/// </summary>
 	void recover_data_dayMaxMin_from_file();
-
-	/// <summary>
-	/// Returns delimited String of 10-min data from file.
-	/// </summary>
-	/// <returns>Delimited String of 10-min data</returns>
-	String XXX_get_data_10_min_string_from_file();
-
-	/// <summary>
-	/// Returns delimited String of 60-min data from file.
-	/// </summary>
-	/// <returns>Delimited String of 60-min data</returns>
-	String XXX_get_data_60_min_string_from_file();
-
-	/// <summary>
-	/// Returns delimited String of day data from file.
-	/// </summary>
-	/// <returns>Delimited String of data data</returns>
-	String data_dayMaxMin_stringFile();
 
 	/******     DUMMY DATA     ******/
 

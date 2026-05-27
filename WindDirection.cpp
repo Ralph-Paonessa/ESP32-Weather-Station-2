@@ -35,28 +35,28 @@ void WindDirection::_clear_10_min() {
 
 		But what float value of degrees will be added to the list
 		of DataPoint(time, value)?! We can't save an item to the
-		10-min_today list (and longer) without a numerical value for angle!
+		10-min_today_dp list (and longer) without a numerical value for angle!
 
 		Could also get around this problem by
 			- Adding all angle readings
 			- WEIGHTING the avg angle by speed.
-			- Saving the (possibly meaningless) direction at each 10-min_today
+			- Saving the (possibly meaningless) direction at each 10-min_today_dp
 			- Not reporting a direction at times when speed < 1. (Easier
 				to do with output strings).
 
 		WEIGHTING BY SPEED will suppress the meaningless directions
-		during the 10-min_today average period. If the speed is always zero
-		(for all 10 min_today), it will still produce a meaningless direction
+		during the 10-min_today_dp average period. If the speed is always zero
+		(for all 10 min_today_dp), it will still produce a meaningless direction
 		number that will be logged. The REPORTING ROUTINE MUST IGNORE
 		DIRECTIONS ASSOCIATED WITH NO SPEED.
 
 		NOTE: If direction angle is logged as exactly zero, (which would
-		be the case for a 10-min_today period with no wind)then web server
+		be the case for a 10-min_today_dp period with no wind)then web server
 		returns it as "" for that time.
 */
 
 /// <summary>
-/// Adds wind direction reading for calculating 10-min_today 
+/// Adds wind direction reading for calculating 10-min_today_dp 
 /// average direction, weighted by speed.
 /// </summary>
 /// <param name="time">Reading time, sec.</param>
@@ -144,7 +144,7 @@ float WindDirection::angleAvg_now() {
 
 /// <summary>
 /// Returns latest cardinal direction using 
-/// latest 10-min_today avg wind angle.
+/// latest 10-min_today_dp avg wind angle.
 /// </summary>
 /// <returns>Cardinal direction as string.</returns>
 String WindDirection::directionCardinal() {

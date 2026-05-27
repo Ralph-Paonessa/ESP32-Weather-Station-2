@@ -28,8 +28,8 @@ void Testing::testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop) 
 	/********************************/
 	/* INSERT TEST CODE HERE.       */
 
-	/*Serial.println("d_TempF.dataString_10_min():");
-	Serial.println(d_TempF.dataString_10_min()); Serial.println();
+	/*Serial.println("d_TempF.getData_10_min_as_String():");
+	Serial.println(d_TempF.getData_10_min_as_String()); Serial.println();
 
 	list<DataPoint> dpList = d_TempF.recovered_data_10_min();
 	String s = getString_from_List(dpList);
@@ -408,11 +408,11 @@ void Testing::testStructList(long time)
 	Serial.println(d_test.label());
 
 	Serial.println("10-min");
-	Serial.println(d_test.dataString_10_min());
+	Serial.println(d_test.getData_10_min_as_String());
 	Serial.println();
 
 	Serial.println("10-min 1 decimal place.");
-	Serial.println(d_test.dataString_10_min());
+	Serial.println(d_test.getData_10_min_as_String());
 }
 
 // Add a list of rotations to a WindSpeed object, and return elapsed seconds.
