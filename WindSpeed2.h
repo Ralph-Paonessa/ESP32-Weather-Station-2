@@ -4,9 +4,9 @@
 #define _WINDSPEED2_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
+#include "arduino.h"
 #else
-	#include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 
@@ -43,17 +43,10 @@ public:
 	/// </summary>
 	/// <param name="calibrationFactor">
 	/// Calibration factor for anemometer.</param>
-	/// <param name="isUseSmoothing">
-	/// Set true to smooth data (default = false).</param>
-	/// <param name="numValuesForAvg">	
-	/// Number of values in moving average (default = 5).</param>
-	/// <param name="outlierDelta">
-	/// Factor applied to moving avg for outlier comparison (default = 1.75).</param>
-	WindSpeed(
-		float calibrationFactor,
-		bool isUseMovingAvg = false,
-		unsigned int numSmoothPoints = 5,
-		float outlierDelta = 1.75);		// Overload of SensorData.
+	WindSpeed(float calibrationFactor);
+		//bool isUseMovingAvg = false,
+		//unsigned int numSmoothPoints = 5,
+		//float outlierDelta = 1.75);		// Overload of SensorData.
 
 	/// <summary>
 	/// Returns wind speed from anemometer rotations.
@@ -62,7 +55,7 @@ public:
 	/// <param name="period">Time period of rotations, sec.</param>
 	/// <returns>Wind speed, mph</returns>
 	float speedInstant(int rotations, unsigned int period);
-		
+
 	/// <summary>
 	/// Checks for and returns a gust datPoint if the speed satisfies 
 	/// gust criteria. Otherwise, the returned value will be zero if 

@@ -122,8 +122,8 @@ void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* msg) {
 	}
 	// File opened. Append msg.
 	if (file.print(msg)) {
-		serial_println_DEBUG("FileOperations::fileAppend to file ", path);
-		serial_println_DEBUG("append msg = ", msg); 
+		/*serial_println_DEBUG("FileOperations::fileAppend to file ", path);
+		serial_println_DEBUG("append msg = ", msg); */
 	}
 	else {
 		Serial.print("ERROR: fileAppend failed to ");

@@ -11,23 +11,15 @@
 /// </summary>
 /// <param name="calibrationFactor">
 /// Calibration factor for anemometer.</param>
-/// <param name="isUseSmoothing">
-/// Set true to smooth data (default = false).</param>
-/// <param name="numValuesForAvg">	
-/// Number of values in moving average (default = 5).</param>
-/// <param name="outlierDelta">
-/// Factor applied to moving avg for outlier comparison (default = 1.75).</param>
-WindSpeed::WindSpeed(
-	float calibrationFactor,
-	bool isUseSmoothing,
-	unsigned int numValuesForAvg,
-	float outlierDelta
-)
+WindSpeed::WindSpeed(float calibrationFactor)
+/*bool isUseSmoothing,
+unsigned int numValuesForAvg,
+float outlierDelta*/
 {
 	_calibrationFactor = calibrationFactor;
-	_isUseSmoothing = isUseSmoothing;
+	/*_isUseSmoothing = isUseSmoothing;
 	_avgMoving_Num = numValuesForAvg;
-	_outlierDelta = outlierDelta;
+	_outlierDelta = outlierDelta;*/
 }
 
 /// <summary>
@@ -57,14 +49,9 @@ float WindSpeed::speedInstant(int rotations, unsigned int period)
 /// <returns>Gust as (time, value) data point.</returns>
 dataPoint WindSpeed::gust(dataPoint speed, float avgSpeed)
 {
-	if (
-		// If Gust exceeds threshold
-		speed.value >= GUST_THRESHOLD
-		&&
-		// If gust exceeds moving avg by GUST_SPREAD
-		((speed.value - _avgMoving) >= GUST_SPREAD)	// Inherit moving avg from SensorData.
-		)
-	{		// Report this as a gust.
+	if (speed.value >= GUST_THRESHOLD &&			// Gust exceeds threshold		
+		(speed.value - avg_now() >= GUST_SPREAD)) {	// Gust exceeds avg by GUST_SPREAD		
+		// Report this as a gust.
 		return speed;
 	}
 	else {

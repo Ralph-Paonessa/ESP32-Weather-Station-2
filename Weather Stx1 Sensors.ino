@@ -229,7 +229,7 @@ int windAngleReading() {
 /// Adds simulated wind speed readings.
 /// </summary>
 void readWind_Simulate() {
-#if defined(VM_DEBUG)
+//#if defined(VM_DEBUG)
 	float sim_speed_start = 3;
 	float sim_speed_spike = 15;
 	float sim_speed_incr = 0.025;
@@ -247,14 +247,14 @@ void readWind_Simulate() {
 
 	// XXX  DOES THIS WORK FOR SIMULATION?!?!  XXX
 	// Record any gusts. Use MOVING AVG of wind speed.
-	float avg_moving = windSpeed.avgMoving();
-	dataPoint dpGust = windSpeed.gust(dpSpeed, avg_moving);
-	windGust.addReading(dpGust);
+	//float avg_moving = windSpeed.avg_moving();
+	//dataPoint dpGust = windSpeed.gust(dpSpeed, avg_moving);
+	//windGust.addReading(dpGust);
 
 	// Read wind direction.
 	float windAngle = dummy_windDir.sawtooth(90, 1, 360);
 	windDir.addReading(now(), windAngle, dpSpeed.value);	// weighted by speed
-#endif
+//#endif
 }
 
 /// <summary>

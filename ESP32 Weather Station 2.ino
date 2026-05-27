@@ -75,17 +75,17 @@ SDCard sd;		// SDCard instance that exposes SD card routines.
 
 // ==========   CREATE SENSOR OBJECTS   ==================== //
 
-SensorData d_TempF;					// Temperature readings.
-SensorData d_Pres_mb(false);		// Pressure readings.
-SensorData d_Pres_seaLvl_mb;		// Pressure readings adjusted to sea level.
-SensorData d_TempC_for_RH(false);	// Temperature on pressure sensor.
-SensorData d_RH;					// Rel. humidity readings.
-SensorData d_UVA(false);			// UVA readings.
-SensorData d_UVB(false);			// UVB readings.
-SensorData d_UVIndex;				// UV Index readings.
-SensorData d_Insol(true, true);		// Insolation readings (no minima).
-SensorData d_IRSky_C;				// IR sky temperature readings.
-SensorData d_fanRPM(false);			// Fan RPM readings.
+SensorData d_TempF;					// Temp
+SensorData d_Pres_mb(false);		// P					(Data not in filesys)
+SensorData d_Pres_seaLvl_mb;		// P adjust to sea lvl
+SensorData d_TempC_for_RH(false);	// Temp on P sensor		(Data not in filesys)
+SensorData d_RH;					// Rel humidity
+SensorData d_UVA(false);			// UVA					(Data not in filesys)
+SensorData d_UVB(false);			// UVB					(Data not in filesys)
+SensorData d_UVIndex;				// UV Index
+SensorData d_Insol(true, true);		// Insolation			(Data not in filesys, no minima)
+SensorData d_IRSky_C;				// IR sky temp
+SensorData d_fanRPM(false);			// Fan RPM
 
 /*
 SensorData instances to average readings.
@@ -94,11 +94,7 @@ Wind direction handled by WindDirection.
 */
 
 // WindSpeed instance for wind.
-WindSpeed windSpeed(
-	DAVIS_SPEED_CAL_FACTOR,
-	true,
-	WIND_SPEEDS_IN_MOVING_AVG,
-	WIND_SPEED_OUTLIER_DELTA);
+WindSpeed windSpeed(DAVIS_SPEED_CAL_FACTOR);
 SensorData windGust;
 WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
 
@@ -452,6 +448,31 @@ void setup() {
 	}
 
 	if (_isDEBUG_run_test_in_setup) {
+		bool isDataInFilesys = true;
+		bool isReportDailyMaxOnly = false;
+		SensorData d(isDataInFilesys, isReportDailyMaxOnly);
+		d.addLabels("Test sensor", "testPrefix", "units");
+		d.createFiles(false, 2);
+
+		unsigned long int t = 0;
+		float val = 50;
+		float increment = 5;
+		for (size_t i = 0; i < 10; i++)
+		{
+			t += SECONDS_PER_DAY;	// Increment time 1 day.
+			val += increment;
+			d.addReading(dataPoint(t, val));
+			
+			Serial.printf("(%li, %f) countReadings() = %i\n",t, val, d.countReadings());
+
+			delay(1000);
+
+		}
+				
+		Serial.printf("avg_now() = %f\n", d.avg_now());
+		Serial.printf("max_10_min() = %f\n", d.max_10_min().value);
+		Serial.printf("min_10_min() = %f\n", d.min_10_min().value);
+
 		//// File contents.
 		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/RH_10_min.txt");
 		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/wind_10_min.txt");
@@ -459,9 +480,11 @@ void setup() {
 		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/d_Temp_F_10_min.txt");
 		//Testing::.testCodeForSetup_printFileContents(true, "/Sensor data/skyTemp_10_min.txt");
 
-		Testing::testCodeForSetup_convert_DelimString_to_ListOfDataPoints(false);
+		/*Testing::testCodeForSetup_convert_DelimString_to_ListOfDataPoints(false);
 		Testing::testCodeForSetup_list_dataPoints_fromString(false);
-		Testing::testCodeForSetup_getStringList_from_String(true);
+		Testing::testCodeForSetup_getStringList_from_String(true);*/
+
+		Testing::infiniteLoop();
 	}
 	//#endif
 

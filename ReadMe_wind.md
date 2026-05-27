@@ -28,8 +28,8 @@ a few seconds.
  "significantly"  greater the the previous one. (See later for 
  what is considered "significant.")
 
- Each time a gust is found, it will be compared to previously the 
- highest previous gust (_maxGust). If it is greater, it will be set 
+ Each time a gust is found, it will be compared to the highest
+ previous gust (_maxGust). If it is greater, it will be set 
  as the new _maxGust.
 
  At the end of each 10-min period, _maxGust will be saved as the
@@ -59,7 +59,7 @@ a few seconds.
 	The "WIND SPEED" reported in each dp is an average speed for
 	the most recent two-minute time prior to the dp time. This
 	is also considered the "SUSTAINED WIND" for routine surface
-	observations. This two minute average is calculated	from a series of
+	observations. This two minute average is calculated from a series of
 	24 five-second average values.
 
 	A "WIND GUST" is also reported when the PEAK "INSTANTANEOUS WIND"
@@ -83,7 +83,7 @@ a few seconds.
 	in wind speed between the peaks and lulls is at least 9 knots (10.36 mph).
 	The duration of a gust is usually less than 20 seconds.
 
-	(*)NOTE: "PEAK WIND SPEED" [2] <---> PEAK "INSTANTANEOUS WIND" [1]
+	(*)NOTE: "PEAK WIND SPEED" [2] isn't the same as PEAK "INSTANTANEOUS WIND" [1]
 
 ________________
 

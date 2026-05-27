@@ -15,22 +15,19 @@
 /// <param name="isDatafile">
 /// Set true to store data in LittleFS file system.</param>
 /// <param name="isReportDailyMaxOnly">
-/// Set true to maxima but not minima LittleFS file system.</param>
-/// <param name="isUseSmoothing">Set true to smooth data.</param>
-/// <param name="numInMovingAvg">Number of points in moving avg.</param>
-/// <param name="outlierDelta">
-/// Range applied to moving avg for outlier rejection.</param>
+/// Set true to save maxima but not minima LittleFS file system.</param>
 SensorData::SensorData(
 	bool isDataInFileSys,
-	bool isReportDailyMaxOnly,
-	bool isUseSmoothing,
-	unsigned int numInMovingAvg,
-	float outlierDelta) {
+	bool isReportDailyMaxOnly	//,
+	//bool isUseSmoothing,
+	//unsigned int numInMovingAvg,
+	//float outlierDelta
+) {
 	_isDatafile = isDataInFileSys;
 	_isReportDayMaxOnly = isReportDailyMaxOnly;
-	_isUseSmoothing = isUseSmoothing;
-	_avgMoving_Num = numInMovingAvg;
-	_outlierDelta = outlierDelta;
+	//_isUseSmoothing = isUseSmoothing;
+	//_avgMoving_Num = numInMovingAvg;
+	//_outlierDelta = outlierDelta;
 }
 
 /// <summary>
@@ -79,8 +76,18 @@ void SensorData::addLabels(
 /// </summary>
 /// <param name="dp">(time, value) dataPoint.</param>
 void SensorData::addReading(dataPoint dp) {
-	_dataPointLastAdded = dp;	// save most recent
+	// Hold most recent
+	_dataPointLastAdded = dp;
+	// Accumulate avg.
+	_countReadings++;
+	_sumReadings += dp.value;
+	// Check for 10-min and daily min max.
+	_updateMinMax(dp);
+
 	/*
+	
+	XXX   XXX   ELIMINATED ALL MOVING AVG AND OUTLIER CODE!   XXX   XXX
+
 	Want outlier detection so that a large wind gust won't "pollute"
 	the moving avg wind speed. Outlier will still be reported as the last
 	value read and it will still be compared by windGust to the moving
@@ -95,7 +102,7 @@ void SensorData::addReading(dataPoint dp) {
 	*/
 	/*
 	DANGER:
-	On the first pass, _avgMoving = 0, and so the high and low outlier
+	On the first pass, _avg_moving = 0, and so the high and low outlier
 	comparisons will all be zero! That means that any reading value will
 	be ouside the range [0, 0] and will be declared an outlier, and won't
 	be added to the moving avg. Thus, the moving avg will always be zero,
@@ -109,12 +116,12 @@ void SensorData::addReading(dataPoint dp) {
 	*/
 	/*
 	NOTE: If this is the first cycle, there's not yet
-	a value assigned to _avgMoving nor any data points
+	a value assigned to _avg_moving nor any data points
 	in _avg_moving_List.
 
-		_avgMoving = 0 (as initialized).
+		_avg_moving = 0 (as initialized).
 
-	When _avgMoving is zero, the multiples used for the
+	When _avg_moving is zero, the multiples used for the
 	outlier range will be [0, 0]. Therefore, any nonzero
 	value will be outside this range and marked as an outlier!
 
@@ -122,52 +129,58 @@ void SensorData::addReading(dataPoint dp) {
 	*/
 	//// First value begins moving avg. (First value CAN'T BE AN OUTLIER!!)
 	//if (!_isMovingAvgStarted) {
-	//	_avgMoving = dp.value;
+	//	_avg_moving = dp.value;
 	//	_isMovingAvgStarted = true;
 	//}
 
-	if (!_isUseSmoothing) {
+	//if (!_isUseSmoothing) {
 		// No smoothing. No moving avg.
-		_countReadings++;
-		_sumReadings += dp.value;
-	}
-	else
-	{
-		// Apply SMOOTHING and OUTLIER REJECTION.
-		// First value begins moving avg. (First value CAN'T BE AN OUTLIER!!)
-		if (!_isMovingAvgStarted) {
-			_avgMoving = dp.value;
-			_isMovingAvgStarted = true;
-		}
-		if (!isOutlier(dp))
-		{
-			// Not an outlier, so include in 10-min avg.
-			_countReadings++;
-			_sumReadings += dp.value;
-			// Not an outlier, so include in moving avg.
-			addDataPoint_to_List(_avg_moving_List, dp.value, _avgMoving_Num);
-			_avgMoving = listAverage(_avg_moving_List, _avgMoving_Num);
-			_isMovingAvgStarted = true;
-		}
-	}
-	_updateMinMax(dp);	// Regardless of outlier status.
+		/*_countReadings++;
+		_sumReadings += dp.value;*/
+	//}
+	//else
+	//{
+	//	// Apply SMOOTHING and OUTLIER REJECTION.
+	//	// First value begins moving avg. (First value CAN'T BE AN OUTLIER!!)
+	//	if (!_isMovingAvgStarted) {
+	//		_avg_moving = dp.value;
+	//		_isMovingAvgStarted = true;
+	//	}
+	//	if (!isOutlier(dp))
+	//	{
+	//		// Not an outlier, so include in 10-min avg.
+	//		_countReadings++;
+	//		_sumReadings += dp.value;
+	//		// Not an outlier, so include in moving avg.
+	//		addDataPoint_to_List(_avg_moving_List, dp.value, _avgMoving_Num);
+	//		_avg_moving = listAverage(_avg_moving_List, _avgMoving_Num);
+	//		_isMovingAvgStarted = true;
+	//	}
+	//	else {
+	//		Serial.printf("OUTLIER DETECTED for (%li, %f)\n", dp.time, dp.value);
+	//	}
+	//}
+	//_updateMinMax(dp);
 }
 
-/// <summary>
-/// Returns true if the data value is outside the limits set 
-/// by [_avgMoving / _avgMoving, _avgMoving * _avgMoving].
-/// </summary>
-/// <param name="dp">Data point with value to evaluate.</param>
-/// <returns>True if this is an outlier.</returns>
-bool SensorData::isOutlier(dataPoint dp) {
-	// NEEDED?? XXX //////////////
-	if (_avgMoving == 0) {
-		return false;
-	}
-	///////////////////////////////
-	return  (dp.value > _avgMoving + _avgMoving)
-		|| (dp.value < _avgMoving - _outlierDelta);		// lower bound
-}
+///// <summary>
+///// Returns true if the data value is outside the limits set 
+///// by [_avg_moving / _avg_moving, _avg_moving * _avg_moving].
+///// </summary>
+///// <param name="dp">Data point with value to evaluate.</param>
+///// <returns>True if this is an outlier.</returns>
+//bool SensorData::isOutlier(dataPoint dp) {
+//	bool isOut = false;
+//	// NEEDED?? XXX //////////////
+//	if (_avg_moving == 0) {
+//		isOut = false;
+//		return isOut;
+//	}
+//	///////////////////////////////
+//
+//	isOut = (dp.value > _avg_moving + _avg_moving) || (dp.value < _avg_moving - _outlierDelta);
+//	return  isOut;
+//}
 
 /// <summary>
 /// Updates saved min and max values for 
@@ -193,6 +206,11 @@ void SensorData::_clear_10_min() {
 	// Reset to highest possible.
 	_min_10_min = dataPoint(0, VAL_LIMIT);
 	_max_10_min = dataPoint(0, -VAL_LIMIT);
+}
+
+int SensorData::countReadings()
+{
+	return _countReadings;
 }
 
 /// <summary>
@@ -299,6 +317,7 @@ void SensorData::XXX_recover_data_fromFile(dataPeriod period) {
 
 
 			break;
+
 		default:
 			break;
 		}
@@ -674,7 +693,7 @@ float SensorData::valueLastAdded() {
 }
 
 /// <summary>
-/// The accumulated avg now (reset every 10 minutes)> When 
+/// The accumulated avg now (cleared every 10 minutes). When 
 /// data smoothing is enabled, outlier values are excluded.
 /// </summary>
 /// <returns>Average now.</returns>
@@ -682,13 +701,13 @@ float SensorData::avg_now() {
 	return _sumReadings / _countReadings;
 }
 
-/// <summary>
-/// Returns moving average of last several reading values.
-/// </summary>
-/// <returns>Moving average.</returns>
-float SensorData::avgMoving() {
-	return _avgMoving;
-}
+///// <summary>
+///// Returns moving average of last several reading values.
+///// </summary>
+///// <returns>Moving average.</returns>
+//float SensorData::avg_moving() {
+//	return _avg_moving;
+//}
 
 /// <summary>
 /// The last average saved to the 10-min list.

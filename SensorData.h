@@ -44,8 +44,8 @@ protected:		// Protected items are accessible by inherited classes.
 
 	dataPoint _dataPointLastAdded;	// Data point (time, value) of most recent reading.
 
-	float _sumReadings;				// Accumulating sum of readings.
-	unsigned int _countReadings;	// Number of readings in average.
+	float _sumReadings = 0;			// Accumulating sum of readings.
+	unsigned int _countReadings = 0;// Number of readings in average.
 
 	// Samples required for smoothing avg.
 	static constexpr unsigned int COUNT_FOR_SMOOTH = 10;
@@ -83,19 +83,19 @@ protected:		// Protected items are accessible by inherited classes.
 
 	bool _isDatafile = true;			// Set true to save periodic data in LittleFS file system.
 	bool _isReportDayMaxOnly = false;	// Set true to save maxima but not minima on LittleFS file system.
-	bool _isUseSmoothing;				// Set true to smooth data with moving avg and reject outliers.
-	float _outlierDelta;				// Factor to determine if reading is an outlier.
-	list<float> _avg_moving_List;		// Moving avg of latest reading values.
-	float _avgMoving = 0;				// Moving average value.
-	unsigned int _avgMoving_Num;		// Maximum number of values to average.
+	//bool _isUseSmoothing;				// Set true to smooth data with moving avg and reject outliers.
+	//float _outlierDelta;				// Factor to determine if reading is an outlier.
+	//list<float> _avg_moving_List;		// Moving avg of latest reading values.
+	//float _avg_moving = 0;				// Moving average value.
+	//unsigned int _avgMoving_Num;		// Maximum number of values to average.
 
 	bool _isConvertZeroToEmpty = true;	//
 	unsigned int _decimalPlaces = 0;	//
 
-	bool _isMovingAvgStarted = false;	// Flag to indicate first cycle.
+	//bool _isMovingAvgStarted = false;	// Flag to indicate first cycle.
 
 
-	bool isOutlier(dataPoint dp);
+	//bool isOutlier(dataPoint dp);
 
 	list<dataPoint> _dataPoints_10_min;		// List of Data_Points at 10-min intervals.
 	list<dataPoint> _dataPoints_60_min;		// List of Data_Points at 60-min intervals.
@@ -113,7 +113,7 @@ public:
 	/// <param name="isDatafile">
 	/// Set true to store data in LittleFS file system.</param>
 	/// <param name="isReportDailyMaxOnly">
-	/// Set true to maxima but not minima LittleFS file system.</param>
+	/// Set true to save maxima but not minima LittleFS file system.</param>
 	/// <param name="isUseMovingAvg">
 	/// Set true to smooth data.</param>
 	/// <param name="numSmoothPoints">
@@ -121,10 +121,11 @@ public:
 	/// <param name="outlierDelta">
 	/// Range applied to moving avg for outlier rejection.</param>
 	SensorData(bool isDataInFileSys = true,
-		bool isReportDailyMaxOnly = false,
-		bool isUseMovingAvg = true,
-		unsigned int numSmoothPoints = 5,
-		float outlierDelta = 1.75);
+		bool isReportDailyMaxOnly = false
+		//bool isUseMovingAvg = true,
+		//unsigned int numSmoothPoints = 5,
+		//float outlierDelta = 1.75
+		);
 
 	/// <summary>
 	/// Creates files that hold sensor data points at various 
@@ -184,17 +185,17 @@ public:
 	float valueLastAdded();
 
 	/// <summary>
-	/// The accumulated avg now (reset every 10 minutes)> When 
+	/// The accumulated avg now (cleared every 10 minutes). When 
 	/// data smoothing is enabled, outlier values are excluded.
 	/// </summary>
 	/// <returns>Average now.</returns>
 	float avg_now();
 
-	/// <summary>
+	/*/// <summary>
 	/// Returns moving average of last several reading values.
 	/// </summary>
 	/// <returns>Moving average.</returns>
-	float avgMoving();
+	float avg_moving();*/
 
 	/// <summary>
 	/// The last average saved to the 10-min list.
@@ -209,6 +210,13 @@ public:
 	/// <returns>The last average saved to the 60-min list.
 	/// </returns>
 	float avg_60_min();
+
+	/// <summary>
+	/// The number of readings since the last reset.
+	/// </summary>
+	/// <returns>The number of readings since the last reset.
+	/// </returns>
+	int countReadings();
 
 	/// <summary>
 	/// Clears saved minimum and maximum for today.
@@ -411,14 +419,14 @@ public:
 
 	/******     DUMMY DATA     ******/
 
-	void addDummy_data_10_min(float valueStart, 
-		float increment, 
-		int numElements, 
+	void addDummy_data_10_min(float valueStart,
+		float increment,
+		int numElements,
 		unsigned long timeStart);
 
-	void addDummy_data_60_min(float valueStart, 
-		float increment, 
-		int numElements, 
+	void addDummy_data_60_min(float valueStart,
+		float increment,
+		int numElements,
 		unsigned long timeStart);
 
 	/// <summary>
