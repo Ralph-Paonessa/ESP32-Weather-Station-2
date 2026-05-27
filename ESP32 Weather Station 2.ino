@@ -26,7 +26,7 @@ using namespace Utilities;
 using namespace FileOperations;
 #include "GPSModule.h"
 #include "SDCard.h"
-//#include "dataPoint.h"
+//#include "DataPoint.h"
 #include "SensorData.h"
 #include "WindSpeed2.h"
 #include "WindDirection.h"
@@ -461,7 +461,7 @@ void setup() {
 		{
 			t += SECONDS_PER_DAY;	// Increment time 1 day.
 			val += increment;
-			d.addReading(dataPoint(t, val));
+			d.addReading(DataPoint(t, val));
 			
 			Serial.printf("(%li, %f) countReadings() = %i\n",t, val, d.countReadings());
 

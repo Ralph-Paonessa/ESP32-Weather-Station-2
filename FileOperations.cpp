@@ -181,3 +181,45 @@ bool FileOperations::fileCreateOrExists(fs::FS& fs, const String& path) {
 		return true;
 	}
 }
+
+
+
+// Structure to hold the combined calculations
+struct WindReport {
+	float meanSpeed;
+	float meanDirection;
+	float maxGust;
+};
+
+
+// Create a queue to pass finished 10-min reports to the logging core
+QueueHandle_t logQueue;
+
+void setup() {
+	logQueue = xQueueCreate(10, sizeof(WindReport));
+
+	// Create a background logging task pinned to Core 0
+	xTaskCreatePinnedToCore(
+		loggingTask,    // Function name
+		"LogTask",      // Task name
+		4096,           // Stack size
+		NULL,           // Parameter
+		1,              // Priority
+		NULL,           // Task handle
+		0               // Pin to Core 0 (Main loop runs on Core 1)
+	);
+}
+
+void loggingTask(void* parameter) {
+	WindReport reportToLog;
+	for (;;) {
+		// This halts efficiently until Core 1 pushes a new report into the queue
+		if (xQueueReceive(logQueue, &reportToLog, portMAX_DELAY)) {
+			File file = LittleFS.open("/wind_log.csv", FILE_APPEND);
+			if (file) {
+				file.printf("%f,%f,%f\n", reportToLog.meanSpeed, reportToLog.meanDirection, reportToLog.maxGust);
+				file.close(); // The 350ms delay happens here, safely isolated on Core 0
+			}
+		}
+	}
+}

@@ -42,7 +42,7 @@ protected:		// Protected items are accessible by inherited classes.
 	String _label, _filenamePrefix;	// Identifying info.
 	String _units, _units_html;		// Units used.
 
-	dataPoint _dataPointLastAdded;	// Data point (time, value) of most recent reading.
+	DataPoint _dataPointLastAdded;	// Data point (time, value) of most recent reading.
 
 	float _sumReadings = 0;			// Accumulating sum of readings.
 	unsigned int _countReadings = 0;// Number of readings in average.
@@ -59,22 +59,22 @@ protected:		// Protected items are accessible by inherited classes.
 	/// Updates saved min and max values for 10-min period and today.
 	/// </summary>
 	/// <param name="dp">Data point with value to evaluate.</param>
-	void _updateMinMax(dataPoint dp);
+	void _updateMinMax(DataPoint dp);
 
 	// Initialize at impossible extremes.
 
-	dataPoint _min_today = dataPoint(0, VAL_LIMIT);		// Today's minimum.
-	dataPoint _max_today = dataPoint(0, -VAL_LIMIT);	// Today's maximum.
+	DataPoint _min_today = DataPoint(0, VAL_LIMIT);		// Today's minimum.
+	DataPoint _max_today = DataPoint(0, -VAL_LIMIT);	// Today's maximum.
 
 	/// <summary>
 	/// Minimum sensor reading in the current 10-min period.
 	/// </summary>
-	dataPoint _min_10_min = dataPoint(0, VAL_LIMIT);	// Initialize at high extreme.
+	DataPoint _min_10_min = DataPoint(0, VAL_LIMIT);	// Initialize at high extreme.
 
 	/// <summary>
 	/// Maximum sensor reading in the current 10-min period.
 	/// </summary>
-	dataPoint _max_10_min = dataPoint(0, -VAL_LIMIT);	// Initialize at low extreme.
+	DataPoint _max_10_min = DataPoint(0, -VAL_LIMIT);	// Initialize at low extreme.
 
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.
@@ -95,12 +95,12 @@ protected:		// Protected items are accessible by inherited classes.
 	//bool _isMovingAvgStarted = false;	// Flag to indicate first cycle.
 
 
-	//bool isOutlier(dataPoint dp);
+	//bool isOutlier(DataPoint dp);
 
-	list<dataPoint> _dataPoints_10_min;		// List of Data_Points at 10-min intervals.
-	list<dataPoint> _dataPoints_60_min;		// List of Data_Points at 60-min intervals.
-	list<dataPoint> _dataPoints_dayMin;		// List of daily minima.
-	list<dataPoint> _dataPoints_dayMax;		// List of daily maxima.
+	list<DataPoint> _dataPoints_10_min;		// List of Data_Points at 10-min intervals.
+	list<DataPoint> _dataPoints_60_min;		// List of Data_Points at 60-min intervals.
+	list<DataPoint> _dataPoints_dayMin;		// List of daily minima.
+	list<DataPoint> _dataPoints_dayMax;		// List of daily maxima.
 
 public:
 
@@ -139,11 +139,11 @@ public:
 	void createFiles(bool isConvertZeroToEmpty = true, unsigned int decimalPlaces = 0);
 
 	/// <summary>
-	/// Adds (time, value) dataPoint, accumulates average, 
+	/// Adds (time, value) DataPoint, accumulates average, 
 	/// and processes min, max.
 	/// </summary>
-	/// <param name="dp">(time, value) dataPoint.</param>
-	void addReading(dataPoint dp);
+	/// <param name="dp">(time, value) DataPoint.</param>
+	void addReading(DataPoint dp);
 
 	/// <summary>
 	/// Calculates 10-min avg and saves data to 10-min 
@@ -176,7 +176,7 @@ public:
 	/// <returns>Data point with (time, value) of latest 
 	/// sensor reading.
 	/// </returns>
-	dataPoint dataPointLastAdded();
+	DataPoint dataPointLastAdded();
 
 	/// <summary>
 	/// The most-recently added data value.
@@ -231,7 +231,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) minimum 
 	/// reading in current 10-min period.</returns>
-	dataPoint min_10_min();	// Minimum over 10-min period.
+	DataPoint min_10_min();	// Minimum over 10-min period.
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 
@@ -241,7 +241,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) maximum 
 	/// reading in current 10-min period.</returns>
-	dataPoint max_10_min();// Maximum over 10-min period.
+	DataPoint max_10_min();// Maximum over 10-min period.
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 
@@ -250,7 +250,7 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) of today's 
 	/// minimum reading.</returns>
-	dataPoint min_today();
+	DataPoint min_today();
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 
@@ -259,31 +259,31 @@ public:
 	/// </summary>
 	/// <returns>Data point with (time, value) of today's 
 	/// maximum reading.</returns>
-	dataPoint max_today();
+	DataPoint max_today();
 
 	/// <summary>
 	/// List of (time, value) dataPoints at 10-min intervals.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> dataPoints_10_min();
+	list<DataPoint> dataPoints_10_min();
 
 	/// <summary>
 	/// List of (time, value) dataPoints at 60-min intervals.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> dataPoints_60_min();
+	list<DataPoint> dataPoints_60_min();
 
 	/// <summary>
 	/// List of (time, value) dataPoints of daily minima.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> dataPoints_day_minima();
+	list<DataPoint> dataPoints_day_minima();
 
 	/// <summary>
 	/// List of (time, value) dataPoints of daily maxima.
 	/// </summary>
 	/// <returns>List of (time, value) dataPoints.</returns>
-	list<dataPoint> dataPoints_day_maxima();
+	list<DataPoint> dataPoints_day_maxima();
 
 	/// <summary>
 	/// Adds label information to the data.

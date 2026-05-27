@@ -71,11 +71,11 @@ void SensorData::addLabels(
 ******************************************************************/
 
 /// <summary>
-/// Adds (time, value) dataPoint, accumulates average, 
+/// Adds (time, value) DataPoint, accumulates average, 
 /// and updates min and max.
 /// </summary>
-/// <param name="dp">(time, value) dataPoint.</param>
-void SensorData::addReading(dataPoint dp) {
+/// <param name="dp">(time, value) DataPoint.</param>
+void SensorData::addReading(DataPoint dp) {
 	// Hold most recent
 	_dataPointLastAdded = dp;
 	// Accumulate avg.
@@ -169,7 +169,7 @@ void SensorData::addReading(dataPoint dp) {
 ///// </summary>
 ///// <param name="dp">Data point with value to evaluate.</param>
 ///// <returns>True if this is an outlier.</returns>
-//bool SensorData::isOutlier(dataPoint dp) {
+//bool SensorData::isOutlier(DataPoint dp) {
 //	bool isOut = false;
 //	// NEEDED?? XXX //////////////
 //	if (_avg_moving == 0) {
@@ -187,7 +187,7 @@ void SensorData::addReading(dataPoint dp) {
 /// current 10-min period and all of today.
 /// </summary>
 /// <param name="dp">Data point with value to evaluate.</param>
-void SensorData::_updateMinMax(dataPoint dp) {
+void SensorData::_updateMinMax(DataPoint dp) {
 	// Update min and max so far for this 10-min period.
 	_min_10_min = (dp.value < _min_10_min.value) ? dp : _min_10_min;
 	_max_10_min = (dp.value > _max_10_min.value) ? dp : _max_10_min;
@@ -204,8 +204,8 @@ void SensorData::_clear_10_min() {
 	_sumReadings = 0;
 	_countReadings = 0;
 	// Reset to highest possible.
-	_min_10_min = dataPoint(0, VAL_LIMIT);
-	_max_10_min = dataPoint(0, -VAL_LIMIT);
+	_min_10_min = DataPoint(0, VAL_LIMIT);
+	_max_10_min = DataPoint(0, -VAL_LIMIT);
 }
 
 int SensorData::countReadings()
@@ -218,8 +218,8 @@ int SensorData::countReadings()
 /// </summary>
 void SensorData::clearMinMax_day() {
 	// Reset to highest possible.
-	_min_today = dataPoint(0, VAL_LIMIT);
-	_max_today = dataPoint(0, -VAL_LIMIT);
+	_min_today = DataPoint(0, VAL_LIMIT);
+	_max_today = DataPoint(0, -VAL_LIMIT);
 }
 
 /*****************************************************************
@@ -235,7 +235,7 @@ void SensorData::process_data_10_min() {
 	_avg_10_min = _sumReadings / _countReadings;
 	// Add to 10-min list of observations.
 	addDataPoint_to_List(_dataPoints_10_min,
-		dataPoint(_dataPointLastAdded.time, _avg_10_min),
+		DataPoint(_dataPointLastAdded.time, _avg_10_min),
 		SIZE_10_MIN_LIST);
 	// Store in LittleFS
 	if (_isDatafile) {
@@ -254,7 +254,7 @@ void SensorData::process_data_60_min() {
 	// Average last 6 x 10 min and add to 60-min list.
 	_avg_60_min = listAverage(_dataPoints_10_min, 6);	// Save latest average.
 	addDataPoint_to_List(_dataPoints_60_min,
-		dataPoint(_dataPointLastAdded.time, _avg_60_min),
+		DataPoint(_dataPointLastAdded.time, _avg_60_min),
 		SIZE_60_MIN_LIST);
 	// Store in LittleFS
 	if (_isDatafile) {
@@ -562,12 +562,12 @@ void SensorData::addDummy_data_10_min(float valueStart,
 	unsigned long timeStart) {
 	for (int elem = 0; elem < numElements; elem++)
 	{
-		dataPoint dp{ timeStart, valueStart };
+		DataPoint dp{ timeStart, valueStart };
 		addDataPoint_to_List(_dataPoints_10_min, dp, SIZE_10_MIN_LIST);
 		valueStart += increment;	// increment value each time.
 		timeStart += SECONDS_PER_MINUTE * 10;	// 10-min interval
 	}
-	_dataPointLastAdded = dataPoint(timeStart, valueStart);
+	_dataPointLastAdded = DataPoint(timeStart, valueStart);
 	_avg_10_min = valueStart;
 }
 
@@ -588,7 +588,7 @@ void SensorData::addDummy_data_60_min(float valueStart,
 	// Add artificial data to a 60-min list.	
 	for (int elem = 0; elem < numElements; elem++)
 	{
-		dataPoint dp{ timeStart, valueStart };
+		DataPoint dp{ timeStart, valueStart };
 		addDataPoint_to_List(_dataPoints_60_min, dp, SIZE_60_MIN_LIST);
 		valueStart += increment;		// increment value each time.
 		timeStart += SECONDS_PER_HOUR;	// 1-hr interval
@@ -614,12 +614,12 @@ void SensorData::addDummy_data_dayMax(
 	// Add artificial data to a 60-min list.	
 	for (int elem = 0; elem < numElements; elem++)
 	{
-		dataPoint dp{ timeStart, valueStart };
+		DataPoint dp{ timeStart, valueStart };
 		addDataPoint_to_List(_dataPoints_dayMax, dp, SIZE_60_MIN_LIST);
 		valueStart += increment;		// increment value each time.
 		timeStart += SECONDS_PER_DAY;	// 1-day interval
 	}
-	dataPoint dpMax{ timeStart, valueStart };
+	DataPoint dpMax{ timeStart, valueStart };
 	_max_today = dpMax;
 }
 
@@ -639,12 +639,12 @@ void SensorData::addDummy_data_dayMin(
 	// Add artificial data to a 60-min list.	
 	for (int elem = 0; elem < numElements; elem++)
 	{
-		dataPoint dp{ timeStart, valueStart };
+		DataPoint dp{ timeStart, valueStart };
 		addDataPoint_to_List(_dataPoints_dayMin, dp, SIZE_60_MIN_LIST);
 		valueStart += increment;		// increment value each time.
 		timeStart += SECONDS_PER_DAY;	// 1-day interval
 	}
-	dataPoint dpMin{ timeStart, valueStart };
+	DataPoint dpMin{ timeStart, valueStart };
 	_min_today = dpMin;
 }
 
@@ -660,7 +660,7 @@ void SensorData::addDummy_data_dayMin(
 /// </summary>
 /// <returns>Data point with (time, value) minimum 
 /// reading in current 10-min period.</returns>
-dataPoint SensorData::min_10_min() {
+DataPoint SensorData::min_10_min() {
 	return _min_10_min;
 }
 
@@ -672,7 +672,7 @@ dataPoint SensorData::min_10_min() {
 /// </summary>
 /// <returns>Data point with (time, value) maximum 
 /// reading in current 10-min period.</returns>
-dataPoint SensorData::max_10_min() {
+DataPoint SensorData::max_10_min() {
 	return _max_10_min;
 }
 
@@ -680,7 +680,7 @@ dataPoint SensorData::max_10_min() {
 /// Data point (time, value) of latest sensor reading.
 /// </summary>
 /// <returns></returns>
-dataPoint SensorData::dataPointLastAdded() {
+DataPoint SensorData::dataPointLastAdded() {
 	return _dataPointLastAdded;
 }
 
@@ -732,7 +732,7 @@ float SensorData::avg_60_min() {
 /// </summary>
 /// <returns>Data point with (time, value) of today's 
 /// minimum reading.</returns>
-dataPoint SensorData::min_today() {
+DataPoint SensorData::min_today() {
 	return _min_today;
 }
 
@@ -743,7 +743,7 @@ dataPoint SensorData::min_today() {
 /// </summary>
 /// <returns>Data point with (time, value) of today's 
 /// maximum reading.</returns>
-dataPoint SensorData::max_today() {
+DataPoint SensorData::max_today() {
 	return _max_today;
 }
 
@@ -751,7 +751,7 @@ dataPoint SensorData::max_today() {
 /// List of (time, value) dataPoints at 10-min intervals.
 /// </summary>
 /// <returns>List of (time, value) dataPoints.</returns>
-list<dataPoint> SensorData::dataPoints_10_min() {
+list<DataPoint> SensorData::dataPoints_10_min() {
 	return _dataPoints_10_min;
 }
 
@@ -759,7 +759,7 @@ list<dataPoint> SensorData::dataPoints_10_min() {
 /// List of dataPoints at 60-min intervals.
 /// </summary>
 /// <returns></returns>
-list<dataPoint> SensorData::dataPoints_60_min() {
+list<DataPoint> SensorData::dataPoints_60_min() {
 	return _dataPoints_60_min;
 }
 
@@ -767,7 +767,7 @@ list<dataPoint> SensorData::dataPoints_60_min() {
 /// List of (time, value) dataPoints of daily minima.
 /// </summary>
 /// <returns>List of (time, value) dataPoints.</returns>
-list<dataPoint> SensorData::dataPoints_day_minima() {
+list<DataPoint> SensorData::dataPoints_day_minima() {
 	return _dataPoints_dayMin;
 }
 
@@ -775,7 +775,7 @@ list<dataPoint> SensorData::dataPoints_day_minima() {
 /// List of (time, value) dataPoints of daily maxima.
 /// </summary>
 /// <returns>List of (time, value) dataPoints.</returns>
-list<dataPoint> SensorData::dataPoints_day_maxima() {
+list<DataPoint> SensorData::dataPoints_day_maxima() {
 	return _dataPoints_dayMax;
 }
 

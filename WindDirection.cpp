@@ -34,7 +34,7 @@ void WindDirection::_clear_10_min() {
 		though we are ignoring the wind direction at low speeds.
 
 		But what float value of degrees will be added to the list
-		of dataPoint(time, value)?! We can't save an item to the
+		of DataPoint(time, value)?! We can't save an item to the
 		10-min_today list (and longer) without a numerical value for angle!
 
 		Could also get around this problem by
@@ -63,7 +63,7 @@ void WindDirection::_clear_10_min() {
 /// <param name="degrees">Wind direction (uncorrected), deg.</param>
 /// <param name="speed">Speed at time of reading, mph.</param>
 void WindDirection::addReading(long time, float degrees, float speed) {
-	_dataPointLastAdded = dataPoint(time, degrees);
+	_dataPointLastAdded = DataPoint(time, degrees);
 	///////////_timeLastAdded = time;
 	// Only record direction for speeds greater than threshold.
 	if (speed >= WIND_DIR_SPEED_THRESHOLD) {
@@ -201,7 +201,7 @@ list<String> WindDirection::directions_cardinal(list<float>& angleList) {
 /// <param name="targetList">List of data points with angle values.</param>
 /// <param name="numElements">Number of elements from the end to average.</param>
 /// <returns>Average angle, degrees.</returns>
-float WindDirection::angleAvg_ofList(list<dataPoint>& targetList, int numElements) {
+float WindDirection::angleAvg_ofList(list<DataPoint>& targetList, int numElements) {
 	double xSum = 0, ySum = 0;
 	// Ensure we don't iterate past the first element.
 	if (numElements > targetList.size()) {
@@ -211,7 +211,7 @@ float WindDirection::angleAvg_ofList(list<dataPoint>& targetList, int numElement
 	auto it = targetList.rbegin();	// Reverse iterator to last element.
 	for (int i = 0; i < numElements; i++)
 	{
-		dataPoint dp = *it;
+		DataPoint dp = *it;
 		xSum += e_Component(dp.value);
 		ySum += n_Component(dp.value);
 		it++;	// next element.

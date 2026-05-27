@@ -13,13 +13,13 @@ using std::string;
 /////   LIST MANIPULATIONS   /////
 
 /// <summary>
-/// Adds dataPoint to list and limits list size. (If adding 
+/// Adds DataPoint to list and limits list size. (If adding 
 /// creates too many elements, the first element is removed.)
 /// </summary>
 /// <param name="targetList">List of dataPoints to add to.</param>
-/// <param name="dp">dataPoint to add.</param>
+/// <param name="dp">DataPoint to add.</param>
 /// <param name="numElements">Maximum allowed elements in list.</param>
-void DataPoint_Lists::addDataPoint_to_List(list<dataPoint>& targetList, dataPoint dp, int numElements) {
+void DataPoint_Lists::addDataPoint_to_List(list<DataPoint>& targetList, DataPoint dp, int numElements) {
 	targetList.push_back(dp);		// Add to list (raw).
 	if (targetList.size() > numElements) {
 		targetList.pop_front();		// If too many, remove the first.
@@ -42,15 +42,15 @@ void DataPoint_Lists::addDataPoint_to_List(list<float>& targetList, float val, i
 
 /// <summary>
 /// Returns the average of the end values of members 
-/// of a dataPoint list.
+/// of a DataPoint list.
 /// </summary>
 /// <param name="targetList">
-/// The list of dataPoint to average.</param>
+/// The list of DataPoint to average.</param>
 /// <param name="numToAverage">
 /// The number of elements at the end of the list to average.
 /// </param>
 /// <returns>Average value.</returns>
-float DataPoint_Lists::listAverage(list<dataPoint>& targetList, int numToAverage) {
+float DataPoint_Lists::listAverage(list<DataPoint>& targetList, int numToAverage) {
 	// Ensure we don't iterate past the first element.
 	if (numToAverage > targetList.size()) {
 		numToAverage = targetList.size();
@@ -60,7 +60,7 @@ float DataPoint_Lists::listAverage(list<dataPoint>& targetList, int numToAverage
 	float total = 0;
 	for (int i = 0; i < numToAverage; i++)
 	{
-		dataPoint dp = *it;
+		DataPoint dp = *it;
 		total += dp.value;
 		it++;
 	}
@@ -69,10 +69,10 @@ float DataPoint_Lists::listAverage(list<dataPoint>& targetList, int numToAverage
 
 /// <summary>
 /// Returns the average of the end values of members 
-/// of a dataPoint list.
+/// of a DataPoint list.
 /// </summary>
 /// <param name="targetList">
-/// The list of dataPoint to average.</param>
+/// The list of DataPoint to average.</param>
 /// <param name="numToAverage">
 /// The number of elements at the end of the list to average.
 /// </param>
@@ -94,12 +94,12 @@ float DataPoint_Lists::listAverage(list<float>& targetList, int numToAverage) {
 }
 
 /// <summary>
-/// Returns the largest value of a list of dataPoint from the last numElements.
+/// Returns the largest value of a list of DataPoint from the last numElements.
 /// </summary>
-/// <param name="targetList">List of dataPoint to check.</param>
+/// <param name="targetList">List of DataPoint to check.</param>
 /// <param name="numElements">Number of elements to check, starting from end.</param>
 /// <returns>Largest value of a list</returns>
-float DataPoint_Lists::listMaximum(list<dataPoint>& targetList, int numElements) {
+float DataPoint_Lists::listMaximum(list<DataPoint>& targetList, int numElements) {
 	// Ensure we don't iterate past the first element.
 	if (numElements > targetList.size()) {
 		numElements = targetList.size();
@@ -109,7 +109,7 @@ float DataPoint_Lists::listMaximum(list<dataPoint>& targetList, int numElements)
 	// Start with low value we should never see.
 	float maxItem = -999999999;
 	for (int i = 1; i < numElements + 1; i++) {
-		dataPoint dp = *it;
+		DataPoint dp = *it;
 		if (dp.value > maxItem) {
 			maxItem = dp.value;
 		}
@@ -123,16 +123,16 @@ float DataPoint_Lists::listMaximum(list<dataPoint>& targetList, int numElements)
 /// pairs, each delimited by "," separate points delimited by 
 /// "~". Such as "t1,v1~t2,v2~t3,v3".
 /// </summary>
-/// <param name="targetList">List of dataPoint.</param>
+/// <param name="targetList">List of DataPoint.</param>
 /// <returns>Delimited string of multiple (time, value) data points.</returns>
-String DataPoint_Lists::getString_from_List(list<dataPoint>& targetList) {
+String DataPoint_Lists::getString_from_List(list<DataPoint>& targetList) {
 	String s = "";
 	if (targetList.size() == 0) {
 		return s + "[-EMPTY-]";
 	}
-	dataPoint dp{};
-	for (list<dataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
-		// Output each dataPoint as CSV separated by "~".
+	DataPoint dp{};
+	for (list<DataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
+		// Output each DataPoint as CSV separated by "~".
 		s += String(it->time) + ",";
 		s += String(it->value) + "~";
 	}
@@ -150,7 +150,7 @@ String DataPoint_Lists::getString_from_List(list<dataPoint>& targetList) {
 /// <returns>
 /// Comma-separated "time,value" pairs delimited by "~"</returns>
 String DataPoint_Lists::getString_from_List(
-	list<dataPoint>& targetList,
+	list<DataPoint>& targetList,
 	bool isConvertZeroToEmpty,
 	unsigned int decimalPlaces)
 {
@@ -158,8 +158,8 @@ String DataPoint_Lists::getString_from_List(
 	if (targetList.size() == 0) {
 		return s + "[-EMPTY-]";
 	}
-	for (list<dataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
-		dataPoint dp = *it;
+	for (list<DataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
+		DataPoint dp = *it;
 		s += String(dp.time) + ",";
 		if (isConvertZeroToEmpty && dp.value == 0)
 		{
@@ -187,8 +187,8 @@ String DataPoint_Lists::getString_from_List(
 /// <returns>Two String lists, respectively delimited by "|".
 /// </returns>
 String DataPoint_Lists::getString_from_List(
-	list<dataPoint>& targetList_hi,
-	list<dataPoint>& targetList_lo,
+	list<DataPoint>& targetList_hi,
+	list<DataPoint>& targetList_lo,
 	bool isConvertZeroToEmpty,
 	unsigned int decimalPlaces)
 {
@@ -241,8 +241,8 @@ list<String> DataPoint_Lists::getStringList_from_String(const String& str, const
 /// <returns>
 /// List of "time,value" dataPoints retrieved from a delimited string.
 /// </returns>
-list<dataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
-	list<dataPoint> dPoints;	// List to hold data points.
+list<DataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
+	list<DataPoint> dPoints;	// List to hold data points.
 	if (str == "") {
 		Serial.println("DataPoint_Lists::getDataPoints_from_String: input str is empty");
 		return dPoints;			// empty list of data points.
@@ -262,7 +262,7 @@ list<dataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
 		else {
 			val = 0;
 		}
-		dataPoint dp = dataPoint(std::stoul(sub.substr(0, i)), val);
+		DataPoint dp = DataPoint(std::stoul(sub.substr(0, i)), val);
 		dPoints.push_back(dp);
 	}
 	return dPoints;
@@ -284,9 +284,9 @@ void DataPoint_Lists::print_List(list<String> targetList) {
 /// <param name="isConvertTime_to_String">
 /// Set true to output numeric (Unix) time as string.
 /// </param>
-void DataPoint_Lists::print_List(list<dataPoint> targetList, bool isConvertTime_to_String) {
-	for (list<dataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
-		dataPoint dp = *it;
+void DataPoint_Lists::print_List(list<DataPoint> targetList, bool isConvertTime_to_String) {
+	for (list<DataPoint>::iterator it = targetList.begin(); it != targetList.end(); ++it) {
+		DataPoint dp = *it;
 		String t;
 		if (isConvertTime_to_String) {
 			// Date-time string format.

@@ -31,7 +31,7 @@ void Testing::testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop) 
 	/*Serial.println("d_TempF.dataString_10_min():");
 	Serial.println(d_TempF.dataString_10_min()); Serial.println();
 
-	list<dataPoint> dpList = d_TempF.recovered_data_10_min();
+	list<DataPoint> dpList = d_TempF.recovered_data_10_min();
 	String s = getString_from_List(dpList);
 	Serial.println("String from list from flash:");
 	Serial.println(s);*/
@@ -69,7 +69,7 @@ void Testing::testCodeForSetup_convert_DelimString_to_ListOfDataPoints(bool isIn
 	String s2 = "1,64~2,~3,63~4,~5,61";
 	Serial.println("String to convert to list:");
 	Serial.println(s2);
-	list<dataPoint> dpList2 = getDataPoints_from_String(s2);
+	list<DataPoint> dpList2 = getDataPoints_from_String(s2);
 	Serial.println("String derived from list of data points:");
 	Serial.println(getString_from_List(dpList2));
 
@@ -189,7 +189,7 @@ void Testing::testCodeForSetup_printFileContents(bool isInfiniteLoop, String pat
 	Serial.println(contents);
 	Serial.println(LINE_SEPARATOR);
 	// Data points parsed from text file.
-	list<dataPoint> dPoints = getDataPoints_from_String(contents);
+	list<DataPoint> dPoints = getDataPoints_from_String(contents);
 	Serial.println("List elements (time converted to string):");
 	DataPoint_Lists::print_List(dPoints, true);
 
@@ -396,7 +396,7 @@ void Testing::windDirection(float angleStart, float angleIncrement, int cycles, 
 
 
 /// <summary>
-/// Tests for list of dataPoint struct.
+/// Tests for list of DataPoint struct.
 /// </summary>
 /// <param name="time"></param>
 void Testing::testStructList(long time)
@@ -421,7 +421,7 @@ float Testing::addDummyRotations(list<float> srcList, WindSpeed& speedObj, float
 	float elapsed = 0;
 	for (list<float>::iterator it = srcList.begin(); it != srcList.end(); ++it) {
 
-		speedObj.addReading(dataPoint(999999, *it));
+		speedObj.addReading(DataPoint(999999, *it));
 		elapsed += rawPeriod;
 	}
 	return elapsed;

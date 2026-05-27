@@ -24,11 +24,11 @@ namespace Utilities {
 	void serial_println_DEBUG(const String& prefix, const char* msg);
 
 	/// <summary>
-	/// Prints dataPoint time and value to serial port during VM_DEBUG.
+	/// Prints DataPoint time and value to serial port during VM_DEBUG.
 	/// </summary>
 	/// <param name="prefix">Prefix for message.</param>
-	/// <param name="msg">A dataPoint struct holding (time, value).</param>
-	void serial_println_DEBUG(const String& prefix, dataPoint dp);
+	/// <param name="msg">A DataPoint struct holding (time, value).</param>
+	void serial_println_DEBUG(const String& prefix, DataPoint dp);
 
 	/// <summary>
 	/// Prints text to serial port during VM_DEBUG.

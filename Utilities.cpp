@@ -18,10 +18,10 @@ void Utilities::serial_println_DEBUG(const String& prefix, const char* msg) {
 }
 
 /// <summary>
-/// Prints dataPoint time and value to serial port during VM_DEBUG.
+/// Prints DataPoint time and value to serial port during VM_DEBUG.
 /// </summary>
-/// <param name="msg">A dataPoint struct holding (time, value).</param>
-void Utilities::serial_println_DEBUG(const String& prefix, const dataPoint dp) {
+/// <param name="msg">A DataPoint struct holding (time, value).</param>
+void Utilities::serial_println_DEBUG(const String& prefix, const DataPoint dp) {
 #if defined(VM_DEBUG)
 	Serial.print(prefix); Serial.print(" ");
 	Serial.printf("(%lui", dp.time); Serial.printf(", %.1f)\n", dp.value);

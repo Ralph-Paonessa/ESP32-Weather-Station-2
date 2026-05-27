@@ -94,7 +94,7 @@ public:
 	/// <param name="targetList">List of data points with angle values.</param>
 	/// <param name="numElements">Number of elements from the end to average.</param>
 	/// <returns>Average angle, degrees.</returns>
-	float angleAvg_ofList(list<dataPoint>& targetList, int numElements);
+	float angleAvg_ofList(list<DataPoint>& targetList, int numElements);
 };
 
 #endif

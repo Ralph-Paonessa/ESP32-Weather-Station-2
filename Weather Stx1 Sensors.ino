@@ -186,12 +186,12 @@ void readWind() {
 	}
 	// Read wind speed.
 	float speed = windSpeed.speedInstant(_anem_Rotations, BASE_PERIOD_SEC);
-	dataPoint dpSpeed(now(), speed);
-	windSpeed.addReading(dataPoint(dpSpeed));
+	DataPoint dpSpeed(now(), speed);
+	windSpeed.addReading(DataPoint(dpSpeed));
 
 	// Record any gusts.
 	float avg = windSpeed.avg_now();
-	dataPoint dpGust = windSpeed.gust(dpSpeed, avg);
+	DataPoint dpGust = windSpeed.gust(dpSpeed, avg);
 	windGust.addReading(dpGust);
 
 	// Read wind direction.
@@ -242,13 +242,13 @@ void readWind_Simulate() {
 		6
 	);
 	float speed = windSpeed.speedInstant(rots, BASE_PERIOD_SEC);
-	dataPoint dpSpeed(now(), speed);
+	DataPoint dpSpeed(now(), speed);
 	windSpeed.addReading(dpSpeed);
 
 	// XXX  DOES THIS WORK FOR SIMULATION?!?!  XXX
 	// Record any gusts. Use MOVING AVG of wind speed.
 	//float avg_moving = windSpeed.avg_moving();
-	//dataPoint dpGust = windSpeed.gust(dpSpeed, avg_moving);
+	//DataPoint dpGust = windSpeed.gust(dpSpeed, avg_moving);
 	//windGust.addReading(dpGust);
 
 	// Read wind direction.
@@ -262,7 +262,7 @@ void readWind_Simulate() {
 /// </summary>
 void readFan() {
 	// Get fan speed.
-	d_fanRPM.addReading(dataPoint(now(), fanRPM(_fanHalfRots, BASE_PERIOD_SEC)));
+	d_fanRPM.addReading(DataPoint(now(), fanRPM(_fanHalfRots, BASE_PERIOD_SEC)));
 	// Reset hardware interrupt count.
 	portENTER_CRITICAL(&hardwareMux_fan);
 	_fanHalfRots = 0;		// Reset fan rotations.		
@@ -287,31 +287,31 @@ void readSensors(int index) {
 	{
 	case 0:
 		// Temperature
-		d_TempF.addReading(dataPoint(now(), read_Temp_F_DS18B20()));
+		d_TempF.addReading(DataPoint(now(), read_Temp_F_DS18B20()));
 		break;
 	case 1:
 		// UV A
-		d_UVA.addReading(dataPoint(now(), sensor_UV.uva()));
+		d_UVA.addReading(DataPoint(now(), sensor_UV.uva()));
 		break;
 	case 2:
 		// UV B
-		d_UVB.addReading(dataPoint(now(), sensor_UV.uvb()));
+		d_UVB.addReading(DataPoint(now(), sensor_UV.uvb()));
 		break;
 	case 3:
 		// UV Index
-		d_UVIndex.addReading(dataPoint(now(), sensor_UV.index()));
+		d_UVIndex.addReading(DataPoint(now(), sensor_UV.index()));
 		break;
 	case 4:
 	{
 		// Raw pressure in mb (hectopascals)
 		float pRaw = sensor_PRH.readPressure() / 100;	// Convert Pa to mb (hPa)!
-		d_Pres_mb.addReading(dataPoint(now(), pRaw));
+		d_Pres_mb.addReading(DataPoint(now(), pRaw));
 		break;
 	}
 	case 5:
 	{
 		//float temp = sensor_PRH.readTemperature();
-		d_TempC_for_RH.addReading(dataPoint(now(), sensor_PRH.readTemperature()));
+		d_TempC_for_RH.addReading(DataPoint(now(), sensor_PRH.readTemperature()));
 		break;
 	}
 	case 6:
@@ -321,22 +321,22 @@ void readSensors(int index) {
 			d_Pres_mb.valueLastAdded(),
 			gps.data.altitude(),
 			d_TempC_for_RH.valueLastAdded());
-		d_Pres_seaLvl_mb.addReading(dataPoint(now(), psl));
+		d_Pres_seaLvl_mb.addReading(DataPoint(now(), psl));
 		break;
 	}
 	case 7:
 		// RH
-		d_RH.addReading(dataPoint(now(), sensor_PRH.readHumidity()));
+		d_RH.addReading(DataPoint(now(), sensor_PRH.readHumidity()));
 		break;
 	case 8:
 		// IR sky
-		d_IRSky_C.addReading(dataPoint(now(), sensor_IR.readObjectTempC()));
+		d_IRSky_C.addReading(DataPoint(now(), sensor_IR.readObjectTempC()));
 		break;
 	case 9:
 	{
 		// Insolation/
 		float insol_norm = insol_norm_pct(readInsol_mV(), INSOL_REFERENCE_MAX);
-		d_Insol.addReading(dataPoint(now(), insol_norm));	// % Insolation
+		d_Insol.addReading(DataPoint(now(), insol_norm));	// % Insolation
 		break;
 	}
 	default:
@@ -367,37 +367,37 @@ void readSensors(int index) {
 /// </remarks>
 void readSensors_Simulate() {
 	//#if defined(VM_DEBUG)
-	dataPoint dp;	// holds reading (Values changed and reused for each sensor!)
+	DataPoint dp;	// holds reading (Values changed and reused for each sensor!)
 	// Temperature.
-	dp = dataPoint(now(), dummy_Temp_F.sawtooth(10, 0.02, 20));
+	dp = DataPoint(now(), dummy_Temp_F.sawtooth(10, 0.02, 20));
 	d_TempF.addReading(dp);
 	// UV readings.
-	/*dp = dataPoint(now(), dummy_UVA.linear(3, 0.1));
+	/*dp = DataPoint(now(), dummy_UVA.linear(3, 0.1));
 	d_UVA.addReading(dp);
-	dp = dataPoint(now(), dummy_UVB.linear(3, 0.1));
+	dp = DataPoint(now(), dummy_UVB.linear(3, 0.1));
 	d_UVB.addReading(dp);*/
-	dp = dataPoint(now(), dummy_UVIndex.sawtooth(0, 0.05, 10));
+	dp = DataPoint(now(), dummy_UVIndex.sawtooth(0, 0.05, 10));
 	d_UVIndex.addReading(dp);
 	// P, RH
-	dp = dataPoint(now(), dummy_RH.sawtooth(0, 0.05, 50));
+	dp = DataPoint(now(), dummy_RH.sawtooth(0, 0.05, 50));
 	d_RH.addReading(dp);
-	dp = dataPoint(now(), dummy_Pres_mb.linear(1000, 0.1) / 100);
+	dp = DataPoint(now(), dummy_Pres_mb.linear(1000, 0.1) / 100);
 	d_Pres_mb.addReading(dp);			// Raw pressure in mb (hectopascals)
-	//dp = dataPoint(now(), dummy_Temp_for_RH_C.linear(10, 0.02));
+	//dp = DataPoint(now(), dummy_Temp_for_RH_C.linear(10, 0.02));
 	//d_TempC_for_RH.addReading(dp);		// Temp (C) of P, RH sensor.
 	// P adjusted to sea level.
 	float psl = pressureAtSeaLevel(
 		dummy_Pres_seaLvl_mb.linear(950, 0.01),
 		gps.data.altitude(),
 		25);
-	dp = dataPoint(now(), psl);
+	dp = DataPoint(now(), psl);
 	d_Pres_seaLvl_mb.addReading(dp);
 	// IR sky
-	dp = dataPoint(now(), dummy_IRSky_C.sawtooth(10, 0.02, 20));	// .sawtooth(0, 0.02, 10));
+	dp = DataPoint(now(), dummy_IRSky_C.sawtooth(10, 0.02, 20));	// .sawtooth(0, 0.02, 10));
 	d_IRSky_C.addReading(dp);
 	// Insolation/
 	float insol_norm = insol_norm_pct(dummy_Insol.linear(0, 0.01), INSOL_REFERENCE_MAX);
-	dp = dataPoint(now(), insol_norm);
+	dp = DataPoint(now(), insol_norm);
 	d_Insol.addReading(dp);	// % Insolation
 	//#endif
 }

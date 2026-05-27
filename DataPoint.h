@@ -1,4 +1,4 @@
-// dataPoint.h
+// DataPoint.h
 
 #ifndef _DATAPOINT_h
 #define _DATAPOINT_h
@@ -15,7 +15,7 @@ using std::list;
 /// <summary>
 /// A single data point of (time, value).
 /// </summary>
-struct dataPoint {
+struct DataPoint {
 	unsigned long time;
 	float value;
 
@@ -24,7 +24,7 @@ struct dataPoint {
 	/// </summary>
 	/// <param name="time">Time (seconds since Jan 1 1970).</param>
 	/// <param name="value">Data value.</param>
-	dataPoint(unsigned long time = 0, float value = 0) :
+	DataPoint(unsigned long time = 0, float value = 0) :
 		time(time), value(value)
 	{}
 };

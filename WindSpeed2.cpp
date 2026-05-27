@@ -47,7 +47,7 @@ float WindSpeed::speedInstant(int rotations, unsigned int period)
 /// <param name="speed">(time, value) point to evaluate for gust.</param>
 /// <param name="avgSpeed">Current average wind speed.</param>
 /// <returns>Gust as (time, value) data point.</returns>
-dataPoint WindSpeed::gust(dataPoint speed, float avgSpeed)
+DataPoint WindSpeed::gust(DataPoint speed, float avgSpeed)
 {
 	if (speed.value >= GUST_THRESHOLD &&			// Gust exceeds threshold		
 		(speed.value - avg_now() >= GUST_SPREAD)) {	// Gust exceeds avg by GUST_SPREAD		
@@ -56,7 +56,7 @@ dataPoint WindSpeed::gust(dataPoint speed, float avgSpeed)
 	}
 	else {
 		// Not a gust, so return value of zero.
-		return dataPoint(speed.time, 0);
+		return DataPoint(speed.time, 0);
 	}
 }
 

@@ -64,7 +64,7 @@ public:
 	/// <param name="speed">(time, value) point to evaluate for gust.</param>
 	/// <param name="avgSpeed">Current average wind speed.</param>
 	/// <returns>Gust as (time, value) data point.</returns>
-	dataPoint gust(dataPoint speed, float avgSpeed);
+	DataPoint gust(DataPoint speed, float avgSpeed);
 
 	/// <summary>
 	/// Returns wind speed description in Beaufort 
