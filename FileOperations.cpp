@@ -4,6 +4,7 @@
 
 #include "FileOperations.h"
 #include "Utilities.h"
+#include <freertos/task.h>
 
 /// <summary>
 /// Lists contents of directory.
@@ -182,44 +183,44 @@ bool FileOperations::fileCreateOrExists(fs::FS& fs, const String& path) {
 	}
 }
 
-
-
-// Structure to hold the combined calculations
-struct WindReport {
-	float meanSpeed;
-	float meanDirection;
-	float maxGust;
-};
-
-
-// Create a queue to pass finished 10-min reports to the logging core
-QueueHandle_t logQueue;
-
-void setup() {
-	logQueue = xQueueCreate(10, sizeof(WindReport));
-
-	// Create a background logging task pinned to Core 0
-	xTaskCreatePinnedToCore(
-		loggingTask,    // Function name
-		"LogTask",      // Task name
-		4096,           // Stack size
-		NULL,           // Parameter
-		1,              // Priority
-		NULL,           // Task handle
-		0               // Pin to Core 0 (Main loop runs on Core 1)
-	);
-}
-
-void loggingTask(void* parameter) {
-	WindReport reportToLog;
-	for (;;) {
-		// This halts efficiently until Core 1 pushes a new report into the queue
-		if (xQueueReceive(logQueue, &reportToLog, portMAX_DELAY)) {
-			File file = LittleFS.open("/wind_log.csv", FILE_APPEND);
-			if (file) {
-				file.printf("%f,%f,%f\n", reportToLog.meanSpeed, reportToLog.meanDirection, reportToLog.maxGust);
-				file.close(); // The 350ms delay happens here, safely isolated on Core 0
-			}
-		}
-	}
-}
+//// Preliminary code for offloading LittleFS writes to 2nd core
+//
+//// Structure to hold the combined calculations
+//struct WindStruct_XXX {
+//	float meanSpeed;
+//	float meanDirection;
+//	float maxGust;
+//};
+//
+//
+//// Create a queue to pass finished 10-min reports to the logging core
+//QueueHandle_t logQueue;
+//
+//void setupQueue() {
+//	logQueue = xQueueCreate(10, sizeof(WindStruct_XXX));
+//
+//	// Create a background logging task pinned to Core 0
+//	xTaskCreatePinnedToCore(
+//		loggingTask,    // Function name
+//		"LogTask",      // Task name
+//		4096,           // Stack size
+//		NULL,           // Parameter
+//		1,              // Priority
+//		NULL,           // Task handle
+//		0               // Pin to Core 0 (Main loop runs on Core 1)
+//	);
+//}
+//
+//void loggingTask(void* parameter) {
+//	WindStruct_XXX dataToLog;
+//	for (;;) {
+//		// This halts efficiently until Core 1 pushes a new report into the queue
+//		if (xQueueReceive(logQueue, &dataToLog, portMAX_DELAY)) {
+//			File file = LittleFS.open("/wind_log.csv", FILE_APPEND);
+//			if (file) {
+//				file.printf("%f,%f,%f\n", dataToLog.meanSpeed, dataToLog.meanDirection, dataToLog.maxGust);
+//				file.close(); // The 350ms delay happens here, safely isolated on Core 0
+//			}
+//		}
+//	}
+//}
