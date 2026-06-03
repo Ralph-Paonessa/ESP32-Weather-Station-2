@@ -1,5 +1,5 @@
 /*
-FileOperations.h
+FileOps.h
 
 Exposes file operations for FS.h. These are
 used with both SD cards and LittleFS.
@@ -26,7 +26,7 @@ using namespace Utilities;
 /// <summary>
 /// Exposes methods that operate on files.
 /// </summary>
-namespace FileOperations {
+namespace FileOps {
 
 	/// <summary>
 	/// Lists contents of directory.

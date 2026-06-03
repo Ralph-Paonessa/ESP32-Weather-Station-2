@@ -12,7 +12,7 @@
 /// <param name="fs">File system.</param>
 /// <param name="dirname">Path of the directory.</param>
 /// <param name="levels">Number of levels to list.</param>
-void FileOperations::dirList(fs::FS& fs, const char* dirname, uint8_t levels) {
+void FileOps::dirList(fs::FS& fs, const char* dirname, uint8_t levels) {
 	Serial.printf("Listing directory: %s\n", dirname);
 
 	File root = fs.open(dirname);
@@ -43,7 +43,7 @@ void FileOperations::dirList(fs::FS& fs, const char* dirname, uint8_t levels) {
 	}
 }
 
-void FileOperations::dirCreate(fs::FS& fs, const char* path) {
+void FileOps::dirCreate(fs::FS& fs, const char* path) {
 	Serial.printf("Creating Dir: %s\n", path);
 	if (fs.mkdir(path)) {
 		Serial.println("Dir created.");
@@ -53,7 +53,7 @@ void FileOperations::dirCreate(fs::FS& fs, const char* path) {
 	}
 }
 
-void FileOperations::dirRemove(fs::FS& fs, const char* path) {
+void FileOps::dirRemove(fs::FS& fs, const char* path) {
 	Serial.printf("Removing Dir: %s\n", path);
 	if (fs.rmdir(path)) {
 		Serial.println("Dir removed.");
@@ -70,7 +70,7 @@ void FileOperations::dirRemove(fs::FS& fs, const char* path) {
 /// <param name="path">Target file path, such as "/readings/data.txt".
 /// </param>
 /// <returns>String containing file contents.</returns>
-String FileOperations::fileRead(fs::FS& fs, const char* path) {
+String FileOps::fileRead(fs::FS& fs, const char* path) {
 
 	if (!fs.exists(path)) {
 		Serial.printf("ERROR: file not found: %s\n", path);
@@ -95,35 +95,35 @@ String FileOperations::fileRead(fs::FS& fs, const char* path) {
 }
 
 
-void FileOperations::fileWrite(fs::FS& fs, const char* path, const char* msg) {
+void FileOps::fileWrite(fs::FS& fs, const char* path, const char* msg) {
 
 	File file = fs.open(path, FILE_WRITE);
 	if (!file) {
-		Serial.print("ERROR: FileOperations::fileWrite Failed to open file for writing: ");
+		Serial.print("ERROR: FileOps::fileWrite Failed to open file for writing: ");
 		Serial.println(path);
 		return;
 	}
 	if (file.print(msg)) {
-		serial_println_DEBUG("FileOperations::fileWrite to file ", path);
+		serial_println_DEBUG("FileOps::fileWrite to file ", path);
 		serial_println_DEBUG("write msg = ", msg);
 	}
 	else {
-		Serial.print("ERROR: FileOperations::fileWrite Write failed: ");
+		Serial.print("ERROR: FileOps::fileWrite Write failed: ");
 		Serial.println(path);
 	}
 	file.close();
 }
 
-void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* msg) {
+void FileOps::fileAppend(fs::FS& fs, const char* path, const char* msg) {
 	File file = fs.open(path, FILE_APPEND);
 	if (!file) {
-		Serial.print("ERROR: FileOperations::fileAppend failed to open file ");
+		Serial.print("ERROR: FileOps::fileAppend failed to open file ");
 		Serial.println(path);
 		return;		// file did not open!
 	}
 	// File opened. Append msg.
 	if (file.print(msg)) {
-		/*serial_println_DEBUG("FileOperations::fileAppend to file ", path);
+		/*serial_println_DEBUG("FileOps::fileAppend to file ", path);
 		serial_println_DEBUG("append msg = ", msg); */
 	}
 	else {
@@ -133,7 +133,7 @@ void FileOperations::fileAppend(fs::FS& fs, const char* path, const char* msg) {
 	file.close();
 }
 
-void FileOperations::fileRename(fs::FS& fs, const char* path1, const char* path2) {
+void FileOps::fileRename(fs::FS& fs, const char* path1, const char* path2) {
 	Serial.printf("Renaming file %s to %s.\n", path1, path2);
 	if (fs.rename(path1, path2)) {
 		Serial.println("File renamed.");
@@ -144,7 +144,7 @@ void FileOperations::fileRename(fs::FS& fs, const char* path1, const char* path2
 	}
 }
 
-void FileOperations::fileDelete(fs::FS& fs, const char* path) {
+void FileOps::fileDelete(fs::FS& fs, const char* path) {
 	Serial.printf("Deleting file: %s\n", path);
 	if (fs.remove(path)) {
 		Serial.println("File deleted.");
@@ -163,7 +163,7 @@ void FileOperations::fileDelete(fs::FS& fs, const char* path) {
 /// <param name="fs">File system to use.</param>
 /// <param name="path">Full path including the filename and extension.</param>
 /// <returns>True on success</returns>
-bool FileOperations::fileCreateOrExists(fs::FS& fs, const String& path) {
+bool FileOps::fileCreateOrExists(fs::FS& fs, const String& path) {
 	// If the file doesn't exist, create it.
 	if (fs.exists(path)) {
 		Serial.printf("File %s exists.\n", path.c_str());
