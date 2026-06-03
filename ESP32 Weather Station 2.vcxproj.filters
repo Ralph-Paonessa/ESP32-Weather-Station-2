@@ -126,6 +126,9 @@
     <ClInclude Include="WiFiTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DebugFlags.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="board XXX IS THIS OK.txt">

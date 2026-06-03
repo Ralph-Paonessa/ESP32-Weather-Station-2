@@ -10,7 +10,7 @@ bool _isChart_max_min = false;	// True when chart from server is max/min.
 /// <summary>
 /// Defines uri routes for async web server.
 /// </summary>
-void serverRouteHandler() {
+void createServerRouteHandler() {
 	/*
 	Configure url routes where server will be listening. Route in url
 	is: "http://[ IP Address ][Route]",	such as [Route]= "/data".
@@ -72,7 +72,7 @@ void serverRouteHandler() {
 	*/
 
 #if defined(VM_DEBUG)
-	if (!_isDEBUG_BypassWebServer) {
+	if (!isDEBUG_BypassWebServer) {
 #endif
 		// Set cache for static files.
 		// css
@@ -260,31 +260,31 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", "");
 					break;
 				case CHART_INSOLATION:
-					request->send(200, "text/plain", d_Insol.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", d_Insol.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_IR_SKY:
-					request->send(200, "text/plain", d_IRSky_C.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", d_IRSky_C.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_TempF.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", d_TempF.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
-					request->send(200, "text/plain", d_Pres_seaLvl_mb.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", d_Pres_seaLvl_mb.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_RELATIVE_HUMIDITY:
-					request->send(200, "text/plain", d_RH.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", d_RH.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_UV_INDEX:
-					request->send(200, "text/plain", d_UVIndex.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", d_UVIndex.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_WIND_DIRECTION:
-					request->send(200, "text/plain", windDir.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", windDir.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_WIND_SPEED:
-					request->send(200, "text/plain", windSpeed.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", windSpeed.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_WIND_GUST:
-					request->send(200, "text/plain", windGust.getData_10_min_as_String().c_str());
+					request->send(200, "text/plain", windGust.dataPoints_10_min_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");
@@ -306,31 +306,31 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", "");
 					break;
 				case CHART_INSOLATION:
-					request->send(200, "text/plain", d_Insol.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", d_Insol.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_IR_SKY:
-					request->send(200, "text/plain", d_IRSky_C.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", d_IRSky_C.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_TempF.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", d_TempF.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
-					request->send(200, "text/plain", d_Pres_seaLvl_mb.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", d_Pres_seaLvl_mb.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_RELATIVE_HUMIDITY:
-					request->send(200, "text/plain", d_RH.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", d_RH.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_UV_INDEX:
-					request->send(200, "text/plain", d_UVIndex.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", d_UVIndex.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_WIND_DIRECTION:
-					request->send(200, "text/plain", windDir.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", windDir.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_WIND_SPEED:
-					request->send(200, "text/plain", windSpeed.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", windSpeed.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_WIND_GUST:
-					request->send(200, "text/plain", windGust.getData_60_min_as_String().c_str());
+					request->send(200, "text/plain", windGust.dataPoints_60_min_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");
@@ -352,31 +352,31 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", "");
 					break;
 				case CHART_INSOLATION:
-					request->send(200, "text/plain", d_Insol.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", d_Insol.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_IR_SKY:
-					request->send(200, "text/plain", d_IRSky_C.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", d_IRSky_C.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_TempF.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", d_TempF.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
-					request->send(200, "text/plain", d_Pres_seaLvl_mb.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", d_Pres_seaLvl_mb.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_RELATIVE_HUMIDITY:
-					request->send(200, "text/plain", d_RH.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", d_RH.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_UV_INDEX:
-					request->send(200, "text/plain", d_UVIndex.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", d_UVIndex.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 					/*case CHART_WIND_DIRECTION:
 						request->send(200, "text/plain", windDir.data_max_min_string_delim().c_str());
 						break;*/
 				case CHART_WIND_SPEED:
-					request->send(200, "text/plain", windSpeed.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", windSpeed.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_WIND_GUST:
-					request->send(200, "text/plain", windGust.getData_dayMaxMin_as_String().c_str());
+					request->send(200, "text/plain", windGust.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");
@@ -395,31 +395,31 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", "");
 					break;
 				case CHART_INSOLATION:
-					request->send(200, "text/plain", d_Insol.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", d_Insol.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_IR_SKY:
-					request->send(200, "text/plain", d_IRSky_C.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", d_IRSky_C.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					request->send(200, "text/plain", d_TempF.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", d_TempF.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
-					request->send(200, "text/plain", d_Pres_seaLvl_mb.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", d_Pres_seaLvl_mb.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_RELATIVE_HUMIDITY:
-					request->send(200, "text/plain", d_RH.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", d_RH.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_UV_INDEX:
-					request->send(200, "text/plain", d_UVIndex.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", d_UVIndex.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_WIND_DIRECTION:
-					request->send(200, "text/plain", windDir.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", windDir.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_WIND_SPEED:
-					request->send(200, "text/plain", windSpeed.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", windSpeed.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_WIND_GUST:
-					request->send(200, "text/plain", windGust.getData_dayMax_as_String().c_str());
+					request->send(200, "text/plain", windGust.dataPoints_dayMax_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");
@@ -438,32 +438,32 @@ void serverRouteHandler() {
 					request->send(200, "text/plain", "");
 					break;
 				case CHART_INSOLATION:
-					request->send(200, "text/plain", d_Insol.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", d_Insol.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_IR_SKY:
-					request->send(200, "text/plain", d_IRSky_C.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", d_IRSky_C.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
-					//request->send(200, "text/plain", d_TempF.getData_dayMin_as_String().c_str());
-					request->send(200, "text/plain", d_TempF.getData_dayMin_as_String().c_str());
+					//request->send(200, "text/plain", d_TempF.dataPoints_dayMin_as_String().c_str());
+					request->send(200, "text/plain", d_TempF.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_PRESSURE_SEA_LEVEL:
-					request->send(200, "text/plain", d_Pres_seaLvl_mb.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", d_Pres_seaLvl_mb.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_RELATIVE_HUMIDITY:
-					request->send(200, "text/plain", d_RH.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", d_RH.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_UV_INDEX:
-					request->send(200, "text/plain", d_UVIndex.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", d_UVIndex.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_WIND_DIRECTION:
-					request->send(200, "text/plain", windDir.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", windDir.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_WIND_SPEED:
-					request->send(200, "text/plain", windSpeed.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", windSpeed.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_WIND_GUST:
-					request->send(200, "text/plain", windGust.getData_dayMin_as_String().c_str());
+					request->send(200, "text/plain", windGust.dataPoints_dayMin_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");

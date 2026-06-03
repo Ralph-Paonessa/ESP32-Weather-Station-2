@@ -323,7 +323,7 @@ void SDCard::logLittleFsSpaceUsage() {
 void SDCard::logApp_Settings() {
 	String msg = "APP SETTINGS:";
 	logStatus(msg);
-	msg = "BASE_PERIOD_SEC: " + String(BASE_PERIOD_SEC);
+	msg = "ANEM_READ_PERIOD_SEC: " + String(ANEM_READ_PERIOD_SEC);
 	msg += " sec";
 	logStatus_indent(msg);
 	msg = "GPS_CYCLES_FOR_SYNC: " + String(GPS_CYCLES_FOR_SYNC);

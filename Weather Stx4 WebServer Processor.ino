@@ -73,7 +73,7 @@ String processor(const String& var) {
 		return String(d_RH.avg_now(), 0);
 	}
 	if (var == "UV_A") {
-		if (_isGood_UV) {
+		if (isGood_UV) {
 			return String(d_UVA.avg_now(), 0);
 		}
 		else {
@@ -81,7 +81,7 @@ String processor(const String& var) {
 		}
 	}
 	if (var == "UV_B") {
-		if (_isGood_UV) {
+		if (isGood_UV) {
 			return String(d_UVB.avg_now(), 0);
 		}
 		else {
@@ -89,7 +89,7 @@ String processor(const String& var) {
 		}
 	}
 	if (var == "UV_INDEX") {
-		//if (_isGood_UV) {
+		//if (isGood_UV) {
 		return String(d_UVIndex.avg_now(), 1);
 		//}
 		//else {
@@ -124,7 +124,7 @@ String processor(const String& var) {
 		return String(d_RH.max_today_dp().value, 0);
 	}
 	if (var == "UV_A_HI") {
-		if (_isGood_UV) {
+		if (isGood_UV) {
 			return String(d_UVA.max_today_dp().value, 0);
 		}
 		else {
@@ -132,7 +132,7 @@ String processor(const String& var) {
 		}
 	}
 	if (var == "UV_B_HI") {
-		if (_isGood_UV) {
+		if (isGood_UV) {
 			return String(d_UVB.max_today_dp().value, 0);
 		}
 		else {
@@ -140,7 +140,7 @@ String processor(const String& var) {
 		}
 	}
 	if (var == "UV_INDEX_HI") {
-		if (_isGood_UV) {
+		if (isGood_UV) {
 			return String(d_UVIndex.max_today_dp().value, 1);
 		}
 		else {

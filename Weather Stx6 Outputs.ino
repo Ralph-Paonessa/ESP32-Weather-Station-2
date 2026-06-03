@@ -9,7 +9,7 @@ void printHeader() {
 	Serial.println(LINE_SEPARATOR);
 	Serial.println(F("ESP32 WEATHER STATION"));
 	Serial.print(F("  Speed sampling interval = "));
-	Serial.print(BASE_PERIOD_SEC, 2); Serial.println(F(" sec."));
+	Serial.print(ANEM_READ_PERIOD_SEC, 2); Serial.println(F(" sec."));
 	Serial.println(LINE_SEPARATOR);
 #endif
 }
@@ -53,7 +53,7 @@ String sensorsDataString_current() {
 	// Solar (1)
 	s += "\t" + String(d_Insol.valueLastAdded());			// PV solar cell %
 	// UV (3)
-	if (_isGood_UV) {
+	if (isGood_UV) {
 		s += "\t" + String(d_UVA.valueLastAdded());
 		s += "\t" + String(d_UVB.valueLastAdded());
 		s += "\t" + String(d_UVIndex.valueLastAdded());		// Scale 0-10+
@@ -102,7 +102,7 @@ String sensorsDataString_10_min() {
 	// Solar (1)
 	s += "\t" + String(d_Insol.avg_10_min());			// PV solar cell mV
 	// UV (3)
-	if (_isGood_UV) {
+	if (isGood_UV) {
 		s += "\t" + String(d_UVA.avg_10_min());
 		s += "\t" + String(d_UVB.avg_10_min());
 		s += "\t" + String(d_UVIndex.avg_10_min());		// Scale 0-10+
@@ -176,7 +176,7 @@ void PrintSensorOutputs() {
 	// Use the uva, uvb, and index functions to
 	// read calibrated UVA and UVB values and a
 	// calculated UV index value between 0-11.
-	if (_isGood_UV) {
+	if (isGood_UV) {
 		Serial.print(d_UVA.valueLastAdded()); Serial.print(F("\t"));
 		Serial.print(d_UVB.valueLastAdded()); Serial.print(F("\t"));
 		Serial.print(d_UVIndex.valueLastAdded()); Serial.print(F("\t\t"));

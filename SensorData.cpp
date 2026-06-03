@@ -215,7 +215,7 @@ void SensorData::process_data_10_min() {
 	if (_isDatafile) {
 		fileWrite(LittleFS,
 			_sensorFilepath("_10_min").c_str(),
-			getData_10_min_as_String().c_str());
+			dataPoints_10_min_as_String().c_str());
 	}
 	_clear_10_min();	// Start another 10-min period.
 }
@@ -234,7 +234,7 @@ void SensorData::process_data_60_min() {
 	if (_isDatafile) {
 		fileWrite(LittleFS,
 			_sensorFilepath("_60_min").c_str(),
-			getData_60_min_as_String().c_str());
+			dataPoints_60_min_as_String().c_str());
 	}
 }
 
@@ -252,7 +252,7 @@ void SensorData::process_data_day() {
 	if (_isDatafile) {
 		fileWrite(LittleFS,
 			_sensorFilepath("_dayMaxMin").c_str(),
-			getData_dayMaxMin_as_String().c_str());
+			dataPoints_dayMaxMin_as_String().c_str());
 	}
 }
 
@@ -273,9 +273,9 @@ void SensorData::recover_data_10_min_from_file() {
 	// Get 10-min data from file system and place in memory.
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
-		String delim = fileRead(LittleFS, _sensorFilepath("_10_min").c_str());
-		serial_println_DEBUG("SensorData::recover_data_10_min_from_file: " + _filenamePrefix + " :", delim.c_str());
-		_dataPoints_10_min = getDataPoints_from_String(delim);
+		String str = fileRead(LittleFS, _sensorFilepath("_10_min").c_str());
+		serial_println_DEBUG("In SensorData::recover_data_10_min_from_file with prefix = " + _filenamePrefix + ":\n", str.c_str());
+		_dataPoints_10_min = getDataPoints_from_String(str);
 	}
 }
 
@@ -288,9 +288,9 @@ void SensorData::recover_data_60_min_from_file() {
 	// Get 10-min data from file system and place in memory.
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
-		String delim = fileRead(LittleFS, _sensorFilepath("_60_min").c_str());
-		serial_println_DEBUG("SensorData::recover_data_60_min_from_file: " + _filenamePrefix + " :", delim.c_str());
-		_dataPoints_60_min = getDataPoints_from_String(delim);
+		String str = fileRead(LittleFS, _sensorFilepath("_60_min").c_str());
+		serial_println_DEBUG("SensorData::recover_data_60_min_from_file with prefix = " + _filenamePrefix + ":\n", str.c_str());
+		_dataPoints_60_min = getDataPoints_from_String(str);
 	}
 }
 
@@ -303,9 +303,9 @@ void SensorData::recover_data_dayMaxMin_from_file() {
 	// Get 10-min data from file system and place in memory.
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
-		String delim = fileRead(LittleFS, _sensorFilepath("_10_min").c_str());
-		serial_println_DEBUG("SensorData::recover_data_dayMaxMin_from_file: " + _filenamePrefix + " :", delim.c_str());
-		list<String> parts = getStringList_from_String(delim, '|');
+		String str = fileRead(LittleFS, _sensorFilepath("_10_min").c_str());
+		serial_println_DEBUG("SensorData::recover_data_dayMaxMin_from_file with prefix = " + _filenamePrefix + ":\n", str.c_str());
+		list<String> parts = getStringList_from_String(str, '|');
 		int index = 0;
 		for (list<String>::iterator it = parts.begin(); it != parts.end(); ++it) {
 			String s = *it;
@@ -337,7 +337,7 @@ void SensorData::recover_data_dayMaxMin_from_file() {
 /// Returns list of 10-min dataPoints as delimited string.
 /// </summary>
 /// <returns>List of 10-min dataPoints as delimited string.</returns>
-String SensorData::getData_10_min_as_String() {
+String SensorData::dataPoints_10_min_as_String() {
 	return getString_from_List(_dataPoints_10_min,
 		_isConvertZeroToEmpty,
 		_decimalPlaces);
@@ -346,7 +346,7 @@ String SensorData::getData_10_min_as_String() {
 /// Returns list of 60-min dataPoints as delimited string.
 /// </summary>
 /// <returns>List of 60-min dataPoints as delimited string.</returns>
-String SensorData::getData_60_min_as_String() {
+String SensorData::dataPoints_60_min_as_String() {
 	return 	getString_from_List(_dataPoints_60_min,
 		_isConvertZeroToEmpty,
 		_decimalPlaces);
@@ -361,7 +361,7 @@ String SensorData::getData_60_min_as_String() {
 /// Delimited string of max and min (time, value) lists, 
 /// separated by "|". For some sensors, only returns 
 /// maxima without "|".</returns>
-String SensorData::getData_dayMaxMin_as_String()
+String SensorData::dataPoints_dayMaxMin_as_String()
 {
 	if (!_isReportDayMaxOnly) {
 		return getString_from_List(
@@ -383,7 +383,7 @@ String SensorData::getData_dayMaxMin_as_String()
 /// Returns list of daily maxima dataPoints as delimited string.
 /// </summary>
 /// <returns>List of maxima dataPoints as delimited string.</returns>
-String SensorData::getData_dayMax_as_String() {
+String SensorData::dataPoints_dayMax_as_String() {
 	return 	getString_from_List(_dataPoints_dayMax,
 		_isConvertZeroToEmpty,
 		_decimalPlaces);
@@ -393,7 +393,7 @@ String SensorData::getData_dayMax_as_String() {
 /// Returns list of minima dataPoints as delimited string.
 /// </summary>
 /// <returns>List of minima dataPoints as delimited string.</returns>
-String SensorData::getData_dayMin_as_String() {
+String SensorData::dataPoints_dayMin_as_String() {
 	return 	getString_from_List(_dataPoints_dayMin,
 		_isConvertZeroToEmpty,
 		_decimalPlaces);
@@ -709,6 +709,17 @@ String SensorData::units() {
 /// <returns>String</returns>
 String SensorData::units_html() {
 	return _units_html;
+}
+
+// <summary>
+/// Returns true if sensor is configured to report 
+/// only daily maximum and not minimum.
+/// </summary>
+/// <returns>True if sensor is configured to report 
+/// only daily maximum.</returns>
+bool SensorData::isReportDayMaxOnly()
+{
+	return _isReportDayMaxOnly;
 }
 
 /// <summary>

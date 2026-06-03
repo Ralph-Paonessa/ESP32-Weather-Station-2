@@ -23,20 +23,20 @@ float outlierDelta*/
 }
 
 /// <summary>
-/// Returns wind speed from anemometer rotations.
+/// Returns wind speed from anemometer rotations_VOL.
 /// </summary>
-/// <param name="rotations"> Number of rotations.</param>
-/// <param name="period">Time period of rotations, sec.</param>
+/// <param name="rotations_VOL"> Number of rotations_VOL.</param>
+/// <param name="period">Time period of rotations_VOL, sec.</param>
 /// <returns>Wind speed, mph</returns>
-float WindSpeed::speedInstant(int rotations, unsigned int period)
+float WindSpeed::speedInstant(int rotations_VOL, unsigned int period)
 {
 	/*************************************************************
 	Davis anemometer formula:
-		speed = rotations * 2.25 / time		[from Davis spec].
+		speed = rotations_VOL * 2.25 / time		[from Davis spec].
 			where
-			time = time during which rotations are counted (sec).
+			time = time during which rotations_VOL are counted (sec).
 	*************************************************************/
-	return rotations * _calibrationFactor / period;
+	return rotations_VOL * _calibrationFactor / period;
 }
 
 /// <summary>

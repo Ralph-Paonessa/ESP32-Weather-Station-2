@@ -86,8 +86,8 @@ namespace Utilities {
 	/// Returns fan rpm from half-rotation count over 
 	/// time period, for fan with 2 counts/rotation.
 	/// </summary>
-	/// <param name="countHalfRots">Count of half-rotations.</param>
-	/// <param name="periodOfRotation">Period of rotations (sec).</param>
+	/// <param name="countHalfRots">Count of half-rotations_VOL.</param>
+	/// <param name="periodOfRotation">Period of rotations_VOL (sec).</param>
 	/// <returns>Fan rpm.</returns>
 	float fanRPM(int countHalfRots, unsigned int periodOfRotation);
 

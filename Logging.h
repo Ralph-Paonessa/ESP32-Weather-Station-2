@@ -27,9 +27,9 @@
 //	bool _isDaylightTime;
 //	bool _wiFi_isConnected;
 //	int _gpsTimeZoneOffset;
-//	bool _isGood_SDCard;
+//	bool isGood_SDCard;
 //	bool _isGood_LittleFS;
-//	bool _isGood_GPS;
+//	bool isGood_GPS;
 //	bool _isGood_Temp;
 //	bool _isGood_PRH;
 //	bool _isGood_UV;
@@ -53,9 +53,9 @@
 //		bool isDaylightTime, 
 //		bool wiFi_isConnected, 
 //		int gpsTimeZoneOffset, 
-//		bool _isGood_SDCard,
+//		bool isGood_SDCard,
 //		bool _isGood_LittleFS,
-//		bool _isGood_GPS,
+//		bool isGood_GPS,
 //		bool _isGood_Temp,
 //		bool _isGood_PRH,
 //		bool _isGood_UV);

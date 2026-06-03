@@ -24,7 +24,7 @@ using namespace DataPoint_Lists;
 #include "SensorData.h"
 
 #include "FileOperations.h"	
-using namespace FileOperations;
+using namespace FileOps;
 
 class Testing {
 
@@ -66,7 +66,7 @@ public:
 	////void testList();
 	void testStructList(long time);
 
-	// Add a list of rotations to a WindSpeed instance, and return elapsed seconds.
+	// Add a list of rotations_VOL to a WindSpeed instance, and return elapsed seconds.
 	float addDummyRotations(list<float> srcList, WindSpeed& speedObj, float rawPeriod);
 
 	//void test();

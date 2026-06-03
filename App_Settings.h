@@ -15,6 +15,10 @@
 /// Exposes parameters for weather station.
 /// </summary>
 namespace App_Settings {
+
+	/*****************      OPTION FLAGS      ******************/
+	constexpr bool isRECOVER_FILESYS_DATA = true;			// Recover data from file system.
+
 	constexpr unsigned int	SECONDS_PER_MINUTE = 60;
 	constexpr unsigned int	MINUTES_PER_HOUR = 60;
 	constexpr unsigned int	MILLISEC_PER_SECOND = 1000;
@@ -26,7 +30,9 @@ namespace App_Settings {
 	constexpr unsigned long MILLISECONDS_PER_MINUTE = MILLISEC_PER_SECOND * SECONDS_PER_MINUTE;		// 60,000 ms
 	constexpr float			DEGREES_PER_RADIAN = 57.2957795130823;	// Degrees in 1 radian.
 
-	constexpr unsigned int	BASE_PERIOD_SEC = 4; // Period to sample anemometer rots. Current default 4 sec.
+	constexpr unsigned int	ANEM_READ_PERIOD_SEC = 4; // Period to sample anemometer rots. Current default 4 sec.
+	constexpr unsigned int	FAN_READ_PERIOD_SEC = 100; // Period to sample radiation shield fan half-rots. Current default 60 sec.
+	constexpr unsigned int	SENSOR_READ_PERIOD_SEC = 60; // Period to sample radiation shield fan half-rots. Current default 60 sec.
 
 	constexpr unsigned int	DATA_RECOVERY_10_MIN_AGE_LIMIT = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than this.
 	constexpr unsigned int	DATA_RECOVERY_60_MIN_AGE_LIMIT = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than this.
@@ -53,16 +59,17 @@ namespace App_Settings {
 
 	constexpr unsigned int	FAN_DUTY_PERCENT = 30;		// PWM duty cycle for fan speed.
 
-	constexpr int	COUNT_SENSORS_TO_READ = 9;			// No. sensors to read in readSensors(index).
+	constexpr int	COUNT_SENSORS_TO_READ = 9;			// No. sensors to read in readSensor_by_index(index).
+	constexpr int	COUNT_SENSORS_TO_PROCESS = 11;		// No. sensors to process at longer intervals.
 	const String	SENSOR_DATA_DIR_PATH = "/Sensor data";	// Absolute path to sensor data files directory.
 	const String	SENSOR_DATA_TIME_FILE_PATH = "/Sensor data/last_time.txt";	// Absolute path to sensor read time file.
 	constexpr int	DATA_FILE_BUFFER_SIZE = 1024;		// Size of buffer when reading a readings data file from file sys.
 	const String	LOGFILE_PATH_DATA = "/data.txt";	// Data file path on SD card.
 	const String	LOGFILE_PATH_STATUS = "/log.txt";	// Log file path on SD card.
 
-	const String	LINE_SEPARATOR_LOG_BEGINS = "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
-	const String	LINE_SEPARATOR_MAJOR = "=======================================";
-	const String	LINE_SEPARATOR = "-----------------------------------";
+	const String	LINE_SEPARATOR_LOG_BEGINS = "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
+	const String	LINE_SEPARATOR_MAJOR = "==================================";
+	const String	LINE_SEPARATOR = "------------------------------";
 
 	/*
 	ESTIMATE of max. achievable insolation, for
@@ -72,24 +79,17 @@ namespace App_Settings {
 	Reset to 1500 in Sept., which would have given 85% max.
 	in June, close to the summer solstice.
 	*/
+
 	constexpr float			INSOL_REFERENCE_MAX = 1500;			// Estimated maximum insolation, mV
 	constexpr float			DAVIS_SPEED_CAL_FACTOR = 2.25;		// WindSpeed calibration factor for Davis anemometer.
+	constexpr unsigned int	DAVIS_ANEM_DEBOUNCE_TIMEOUT_MS = 15;// Debounce timeout (millisec)
 	constexpr float			VANE_OFFSET = 0;					// Degrees that wind direction reading exceeds north.
 	constexpr float			WIND_DIR_SPEED_THRESHOLD = 1;		// WindSpeed below which wind direction is not reported.
 	constexpr float			WIND_SPEED_OUTLIER_DELTA = 10;		// Factor applied to moving avg for outlier comparison
 	constexpr unsigned int	WIND_SPEEDS_IN_MOVING_AVG = 5;		// no. of speeds for moving avg.
 
 	constexpr unsigned int	LOOP_TIME_WARN_THRESHOLD_MS = 120;	// threshold for reporting long loop cycle.
-
-	/// <summary>
-	/// Enumerate lists of sensor data of different periods.
-	/// </summary>
-	enum dataPeriod {
-		PERIOD_10_MIN,	// 10-minute period
-		PERIOD_60_MIN,	// 60-minute period
-		PERIOD_DAY		// 24-hour period
-	};
-
+		
 	/// <summary>
 	/// Max size of data lists.
 	/// </summary>
@@ -97,15 +97,6 @@ namespace App_Settings {
 		SIZE_10_MIN_LIST = 24,	// Max. no. of 10-min readings in that list. (At least 6 needed for 60-min avg)!
 		SIZE_60_MIN_LIST = 24,	// Max. no. of 60-min readings in that list. (At least 12 needed for 12-hr avg)!
 		SIZE_DAY_LIST = 30		// Max. no. of daily readings in list. (Hold data for 30 days.)
-	};
-
-	/// <summary>
-	/// The number of base periods in a report interval. (Assume 4s BASE_PERIOD_SEC)
-	/// </summary>
-	enum BasePeriodsInInterval {
-		BASE_PERIODS_IN_10_MIN = 10 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC,	// No. of Base Periods in 10 minutes.
-		BASE_PERIODS_IN_60_MIN = 60 * SECONDS_PER_MINUTE / BASE_PERIOD_SEC,	// No. of Base Periods in 60 minutes.
-		BASE_PERIODS_IN_24_HR = 24 * SECONDS_PER_HOUR / BASE_PERIOD_SEC		// No. of Base Periods in 24 hours.
 	};
 
 	/// <summary>

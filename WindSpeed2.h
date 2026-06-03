@@ -28,7 +28,7 @@ class WindSpeed : public SensorData {	// Inherits SensorData.
 
 private:
 
-	float _calibrationFactor;			// Anemometer calibration factor to convert rotations to speed.
+	float _calibrationFactor;			// Anemometer calibration factor to convert rotations_VOL to speed.
 
 	// For identification of gusts.
 	static constexpr float GUST_THRESHOLD = 18.41;	// WindSpeed must exceed this to be a gust.
@@ -49,12 +49,12 @@ public:
 		//float outlierDelta = 1.75);		// Overload of SensorData.
 
 	/// <summary>
-	/// Returns wind speed from anemometer rotations.
+	/// Returns wind speed from anemometer rotations_VOL.
 	/// </summary>
-	/// <param name="rotations"> Number of rotations.</param>
-	/// <param name="period">Time period of rotations, sec.</param>
+	/// <param name="rotations_VOL"> Number of rotations_VOL.</param>
+	/// <param name="period">Time period of rotations_VOL, sec.</param>
 	/// <returns>Wind speed, mph</returns>
-	float speedInstant(int rotations, unsigned int period);
+	float speedInstant(int rotations_VOL, unsigned int period);
 
 	/// <summary>
 	/// Checks for and returns a gust datPoint if the speed satisfies 

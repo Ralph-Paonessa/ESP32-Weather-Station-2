@@ -4,7 +4,7 @@ Custom weather station control software.
 
 Ralph Paonessa
 August 10, 2022
-Rev. May 5, 2026
+Rev. May 29, 2026
 ******************************************/
 
 // ========  ESP32 Libraries  ================  
@@ -12,18 +12,18 @@ Rev. May 5, 2026
 #include <TimeLib.h>
 #include "WiFiTools.h"
 #include <Arduino.h>
-#include "freertos/FreeRTOS.h"	// for delay in loop???
 #include <ESPAsyncWebServer.h>
 
 // ========  Custom Libraries  ================  
 
 #include "App_settings.h"
+#include "DebugFlags.h"
 using namespace App_Settings;
 #include "PinAssignments.h"
 #include "Utilities.h"
 using namespace Utilities;
 #include "FileOperations.h"
-using namespace FileOperations;
+using namespace FileOps;
 #include "GPSModule.h"
 #include "SDCard.h"
 //#include "DataPoint.h"
@@ -31,28 +31,8 @@ using namespace FileOperations;
 #include "WindSpeed2.h"
 #include "WindDirection.h"
 
-/*****************      OPTION FLAGS      ******************/
-
-const bool isRECOVER_FILESYS_DATA = false;			// Recover data from file system.
-
-/*****************      DEBUGGING FLAGS      ******************/
-
-const bool _isDEBUG_BypassGPS = true;				// Bypass gps syncing.
-const bool _isDEBUG_BypassWifi = false;				// Bypass WiFi connect.	 XXX FAILS!!!
-const bool _isDEBUG_BypassSDCard = false;			// Bypass SD card.
-const bool _isDEBUG_ListLittleFS = true;			// List contents of LittleFS.
-const bool _isDEBUG_BypassWebServer = false;		// Bypass Web Server.
-const bool _isDEBUG_run_test_in_setup = true;		// Run only test code inserted in Setup.
-const bool _isDEBUG_run_test_in_loop = false;		// Run test code inserted in Loop.
-const bool _isDEBUG_addDummyDataLists = false;		// Add dummy data.
-const bool _isDEBUG_simulateSensorReadings = false;	// Add dummy sensor reading values.
-const bool _isDEBUG_simulateWindReadings = false;	// Add dummy wind reading values.
-const bool _isDEBUG_AddDelayInLoop = false;			// Add delay in loop.
-const int _LOOP_DELAY_DEBUG_ms = 100;				// Debug delay in loop, msec.
-
-
 // ==========   SD card module   ==================== //
-SDCard sd;		// SDCard instance that exposes SD card routines. 
+SDCard sd;		// SDCard instance for SD card routines. 
 
 //#if defined(VM_DEBUG)
 #include "Testing.h"			// DEBUG AND TESTING
@@ -70,7 +50,6 @@ SDCard sd;		// SDCard instance that exposes SD card routines.
 #include <freertos/task.h>
 #include <freertos/portmacro.h>
 #include <cstddef>
-//Testing test;					// class for test routings
 //#endif
 
 // ==========   CREATE SENSOR OBJECTS   ==================== //
@@ -86,23 +65,14 @@ SensorData d_UVIndex;				// UV Index
 SensorData d_Insol(true, true);		// Insolation			(Data not in filesys, no minima)
 SensorData d_IRSky_C;				// IR sky temp
 SensorData d_fanRPM(false);			// Fan RPM
-
-/*
-SensorData instances to average readings.
-Wind speed handled by WindSpeed.
-Wind direction handled by WindDirection.
-*/
-
-// WindSpeed instance for wind.
-WindSpeed windSpeed(DAVIS_SPEED_CAL_FACTOR);
 SensorData windGust;
-WindDirection windDir(VANE_OFFSET);	// WindDirection instance for wind.
+WindSpeed windSpeed(DAVIS_SPEED_CAL_FACTOR);	// Wind speed
+WindDirection windDir(VANE_OFFSET);	// Wind direction
 
 /// <summary>
 /// Adds labels and units to SensorData instances.
 /// </summary>
-void sensors_AddLabels()
-{
+void sensors_AddLabels() {
 	windSpeed.addLabels("Wind Speed", "wind", "mph");
 	windDir.addLabels("Wind direction", "windDir", "", "&deg;");
 	windGust.addLabels("Wind Gust", "gust", "mph");
@@ -120,11 +90,9 @@ void sensors_AddLabels()
 }
 
 /// <summary>
-/// Creates data files for selected SensorData instances 
-/// that save chart data on the file system.
+/// Creates filesys data files for selected SensorData instances. 
 /// </summary>
-void sensors_createFiles()
-{
+void sensors_createFiles() {
 	windSpeed.createFiles();
 	windDir.createFiles();
 	windGust.createFiles();
@@ -141,8 +109,7 @@ void sensors_createFiles()
 	//d_fanRPM.createFiles();      
 }
 
-
-//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 SensorSimulate dummy_Temp_F;			// Temperature readings.
 SensorSimulate dummy_Pres_mb;			// Pressure readings.
 SensorSimulate dummy_Pres_seaLvl_mb;	// Pressure readings.
@@ -154,45 +121,81 @@ SensorSimulate dummy_UVIndex;			// UV Index readings.
 SensorSimulate dummy_Insol;				// Insolaton readings.
 SensorSimulate dummy_IRSky_C;			// IR sky temperature readings.
 SensorSimulate dummy_fanRPM;			// Fan RPM readings.
-
 SensorSimulate dummy_anemCount;			// Anemometer rot count.
 SensorSimulate dummy_windDir;			// Anemometer wind direction.
-//#endif
+#endif
 
 // %%%%%%%%%%   STATUS FLAGS FOR DEVICES   %%%%%%%%%%%%%%%%
-bool _isGood_Temp = false;
-bool _isGood_PRH = false;
-bool _isGood_UV = false;
-bool _isGood_IR = false;
-bool _isGood_WindDir = false;
-bool _isGood_WindSpeed = false;
-//bool _isGood_GPS = false;
-bool _isGood_PMS = false;
-//bool _isGood_SDCard = false;
-bool _isGood_Solar = false;
-bool _isGood_LittleFS = false;
-bool _isGood_fan = false;
+bool isGood_Temp = false;
+bool isGood_PRH = false;
+bool isGood_UV = false;
+bool isGood_IR = false;
+bool isGood_WindDir = false;
+bool isGood_WindSpeed = false;
+//bool isGood_GPS = false;
+bool isGood_PMS = false;
+//bool isGood_SDCard = false;
+bool isGood_Solar = false;
+bool isGood_LittleFS = false;
+bool isGood_fan = false;
+bool isGood_SDCard = false;
+bool isGood_GPS = false;
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-unsigned long _time_start_current_loop;			//monitor loop timing
-int _index = 0;	// Determines which sensor to read.
-long int _time_start_first_loop;
+unsigned long time_start_current_loop;		//monitor loop timing
+long int time_start_first_loop;
+int sensor_idx = 0;		// Determines which sensor to read.
+int sensor_idx_10 = 0;	// Determines which sensor to process at 10 min.
+int sensor_idx_60 = 0;	// Determines which sensor to process at 60 min.
+int sensor_idx_day = 0;	// Determines which sensor to process at day rollover.
 
-/*
-	WARNING: long int is 64-bit, which uses TWO 32-bit values.
-	That would require portENTER_CRITICAL() when you READ the
-	variable, not simply when you change it!
-*/
-volatile int _countInterrupts_base = 0;		// Number of accumulated timer interrupts for sensor reads.
-volatile int _countInterrupts_10_min = 0;	// Number of accumulated timer interrupts for sensor for 10-min averages.
-//volatile int _countInterrupts_60_min = 0;	// Number of accumulated timer interrupts for sensor for 60-min averages.
+unsigned long last_debounce_time_anem = 0;	// Last millis when anemometer output pin was toggled
 
-//// ==========   SD card module   ==================== //
-//SDCard sd;		// SDCard instance that exposes SD card routines. 
-// Moved to GPSModule library!
+// INITIALIZE ANEMOMETER INTERRUPTS
 
-bool _isGood_SDCard = false;
-bool _isGood_GPS = false;
+volatile uint32_t interrupts_pending_anem_v = 0;// Count unhandled anemometer timer interrupts
+volatile uint32_t anemCount_v = 0;				// Count of anemometer rotations (volatile)
+volatile uint32_t rotations_v = 0;				// Count of anemometer rotations (volatile)
+
+// Timer to trigger anemometer rotations count.
+hw_timer_t* timerAnem = NULL;
+
+// FreeRTOS spinlock (port multiplexer) to protect 
+// shared data from concurrent access.
+portMUX_TYPE muxAnem = portMUX_INITIALIZER_UNLOCKED;
+
+/// <summary>
+/// ISR handler for anemometer rotation pin. Counts 
+/// anemometer rotations.
+/// </summary>
+/// <remarks>ARDUINO_ISR_ATTR uses fast RAM.</remarks>
+void ARDUINO_ISR_ATTR onAnemRotate() {
+	// Ignore any additional activations within the debounce time.
+	if ((millis() - last_debounce_time_anem) > DAVIS_ANEM_DEBOUNCE_TIMEOUT_MS) {
+		portENTER_CRITICAL_ISR(&muxAnem);
+		anemCount_v++;
+		portEXIT_CRITICAL_ISR(&muxAnem);
+		last_debounce_time_anem = millis();
+	}
+}
+
+/// <summary>
+/// ISR handler for anemometer timer. Holds rotation count 
+/// every ANEM_READ_PERIOD_SEC for wind speed calculation.
+/// </summary>
+/// <remarks>ARDUINO_ISR_ATTR uses fast RAM.</remarks>
+void ARDUINO_ISR_ATTR onAnemTimer() {
+	portENTER_CRITICAL_ISR(&muxAnem);
+	rotations_v = anemCount_v;		// get immediate rotation count.
+	anemCount_v = 0;				// reset count for next timer cycle.
+	interrupts_pending_anem_v++;	// flag to calculate wind.
+	portEXIT_CRITICAL_ISR(&muxAnem);
+}
+
+
+// FAN (for radiation shield)
+unsigned long millis_fan_read = 0;	// keep track of fan read time
+volatile int fanHalfRots = 0;		// count fan half-rotations_v (1 count/half-rotation)
 
 // ==========   Async Web Server   ================== //
 AsyncWebServer server(80);	// Async web server instance on port 80.
@@ -204,81 +207,16 @@ WiFiTools wifi;
 // GPS module instance. 
 GPSModule gps;
 
-int _oldMonth = 0;		// Month of previous day.
-int _oldDay = 0;		// Day of previous day.
-int _oldYear = 0;		// Year of previous day.
-
-// ==========   PWM Fan for Radiation Shield  ======================== //
-
-volatile unsigned long _fanHalfRots = 0;// count fan half-rotation (2 counts/cycle)
-
-// HARDWARE INTERRUPT for fan tachometer switch that signals half-rotation
-portMUX_TYPE hardwareMux_fan = portMUX_INITIALIZER_UNLOCKED;
-
-// Function called by hardware interrupt when fan 
-// tachometer switch closes on every half-rotation.
-void IRAM_ATTR ISR_onFanHalfRotation() {
-	portENTER_CRITICAL_ISR(&hardwareMux_fan);
-	_fanHalfRots++;
-	portEXIT_CRITICAL_ISR(&hardwareMux_fan);
-}
-
-// ==========   Davis anemometer - wind speed  ==================== //
-/*
- Wind speed is determined by counting anemometer
- rotations over a brief base measurement period.
- Each rotation triggers a hardware interrupt that
- increments _anem_Rotations by 1.
-*/
-volatile unsigned int _anem_Rotations = 0;		// Count of anemometer rotations
-unsigned long _lastDebounceTime = 0;			// Last millis when output pin was toggled
-const unsigned int DEBOUNCE_TIMEOUT = 15;		// Debounce timeout (millisec)
-
-/*
-	INTERRUPT DEFINITIONS
-		- TIMER interrupt to trigger sensor readings (every 4 sec)
-		- HARDWARE interrupt to signal anemometer and fan rots
-*/
-// TIMER INTERRUPT to count anemometer and fan rotations.
-hw_timer_t* timer_base = NULL;
-portMUX_TYPE timerMux_base = portMUX_INITIALIZER_UNLOCKED;
-
-/// <summary>
-/// Timer interrupt service routine increments counts 
-/// _countInterrupts_base, _countInterrupts_10_min, and 
-/// _countInterrupts_60_min. Should happen every 4 sec 
-/// (Base Period).
-/// </summary>
-void IRAM_ATTR ISR_onTimer_count() {
-	portENTER_CRITICAL_ISR(&timerMux_base);
-	_countInterrupts_base++;
-	_countInterrupts_10_min++;
-	//_countInterrupts_60_min++;
-	portEXIT_CRITICAL_ISR(&timerMux_base);
-}
-
-// HARDWARE INTERRUPT that signals one anemometer rotation.
-portMUX_TYPE hardwareMux_anem = portMUX_INITIALIZER_UNLOCKED;
-
-// Function called by hardware interrupt when anemometer sensor switch closes.
-// It increments the rotation count by 1, after switch debouncing.
-void IRAM_ATTR ISR_onRotation_anem() {
-	// Ignore any additional activations within the debounce time.
-	if ((millis() - _lastDebounceTime) > DEBOUNCE_TIMEOUT) {
-		portENTER_CRITICAL_ISR(&hardwareMux_anem);
-		_anem_Rotations++;
-		portEXIT_CRITICAL_ISR(&hardwareMux_anem);
-		_lastDebounceTime = millis();
-	}
-}
-// ========   END Davis Anemometer 6410  =================  //
+int oldMonth = 0;	// Month of previous day.
+int oldDay = 0;		// Day of previous day.
+int oldYear = 0;	// Year of previous day.
 
 // ========   Setup LittleFS   =================  //
 
 /// <summary>
 /// Initializes and mounts LittleFS filesystem. 
 /// Logs mount success or failure, records used/available space, 
-/// sets the _isGood_LittleFS flag on success, and optionally 
+/// sets the isGood_LittleFS flag on success, and optionally 
 /// lists the root directory when debugging is enabled.
 /// </summary>
 void littleFS_initialize() {
@@ -287,59 +225,69 @@ void littleFS_initialize() {
 		sd.logStatus(msg, millis());
 	}
 	else {
-		_isGood_LittleFS = true;
+		isGood_LittleFS = true;
 		String msg = "LittleFS mounted.";
 		sd.logStatus(msg, millis());
 	}
 	// Log used and available space.
 	sd.logLittleFsSpaceUsage();
 
-	if (_isDEBUG_ListLittleFS) {
+	if (isDEBUG_ListLittleFS) {
 		dirList(LittleFS, "/", 5);
 	}
 }
 
-
 /// <summary>
 /// Read recent sensor readings from LittleFS and load them back into memory.
-/// /// 
-/// XXX ONLY CODED FOR d_TempF!!!
-/// /// 
-/// <remarks>Used to recover recent data lost from memory after reboot.
-/// 
-/// XXX ONLY CODED FOR d_TempF!!!
-/// 
-/// </remarks>
 /// </summary>
-void recoverData() {
+/// <param name="sData">SensorData instance.</param>
+/// <param name="time">Time of recover.</param>
+void recoverData(SensorData& sData, time_t time) {
+	String tStr = GPSModule::dateTime(time);
+	if (!sData.isDatafile()) {
+		sd.logStatus("Data file is not configured for " + sData.label(), tStr);
+		return;
+	}
+
 	unsigned long lastTime = lastReadingTime_fromFile();
-	Serial.printf("recover_data(): lastReadingTime_fromFile = %lu\n", lastTime);
+	Serial.printf("recoverData(): lastReadingTime_fromFile = %lu = %s\n",
+		lastTime,
+		GPSModule::dateTime(lastTime).c_str());
 
 	// 10-min lists
-	Serial.println("recover_data(): 10-min lists");
-	if (d_TempF.isDatafile()
-		&& (now() - lastTime) > DATA_RECOVERY_10_MIN_AGE_LIMIT)
+	Serial.println("recoverData(): 10-min lists " + sData.label());
+	if ((now() - lastTime) > DATA_RECOVERY_10_MIN_AGE_LIMIT)
 	{
-		d_TempF.recover_data_10_min_from_file();
+		sData.recover_data_10_min_from_file();
 		sd.logStatus("Recovered 10-min data.", millis());
+		sd.logStatus(sData.dataPoints_10_min_as_String().c_str(), tStr);
+	}
+	else {
+		sd.logStatus("10-min data is beyond configured age limit.", millis());
 	}
 
 	// 60-min lists
-	Serial.println("recover_data(): 60-min lists");
-	if (d_TempF.isDatafile()
-		&& (now() - lastTime) > DATA_RECOVERY_60_MIN_AGE_LIMIT)
+	Serial.println("recoverData(): 60-min lists " + sData.label());
+	if ((now() - lastTime) > DATA_RECOVERY_60_MIN_AGE_LIMIT)
 	{
-		d_TempF.recover_data_60_min_from_file();
+		sData.recover_data_60_min_from_file();
 		sd.logStatus("Recovered 60-min data.", millis());
+		sd.logStatus(sData.dataPoints_60_min_as_String().c_str(), tStr);
+	}
+	else {
+		sd.logStatus("60-min data is beyond configured age limit.", millis());
 	}
 
 	// day lists
-	Serial.println("recover_data(): day lists");
-	if (d_TempF.isDatafile()
-		&& (now() - lastTime) > DATA_RECOVERY_DAY_AGE_LIMIT)
+	Serial.println("recoverData(): day lists " + sData.label());
+	if ((now() - lastTime) > DATA_RECOVERY_DAY_AGE_LIMIT)
 	{
-		d_TempF.recover_data_dayMaxMin_from_file();
+		sData.recover_data_dayMaxMin_from_file();
 		sd.logStatus("Recovered dayMaxMin data.", millis());
+		sd.logStatus(sData.dataPoints_dayMaxMin_as_String().c_str(), tStr);
+	}
+	else {
+		sd.logStatus("dayMaxMin data is beyond configured age limit.", millis());
 	}
 }
 
@@ -348,9 +296,7 @@ void recoverData() {
 /******************************      SETUP      *****************************/
 /****************************************************************************/
 void setup() {
-
 	Serial.begin(115200);
-
 	// Print status message now because SD is not yet online.
 	String msg = "\n\n\n" + LINE_SEPARATOR_MAJOR + "\n";
 	msg += String(millis() / 1000.);
@@ -359,9 +305,11 @@ void setup() {
 	Serial.print(msg);
 
 	//  SETUP: ==========  CREATE SD CARD   ========== //
+#if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE SD CARD   ==========");
+#endif
 	// (Do this first - need SD card for logging.)
-	_isGood_SDCard = sd.create(SPI_CS_PIN, _isDEBUG_BypassSDCard);
+	isGood_SDCard = sd.create(SPI_CS_PIN, isDEBUG_BypassSDCard);
 	// Begin status log entries to SD card.
 	sd.logStatus();	// Empty line
 	sd.logStatus(LINE_SEPARATOR_MAJOR);
@@ -371,37 +319,43 @@ void setup() {
 
 	// Log the settings to the status file.
 	sd.logDebugStatus(
-		_isDEBUG_BypassGPS,
-		_isDEBUG_BypassWifi,
-		_isDEBUG_BypassSDCard,
-		_isDEBUG_ListLittleFS,
-		_isDEBUG_BypassWebServer,
-		_isDEBUG_run_test_in_setup,
-		_isDEBUG_run_test_in_loop,
-		_isDEBUG_addDummyDataLists,
-		_isDEBUG_simulateSensorReadings,
-		_isDEBUG_simulateWindReadings,
-		_isDEBUG_AddDelayInLoop,
-		_LOOP_DELAY_DEBUG_ms);
+		isDEBUG_BypassGPS,
+		isDEBUG_BypassWifi,
+		isDEBUG_BypassSDCard,
+		isDEBUG_ListLittleFS,
+		isDEBUG_BypassWebServer,
+		isDEBUG_run_test_in_setup,
+		isDEBUG_run_test_in_loop,
+		isDEBUG_addDummyDataLists,
+		isDEBUG_simulateSensorReadings,
+		isDEBUG_simulateWindReadings,
+		isDEBUG_AddDelayInLoop,
+		LOOP_DELAY_DEBUG_ms);
 	sd.logApp_Settings();
 
 	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
+#if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
+#endif
 	wifi.Initialize(sd);
 
-	//XXX Should _isDEBUG_BypassWifi be a parameter??
+	//XXX Should isDEBUG_BypassWifi be a parameter??
 	//XXX Or should we just skip wifiSetupAndConnect() if it's true?!
-	wifi.wifiSetupAndConnect(gps.dateTime(), _isDEBUG_BypassWifi);
+	wifi.wifiSetupAndConnect(gps.dateTime(), isDEBUG_BypassWifi);
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
+#if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE ASYNC WEB SERVER   ==========");
-	serverRouteHandler();	// Define routes for server requests.
+#endif
+	createServerRouteHandler();	// Define routes for server requests.
 	sd.logStatus("Async web server routes defined.", millis());
-	server.begin();			// Start async web server.
+	server.begin();				// Start async web server.
 	sd.logStatus("Async web server beginning.", millis());
 
 	// ==========   CREATE GPS AND SYNC TO GET TIME   ========== //
+#if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE GPS AND SYNC TO GET TIME   ==========");
+#endif
 	// XXX  Need code to alter power of GPS!!!  XXX
 
 	/* 	Format for setting s serial port:
@@ -419,8 +373,8 @@ void setup() {
 	bool isGpsSuccess = false;
 	if (!gps.isSynced())
 	{
-		isGpsSuccess = gps.syncToGPS(sd, _isDEBUG_BypassGPS);
-		_isGood_GPS = true;
+		isGpsSuccess = gps.syncToGPS(sd, isDEBUG_BypassGPS);
+		isGood_GPS = true;
 	}
 	if (!isGpsSuccess)
 	{
@@ -429,16 +383,16 @@ void setup() {
 		sd.logStatus(msg, millis());
 	}
 
-
 	// ==========  SETUP LittleFS  ========== //
+#if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  SETUP LittleFS   ==========");
+#endif
 	littleFS_initialize();
 
-
-	//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 	////////  TESTING   ////////
 	Serial.println("SETUP: ==========  TESTING   ==========");
-	if (_isDEBUG_addDummyDataLists) {
+	if (isDEBUG_addDummyDataLists) {
 		Serial.println("SETUP: ==========  ADD DUMMY DATA   ==========");
 		addDummyData();
 		saveLastReadTime_toFile(now());
@@ -446,8 +400,7 @@ void setup() {
 		Serial.println("XXX  saveLastReadTime_toFile(now())  XXX");
 		Serial.println();
 	}
-
-	if (_isDEBUG_run_test_in_setup) {
+	if (isDEBUG_run_test_in_setup) {
 		bool isDataInFilesys = true;
 		bool isReportDailyMaxOnly = false;
 		SensorData d(isDataInFilesys, isReportDailyMaxOnly);
@@ -455,58 +408,52 @@ void setup() {
 		d.createFiles(false, 2);
 
 		unsigned long int t = 0;
-		float val = 50;
-		float increment = 5;
-		for (size_t i = 0; i < 15; i++)
+		float val = 40;
+		float delta = 15. / 150.;
+		Serial.printf("Delta = %.3f\n", delta);
+
+		int num = 150;
+		for (size_t i = 0; i < num; i++)
 		{
-			t += SECONDS_PER_DAY;	// Increment time 1 day.
-			val += increment;
+			t += SECONDS_PER_DAY;	// Increase datetime by 1 day.
 			d.addReading(DataPoint(t, val));
-
-			Serial.printf("Add reading (%li, %.1f), countReadings = %i\n", t, val, d.countReadings());
-
-			Serial.printf("avg_now = %.1f, avg_10_min = %.1f\n", d.avg_now(), d.avg_10_min());
-			Serial.printf("Point just added = (%li, %.1f)\n", d.dataPointLastAdded().time, d.dataPointLastAdded().value);
-			Serial.printf("min_10_min_dp = (%i, %.1f), max_10_min_dp = (%i, %.1f)\n",
+			Serial.printf("Add reading (%li, %.3f), countReadings = %i\n", t, val, d.countReadings());
+			Serial.printf("avg_now = %.3f, avg_10_min = %.3f\n", d.avg_now(), d.avg_10_min());
+			Serial.printf("Point just added = (%li, %.3f)\n", d.dataPointLastAdded().time, d.dataPointLastAdded().value);
+			Serial.printf("min_10_min_dp = (%i, %.3f), max_10_min_dp = (%i, %.3f)\n",
 				d.min_10_min_dp().time,
 				d.min_10_min_dp().value,
 				d.max_10_min_dp().time,
 				d.max_10_min_dp().value);
-			Serial.printf("min_today_dp = (%i, %.1f), max_today_dp = (%i, %.1f)\n",
+			Serial.printf("min_today_dp = (%i, %.3f), max_today_dp = (%i, %.3f)\n",
 				d.min_today_dp().time,
 				d.min_today_dp().value,
 				d.max_today_dp().time,
 				d.max_today_dp().value);
-			
 			//d.process_data_10_min();	// XXX	will reset averages
-			Serial.printf("getData_10_min_as_String: %s\n",  d.getData_10_min_as_String().c_str());
+			Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
 			Serial.println(LINE_SEPARATOR);
 			//delay(1000);
+			val += delta;	// Change value for next time.
 		}
-
 		Serial.println(LINE_SEPARATOR_MAJOR);
-
-		Serial.printf("avg_now() = %.2f\n", d.avg_now());
-		Serial.printf("max_10_min_dp() = %.2f\n", d.max_10_min_dp().value);
-		Serial.printf("min_10_min_dp() = %.2f\n", d.min_10_min_dp().value);
-
-		Serial.printf("getData_10_min_as_String: %s\n", d.getData_10_min_as_String().c_str());
-
+		Serial.printf("avg_now() = %.3f\n", d.avg_now());
+		Serial.printf("max_10_min_dp() = %.3f\n", d.max_10_min_dp().value);
+		Serial.printf("min_10_min_dp() = %.3f\n", d.min_10_min_dp().value);
+		Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
 		Serial.println("process_data_10_min!!!");
 		d.process_data_10_min();
-
-		Serial.printf("min_10_min_dp = (%i, %.1f), max_10_min_dp = (%i, %.1f)\n",
+		Serial.printf("min_10_min_dp = (%i, %.3f), max_10_min_dp = (%i, %.3f)\n",
 			d.min_10_min_dp().time,
 			d.min_10_min_dp().value,
 			d.max_10_min_dp().time,
 			d.max_10_min_dp().value);
-		Serial.printf("min_today_dp = (%i, %.1f), max_today_dp = (%i, %.1f)\n",
+		Serial.printf("min_today_dp = (%i, %.3f), max_today_dp = (%i, %.3f)\n",
 			d.min_today_dp().time,
 			d.min_today_dp().value,
 			d.max_today_dp().time,
 			d.max_today_dp().value);
-
-		Serial.printf("getData_10_min_as_String: %s\n", d.getData_10_min_as_String().c_str());
+		Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
 
 		//// File contents.
 		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/RH_10_min.txt");
@@ -521,89 +468,84 @@ void setup() {
 
 		Testing::infiniteLoop();
 	}
-	//#endif
-
+#endif
 
 	// ==========  CREATE SENSORS  ========== //
-
+#if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE SENSORS   ==========");
+#endif
 	sensors_AddLabels();	// Add labels and units to the SensorData instances.
-	sensors_begin();
-	sensors_createFiles();
+	sensors_begin();		// Initialize all sensors.
+	sensors_createFiles();	// Create LittleFS files.
 
 	// ==========  RECOVER DATA   ==========
 	if (isRECOVER_FILESYS_DATA) {
+#if defined(VM_DEBUG)
 		Serial.println("SETUP: ==========  RECOVER DATA FROM FILE SYSTEM   ==========");
+#endif
 		// Retrieve recent saved data from LittleFS. (In case of inadvertent reboot.)
-		recoverData();
+		recoverData(d_TempF, now());
 	}
 	else {
 		Serial.println("SETUP: BYPASS RECOVER DATA FROM FILE SYSTEM");
 	}
 
 	// Date info to determine when new day begins.
-	_oldDay = day();
-	_oldMonth = month();
-	_oldYear = year();
-
+	oldDay = day();
+	oldMonth = month();
+	oldYear = year();
 
 	sd.logData(columnNames());	// Write column names to data log.
 	sd.logStatus_indent("DATA COLUMNS:\t" + columnNames());	// Write column names to status log.
 
 	/// ==========  CONFIGURE FAN PWM  ========== //
-	const int FAN_PWM_FREQUENCY = 25000;	// 25kHz
-	const int FAN_PWM_CHANNEL = 0;
-	const int FAN_PWM_RESOLUTION = 8;
 
-	// VERSION FOR ESP32 2.X ...
+	constexpr int FAN_PWM_FREQUENCY = 25000;	// 25kHz
+	constexpr int FAN_PWM_CHANNEL = 0;
+	constexpr int FAN_PWM_RESOLUTION = 8;
+
+	// VERSION FOR ESP32 2.X
 	ledcSetup(FAN_PWM_CHANNEL, FAN_PWM_FREQUENCY, FAN_PWM_RESOLUTION);
 	// Attach the channel to the pin for PWM output.
 	ledcAttachPin(FAN_PWM_PIN, FAN_PWM_CHANNEL);
 	// Set fan speed using PWM.
 	ledcWrite(FAN_PWM_CHANNEL, FAN_DUTY_PERCENT / 100. * 256);
 	/*
-	VERSION FOR ESP32 3.X ...
+	// VERSION FOR ESP32 3.X
 	ledcAttach(FAN_PWM_PIN, FAN_PWM_FREQUENCY, FAN_PWM_RESOLUTION);
 	ledcWrite(FAN_PWM_PIN, FAN_DUTY_PERCENT / 100. * 256);
 	*/
 
-	// Create interrupts after everything else has completed.
 
-	// ==========  CREATE ANEMOMETER HARDWARE INTERRUPT  ========== //
-	Serial.println("SETUP: ==========  CREATE ANEMOMETER HARDWARE INTERRUPT   ==========");
-	// Anemometer hardware interrupt for detecting rotation.
+	// ==========  SETUP: CREATE INTERRUPTS  ========== //
+#if defined(VM_DEBUG)
+	Serial.println("SETUP: ==========  CREATE INTERRUPTS   ==========");
+#endif
+	// ANEMOMETER HARDWARE INTERRUPT (every rotation).
 	pinMode(WIND_SPEED_PIN, INPUT_PULLUP);
-	attachInterrupt(digitalPinToInterrupt(WIND_SPEED_PIN),
-		ISR_onRotation_anem,
+	// Specify ISR to handle WIND_SPEED_PIN.
+	attachInterrupt(
+		digitalPinToInterrupt(WIND_SPEED_PIN),	// attach to pin
+		&onAnemRotate,							// ISR handler
 		FALLING);
-	// Fan hardware interrupt to detect half-rotation.
-	pinMode(FAN_SPEED_PIN, INPUT_PULLUP);
-	attachInterrupt(digitalPinToInterrupt(FAN_SPEED_PIN), ISR_onFanHalfRotation, FALLING);
 
-	// ==========  CREATE TIMER INTERRUPT  ========== //
-	Serial.println("SETUP: ==========  CREATE TIMER INTERRUPT   ==========");
+	// HARDWARE TIMER INTERRUPT to capture data 
+	// for wind speed calc every ANEM_READ_PERIOD_SEC.
+	// For ESP32 Arduino IDE 2.X:
+	timerAnem = timerBegin(0, 80, true);
+	// Attach ISR (interrupt service routine) to hardware timer created with timerBegin().
+	timerAttachInterrupt(timerAnem, &onAnemTimer, true);
+	timerAlarmWrite(timerAnem,					// hardware timer
+		ANEM_READ_PERIOD_SEC * MICROSEC_PER_SECOND,	// every ANEM_READ_PERIOD_SEC.
+		true);									// auto reload	
+	timerAlarmEnable(timerAnem);
 	/*
-	 Timer interrupt fires every BASE_PERIOD_SEC (4 sec) to
-	 trigger counts of anemometer and fan rotations.
-	 This is ALSO when we record all the other sensor readings.
-	 ONLY WIND SPEED NEEDS TO BE RECORDED THIS FREQUENTLY.
-	 [NOTE: Consider spacing out the other sensor readings.]
+	For ESP32 Arduino IDE 3.X ...
+	int duration_count = ANEM_READ_PERIOD_SEC * MICROSEC_PER_SECOND;	// Timer duration (microsec).
+	timerAnem = timerBegin(duration_count);
+	timerAttachInterrupt(timerAnem, &onAnemRotate);
+	timerAlarm(timerAnem, duration_count, true, 0);		// Trigger every ANEM_READ_PERIOD_SEC.
 	*/
-	// Compatible with ESP32 2.X:
-	timer_base = timerBegin(0, 80, true);
-	timerAttachInterrupt(timer_base, &ISR_onTimer_count, true);
-	int duration_count = BASE_PERIOD_SEC * MICROSEC_PER_SECOND;	// Timer duration (microsec).
-	timerAlarmWrite(timer_base, duration_count, true);		// Trigger every BASE_PERIOD_SEC.
-	timerAlarmEnable(timer_base);
-	/*
-	VERSION FOR ESP32 3.X ...
-	int duration_count = BASE_PERIOD_SEC * MICROSEC_PER_SECOND;	// Timer duration (microsec).
-	timer_base = timerBegin(duration_count);
-	timerAttachInterrupt(timer_base, &ISR_onTimer_count);
-	timerAlarm(timer_base, duration_count, true, 0);		// Trigger every BASE_PERIOD_SEC.
-	*/
-
-	_time_start_first_loop = millis();
 
 	Serial.println("SETUP: ==========  COMPLETED CREATE TIMER INTERRUPT   ==========");
 
@@ -611,18 +553,23 @@ void setup() {
 	(IS_DAYLIGHT_TIME) ? msg = " Daylight time." : msg = " Standard time.";
 	sd.logStatus(msg);
 	sd.logStatus("SETUP END " + gps.dateTime(), millis());
+
+	time_start_first_loop = millis();
 }
 /****************************************************************************/
 /************************        END SETUP       ****************************/
 /****************************************************************************/
 
-
+// Initialize loop timers (immediately before loop starts!).
+unsigned long millis_sensors_read = 0;			// Start time of reading sensors
+unsigned long millis_sensors_Process_10 = 0;	// Start time of processing sensors at 10-min.
+unsigned long millis_sensors_Process_60 = 0;	// Start time of processing sensors at 60-min.
 
 /****************************************************************************/
 /***************************       LOOP      ********************************/
 /****************************************************************************/
 void loop() {
-	_time_start_current_loop = millis();	// To monitor loop execution time.
+	time_start_current_loop = millis();	// To monitor loop execution time.
 
 	//// Check for timer interrupts that were 
 	//// not handled during code delays.
@@ -634,10 +581,10 @@ void loop() {
 	*************************************************/
 
 	/*
-	 After every 4 sec Base Period, get anemometer counts as well as
+	 XXX	After every 4 sec Base Period, get anemometer counts as well as
 	 all sensor values. Use values to accumulate 10-min averages.
 	 (This is ESSENTIAL for anemometer wind speed, which counts
-	 rotations for every Base Period. It is CONVENIENT for timing
+	 rotations_v for every Base Period. It is CONVENIENT for timing
 	 reading of other sensors.
 
 	 At 10-min intervals, save 10-min averages and start
@@ -648,80 +595,117 @@ void loop() {
 	*/
 
 	// ====================================================
-	//		BASE_PERIOD_SEC (4 sec)
+	//		ANEM_READ_PERIOD_SEC (4 sec)
 	// ====================================================	
 
+	if (interrupts_pending_anem_v > 0) {
 
+		Serial.printf("%.3fs interrupts_pending_anem_v = %i\n", millis() / 1000., interrupts_pending_anem_v);
 
-	//XXX  if (_countInterrupts_base == 1) {    XXX
-	if (_countInterrupts_base > 0) {
-		// Read sensors and process data.
-		readWind();
-		readFan();
-		// Read data for other sensors one at a time.
-		readSensors(_index);
-		_index++;
-		if (_index > COUNT_SENSORS_TO_READ - 1) {
-			_index = 0;		// Restart cycle.
+		// Get wind speed data from anemometer.
+		portENTER_CRITICAL(&muxAnem);
+		rotations_v = anemCount_v;		// Hold immediate anem count.
+		anemCount_v = 0;				// Reset anemometer rotations_v.
+		interrupts_pending_anem_v--;	// Anemometer timer interrupt handled.
+		portEXIT_CRITICAL(&muxAnem);
+
+		processWind(rotations_v);		// Wind speed, gust, direction.
+
+		// Check for unhandled interrupts.
+		if (interrupts_pending_anem_v > 0) {
+			// If still > 0, we missed an interrupt.
+			String msg = "ERROR: Missed timer interrupts! count = " + interrupts_pending_anem_v;
+			sd.logStatus(msg, gps.dateTime());
+		}
+		
+	}
+
+	//// ====================================================
+	////		READ SENSORS
+	//// ====================================================
+	if ((millis() - millis_sensors_read) >= SENSOR_READ_PERIOD_SEC * MILLISEC_PER_SECOND) {
+		// Read data for sensors one at a time.
+
+		Serial.printf("\t%.3fs READ SENSORS\n", millis() / 1000.);
+
+		readSensor_by_index(sensor_idx);
+		sensor_idx++;
+		if (sensor_idx > COUNT_SENSORS_TO_READ - 1) {
+			sensor_idx = 0;					// restart sensor cycle.
+			millis_sensors_read = millis();	// reset timer
 		};
-		portENTER_CRITICAL_ISR(&timerMux_base);
-		_countInterrupts_base--;	// Base timer interrupt handled.
-		portEXIT_CRITICAL_ISR(&timerMux_base);
+	}
+
+	//// ====================================================
+	////		READ FAN
+	//// ====================================================
+	if ((millis() - millis_fan_read) >= FAN_READ_PERIOD_SEC * MILLISEC_PER_SECOND) {
+
+		Serial.printf("\t%.3fs READ FAN\n", millis() / 1000.);
+
+		// Get fan speed
+		d_fanRPM.addReading(DataPoint(now(), fanRPM(fanHalfRots, FAN_READ_PERIOD_SEC)));
+		fanHalfRots = 0;			// Reset fan rotations_v.
+		millis_fan_read = millis();	// reset timer
 	}
 
 	//// ====================================================
 	////		10-MIN INTERVAL
 	//// ====================================================
 
-	if (_countInterrupts_10_min >= BASE_PERIODS_IN_10_MIN) {
+	if ((millis() - millis_sensors_Process_10) >= 10 * MILLISECONDS_PER_MINUTE) {
 		// Get 10-min avgs.
-		processReadings_10_min();
-		sd.logData(sensorsDataString_10_min());	// Save readings to SD card.
-		sd.logStatus("Logged 10-min avgs.", gps.dateTime());
-		// Check for unhandled interrupts.
-		if (_countInterrupts_10_min > BASE_PERIODS_IN_10_MIN)	// XXX  WRONG!!!!!!
-		{
-			String msg = "WARNING: 10-min interrupt count exceeded threshold by ";
-			msg += String(_countInterrupts_10_min - BASE_PERIODS_IN_10_MIN);
-			msg += " indicating unhandled 10-min timer interrupt.";
-			sd.logStatus(msg, gps.dateTime());
-		}
-		portENTER_CRITICAL_ISR(&timerMux_base);
-		_countInterrupts_10_min = 0;	// Interrupt handled.
-		portEXIT_CRITICAL_ISR(&timerMux_base);
+
+		Serial.printf("\t\t%.3fs 10-MIN INTERVAL\n", millis() / 1000.);
+
+		// Process 10-min data for sensors one at a time.
+		processSensor_10_min_by_index(sensor_idx_10);
+		sensor_idx_10++;
+		if (sensor_idx_10 > COUNT_SENSORS_TO_PROCESS - 1) {	// all sensors read
+			sensor_idx_10 = 0;			// Restart sensor cycle.
+			millis_sensors_Process_10 = millis();	// restart timer
+			sd.logData(sensorsDataString_10_min());	// Save readings to SD card.
+			sd.logStatus("Logged 10-min avgs.", gps.dateTime());
+		};
 	}
 
 	//// ====================================================
 	////		60-MIN INTERVAL
 	//// ====================================================   
 
-	//if (_countInterrupts_60_min >= BASE_PERIODS_IN_60_MIN) {
-	//	processReadings_60_min();
-	//	sd.logData(sensorsDataString_10_min());	// Save readings to SD card.
-	//	sd.logStatus("Logged 60-min avgs.", gps.dateTime());
-	//	// Check for unhandled.
-	//	if (_countInterrupts_60_min > BASE_PERIODS_IN_60_MIN) {
-	//		String msg = "WARNING: 10-min interrupt count exceeded threshold by ";
-	//		msg += String(_countInterrupts_60_min - BASE_PERIODS_IN_60_MIN);
-	//		msg += " counts, indicating unhandled 10-min timer interrupt.";
-	//		sd.logStatus(msg, gps.dateTime());
-	//	}
-	//	portENTER_CRITICAL_ISR(&timerMux_base);
-	//	_countInterrupts_60_min--;	// Interrupt handled.
-	//	portEXIT_CRITICAL_ISR(&timerMux_base);
-	//}
+	if ((millis() - millis_sensors_Process_60) >= 60 * MILLISECONDS_PER_MINUTE) {
+		// Get 60-min avgs.
+
+		// Process 60-min data for sensors one at a time.
+		processSensor_60_min_by_index(sensor_idx_60);
+		sensor_idx_60++;
+		if (sensor_idx_60 > COUNT_SENSORS_TO_PROCESS - 1) {
+			sensor_idx_60 = 0;			// Restart sensor cycle.
+			sd.logStatus("Calculate 60-min avgs.", gps.dateTime());
+			millis_sensors_Process_60 = millis();	// restart timer
+		};
+	}
 
 	//// ====================================================
-	////  CHECK FOR NEW DAY
-	//if (day() > _oldDay || month() > _oldMonth || year() > _oldYear) {
-	//	// NEW DAY. 
-	//	// Save minima and maxima for previous day.
-	//	processReadings_day();
-	//	_oldDay = day();
-	//	_oldMonth = month();
-	//	_oldYear = year();
-	//	sd.logStatus("New day rollover.", gps.dateTime());
-	//}
+	////		DAY ROLLOVER
+	//// ====================================================   
+	if (day() > oldDay || month() > oldMonth || year() > oldYear) {
+		// NEW DAY. 
+		// Save minima and maxima for previous day.
+
+		// Process day rollover data for sensors one at a time.
+		processSensor_day_by_index(sensor_idx_day);
+		sensor_idx_day++;
+		if (sensor_idx_day > COUNT_SENSORS_TO_PROCESS - 1) {
+			sensor_idx_day = 0;			// Restart sensor cycle.
+			// Log and reset after all sensors processed.
+			oldDay = day();
+			oldMonth = month();
+			oldYear = year();
+			sd.logStatus("New day rollover.", gps.dateTime());
+		};
+		
+	}
 
 	///// ==========  TEST FOR LOST WIFI CONNECTION  ========== //
 	///*
@@ -731,10 +715,10 @@ void loop() {
 	//then recover.
 
 	//If WiFi was lost, the time to reconnect will cause
-	//the timer interrupt counts to increment beyond where
+	//the timer interrupt counts to delta beyond where
 	//they should have been handled.
 	//*/
-	//if (!_isDEBUG_BypassWifi) {
+	//if (!isDEBUG_BypassWifi) {
 	//	if (WiFi.status() != WL_CONNECTED) {
 	//		wifi.checkWifiConnection(gps.dateTime());
 
@@ -745,18 +729,18 @@ void loop() {
 	//	}
 	//}
 
-	//#if defined(VM_DEBUG)
-		// Add delay for DEBUG.
-	if (_isDEBUG_AddDelayInLoop) {
-		vTaskDelay(_LOOP_DELAY_DEBUG_ms / portTICK_PERIOD_MS);
+#if defined(VM_DEBUG)
+	// Add delay for DEBUG.
+	if (isDEBUG_AddDelayInLoop) {
+		vTaskDelay(LOOP_DELAY_DEBUG_ms / portTICK_PERIOD_MS);
 	}
-	//#endif
+#endif
 
-		// Watch for excessive processing time in loop.
-	if (millis() - _time_start_current_loop > LOOP_TIME_WARN_THRESHOLD_MS) {
-		String msg = "Loop " + String(millis() - _time_start_current_loop) + "ms";
+	// Watch for excessive processing time in loop.
+	if (millis() - time_start_current_loop > LOOP_TIME_WARN_THRESHOLD_MS) {
+		String msg = "Loop " + String(millis() - time_start_current_loop) + "ms";
 		sd.logStatus(msg, gps.dateTime());
-		//Serial.printf("long loop %lims\n", millis() - _time_start_current_loop);
+		//Serial.printf("long loop %lims\n", millis() - time_start_current_loop);
 	}
 }
 /******************************        END LOOP        **********************************/

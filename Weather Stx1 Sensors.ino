@@ -1,6 +1,6 @@
 #include "App_Settings.h"
 #include "Logging.h"
-//#include "DebugFlags.h" -- moved to main .ino
+#include "DebugFlags.h" //-- moved to main .ino
 #include "PinAssignments.h"
 #include "Utilities.h"
 #include "FileOperations.h"
@@ -94,10 +94,10 @@ void sensors_begin() {
 	if (!sensor_PRH.begin(0x77)) {
 		String msg = "WARNING: BME280 P/RH sensor not found.";
 		sd.logStatus(msg, millis());
-		_isGood_PRH = false;
+		isGood_PRH = false;
 	}
 	else {
-		_isGood_PRH = true;
+		isGood_PRH = true;
 		String msg = "BME280 P/RH sensor found.";
 		sd.logStatus(msg, millis());
 	}
@@ -115,12 +115,12 @@ void sensors_begin() {
 	*/
 	// Find DS18B20 sensor.
 	if (countOneWireDevices() < 1) {
-		_isGood_Temp = false;
+		isGood_Temp = false;
 		String msg = "WARNING: DS18B20 T sensor not found.";
 		sd.logStatus(msg, millis());
 	}
 	else {
-		_isGood_Temp = true;
+		isGood_Temp = true;
 		String msg = "DS18B20 T sensor found.";
 		sd.logStatus(msg, millis());
 	}
@@ -129,7 +129,7 @@ void sensors_begin() {
 	// The VEML6075 begin returns true on success
 	// or false on failure to communicate.
 	if (sensor_UV.begin() == true) {
-		_isGood_UV = true;
+		isGood_UV = true;
 		String msg = "VEML6075 UV sensor found.";
 		sd.logStatus(msg, millis());
 	}
@@ -144,12 +144,12 @@ void sensors_begin() {
 		Missing sensor gives T > 1000.
 		Implies IR sensor was not found.
 		*/
-		_isGood_IR = false;
+		isGood_IR = false;
 		String msg = "WARNING: MLX90614 IR sensor not found.";
 		sd.logStatus(msg, millis());
 	}
 	else {
-		_isGood_IR = true;
+		isGood_IR = true;
 		String msg = "MLX90614 IR sensor found.";
 		sd.logStatus(msg, millis());
 	}
@@ -157,8 +157,8 @@ void sensors_begin() {
 	windDir.begin();	// Create WindDirection.
 	String msg = "[ No connection test implemented for Davis anemometer. ]";
 	sd.logStatus(msg, millis());
-	_isGood_WindDir = true;      // How can this be tested?? XXX
-	_isGood_WindSpeed = true;
+	isGood_WindDir = true;      // How can this be tested?? XXX
+	isGood_WindSpeed = true;
 
 	sd.logStatus("Device initialization complete.", millis());
 	sd.logDeviceStatus(
@@ -166,26 +166,27 @@ void sensors_begin() {
 		gps.isDaylightTime(),
 		//wiFi_isConnected,		XXX NOT CODED YET!
 		gps.timeZoneOffset(),     //timeZoneOffset,
-		_isGood_SDCard,
-		_isGood_LittleFS,
-		_isGood_GPS,
-		_isGood_Temp,
-		_isGood_PRH,
-		_isGood_UV);
+		isGood_SDCard,
+		isGood_LittleFS,
+		isGood_GPS,
+		isGood_Temp,
+		isGood_PRH,
+		isGood_UV);
 }
 
 /******   WIND READINGS    ******/
 
-/// <summry>
-/// Reads and saves wind speed, gusts, and direction.
+/// <summary>
+/// Adds wind readings for speed, gust, and direction.
 /// </summary>
-void readWind() {
-	if (_isDEBUG_simulateWindReadings) {
+/// <param name="rots">Rotation count.</param>
+void processWind(uint32_t rots) {
+	if (isDEBUG_simulateWindReadings) {
 		readWind_Simulate();
 		return;
 	}
 	// Read wind speed.
-	float speed = windSpeed.speedInstant(_anem_Rotations, BASE_PERIOD_SEC);
+	float speed = windSpeed.speedInstant(rots, ANEM_READ_PERIOD_SEC);
 	DataPoint dpSpeed(now(), speed);
 	windSpeed.addReading(DataPoint(dpSpeed));
 
@@ -195,22 +196,17 @@ void readWind() {
 	windGust.addReading(dpGust);
 
 	// Read wind direction.
-	float windAngle = windAngleReading();
+	float windAngle = getWindAngle();
 	windDir.addReading(now(), windAngle, speed);	// weighted by speed
-
-	// Reset hardware interrupt count.
-	portENTER_CRITICAL_ISR(&hardwareMux_anem);
-	_anem_Rotations = 0;	// Reset anemometer count.
-	portEXIT_CRITICAL_ISR(&hardwareMux_anem);
 }
 
 /// <summary>
-/// Returns number of rotations that produce a given speed.
+/// Returns number of rots that produce a given speed.
 /// </summary>
 /// <param name="speed">Speed, mph</param>
-/// <returns>Number of rotations.</returns>
+/// <returns>Number of rots.</returns>
 float rotsFromSpeed(float speed) {
-	return speed * BASE_PERIOD_SEC / DAVIS_SPEED_CAL_FACTOR;
+	return speed * ANEM_READ_PERIOD_SEC / DAVIS_SPEED_CAL_FACTOR;
 }
 
 // =======   Wind speed measurement and averaging   ================== //
@@ -220,7 +216,7 @@ float rotsFromSpeed(float speed) {
 /// analog pin as integer value from 0 - 360 deg.
 /// </summary>
 /// <returns>Integer wind angle.</returns>
-int windAngleReading() {
+int getWindAngle() {
 	int vaneValue = analogRead(WIND_VANE_PIN);
 	return map(vaneValue, 0, 4095, 0, 359);	// Map to 0-359 deg.	
 }
@@ -229,7 +225,7 @@ int windAngleReading() {
 /// Adds simulated wind speed readings.
 /// </summary>
 void readWind_Simulate() {
-//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 	float sim_speed_start = 3;
 	float sim_speed_spike = 15;
 	float sim_speed_incr = 0.025;
@@ -241,7 +237,7 @@ void readWind_Simulate() {
 		50,
 		6
 	);
-	float speed = windSpeed.speedInstant(rots, BASE_PERIOD_SEC);
+	float speed = windSpeed.speedInstant(rots, ANEM_READ_PERIOD_SEC);
 	DataPoint dpSpeed(now(), speed);
 	windSpeed.addReading(dpSpeed);
 
@@ -254,28 +250,26 @@ void readWind_Simulate() {
 	// Read wind direction.
 	float windAngle = dummy_windDir.sawtooth(90, 1, 360);
 	windDir.addReading(now(), windAngle, dpSpeed.value);	// weighted by speed
-//#endif
+#endif
 }
 
-/// <summary>
-/// Reads and saves fan speed.
-/// </summary>
-void readFan() {
-	// Get fan speed.
-	d_fanRPM.addReading(DataPoint(now(), fanRPM(_fanHalfRots, BASE_PERIOD_SEC)));
-	// Reset hardware interrupt count.
-	portENTER_CRITICAL(&hardwareMux_fan);
-	_fanHalfRots = 0;		// Reset fan rotations.		
-	portEXIT_CRITICAL(&hardwareMux_fan);
-}
+///// <summary>
+///// Reads and saves fan speed.
+///// </summary>
+//void readFan() {
+//	// Get fan speed.
+//	d_fanRPM.addReading(DataPoint(now(), fanRPM(fanHalfRots, FAN_READ_PERIOD_SEC)));
+//	// Reset hardware interrupt count.
+//	fanHalfRots = 0;		// Reset fan rots.
+//}
 
 /// <summary>
 /// Reads and saves data from a sensor specified by index.
 /// </summary>
 /// <param name="index">Indicates sensor to read.</param>
-void readSensors(int index) {
+void readSensor_by_index(int index) {
 	//unsigned long timeStart = millis();
-	if (_isDEBUG_simulateSensorReadings) {
+	if (isDEBUG_simulateSensorReadings) {
 		// Simulate sensor readings.
 		readSensors_Simulate();
 		return;
@@ -341,7 +335,7 @@ void readSensors(int index) {
 	}
 	default:
 	{
-		String msg = "Error: readSensors index out of range = " + String(index);
+		String msg = "Error: readSensor_by_index index out of range = " + String(index);
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
@@ -350,6 +344,228 @@ void readSensors(int index) {
 	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
 #endif
 }
+
+
+/// <summary>
+/// Processes 10-min data for a sensor specified by index.
+/// </summary>
+/// <param name="index">Indicates sensor to read.</param>
+void processSensor_10_min_by_index(int index) {
+	//unsigned long timeStart = millis();
+	if (isDEBUG_simulateSensorReadings) {
+		// Simulate sensor readings.
+		readSensors_Simulate();
+		return;
+	}
+	unsigned long start_usec = micros();	// debugging
+
+	// Read sensor specified by index.
+	switch (index)
+	{
+	case 0:
+		// Temperature
+		d_TempF.process_data_10_min();
+		break;
+	case 1:
+		// UV A
+		d_UVA.process_data_10_min();
+		break;
+	case 2:
+		// UV B
+		d_UVB.process_data_10_min();
+		break;
+	case 3:
+		// UV Index
+		d_UVIndex.process_data_10_min();
+		break;
+	case 4:
+	{
+		// Raw pressure in mb (hectopascals)
+		d_Pres_mb.process_data_10_min();
+		break;
+	}
+	case 5:
+	{
+		//float temp = sensor_PRH.readTemperature();
+		d_TempC_for_RH.process_data_10_min();
+		break;
+	}
+	case 6:
+	{
+		// P adjusted to sea level.
+		d_Pres_seaLvl_mb.process_data_10_min();
+		break;
+	}
+	case 7:
+		// RH
+		d_RH.process_data_10_min();
+		break;
+	case 8:
+		// IR sky
+		d_IRSky_C.process_data_10_min();
+		break;
+	case 9:
+	{
+		// Insolation/
+		d_Insol.process_data_10_min();
+		break;
+	}
+	default:
+	{
+		String msg = "Error: processSensor_10_min_by_index index out of range = " + String(index);
+		sd.logStatus(msg, gps.dateTime());
+	}
+	}
+#if defined(VM_DEBUG)
+	float elapsed = (micros() - start_usec) / 1000.;
+	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
+#endif
+}
+
+/// <summary>
+/// Processes 60-min data for a sensor specified by index.
+/// </summary>
+/// <param name="index">Indicates sensor to read.</param>
+void processSensor_60_min_by_index(int index) {
+	//unsigned long timeStart = millis();
+	if (isDEBUG_simulateSensorReadings) {
+		// Simulate sensor readings.
+		readSensors_Simulate();
+		return;
+	}
+	unsigned long start_usec = micros();	// debugging
+
+	// Read sensor specified by index.
+	switch (index)
+	{
+	case 0:
+		// Temperature
+		d_TempF.process_data_60_min();
+		break;
+	case 1:
+		// UV A
+		d_UVA.process_data_60_min();
+		break;
+	case 2:
+		// UV B
+		d_UVB.process_data_60_min();
+		break;
+	case 3:
+		// UV Index
+		d_UVIndex.process_data_60_min();
+		break;
+	case 4:
+		// Raw pressure in mb (hectopascals)
+		d_Pres_mb.process_data_60_min();
+		break;
+	case 5:
+		//float temp = sensor_PRH.readTemperature();
+		d_TempC_for_RH.process_data_60_min();
+		break;
+	case 6:
+		// P adjusted to sea level.
+		d_Pres_seaLvl_mb.process_data_60_min();
+		break;
+	case 7:
+		// RH
+		d_RH.process_data_60_min();
+		break;
+	case 8:
+		// IR sky
+		d_IRSky_C.process_data_60_min();
+		break;
+	case 9:
+		// Insolation/
+		d_Insol.process_data_60_min();
+		break;
+	default:
+	{
+		String msg = "Error: processSensor_60_min_by_index index out of range = " + String(index);
+		sd.logStatus(msg, gps.dateTime());
+	}
+	}
+#if defined(VM_DEBUG)
+	float elapsed = (micros() - start_usec) / 1000.;
+	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
+#endif
+}
+
+/// <summary>
+/// Processes day rollover data for a sensor specified by index.
+/// </summary>
+/// <param name="index">Indicates sensor to read.</param>
+void processSensor_day_by_index(int index) {
+	//unsigned long timeStart = millis();
+	if (isDEBUG_simulateSensorReadings) {
+		// Simulate sensor readings.
+		readSensors_Simulate();
+		return;
+	}
+	unsigned long start_usec = micros();	// debugging
+
+	// Read sensor specified by index.
+	switch (index)
+	{
+	case 0:
+		// Temperature
+		d_TempF.process_data_day();
+		break;
+	case 1:
+		// UV A
+		d_UVA.process_data_day();
+		break;
+	case 2:
+		// UV B
+		d_UVB.process_data_day();
+		break;
+	case 3:
+		// UV Index
+		d_UVIndex.process_data_day();
+		break;
+	case 4:
+	{
+		// Raw pressure in mb (hectopascals)
+		d_Pres_mb.process_data_day();
+		break;
+	}
+	case 5:
+	{
+		//float temp = sensor_PRH.readTemperature();
+		d_TempC_for_RH.process_data_day();
+		break;
+	}
+	case 6:
+	{
+		// P adjusted to sea level.
+		d_Pres_seaLvl_mb.process_data_day();
+		break;
+	}
+	case 7:
+		// RH
+		d_RH.process_data_day();
+		break;
+	case 8:
+		// IR sky
+		d_IRSky_C.process_data_day();
+		break;
+	case 9:
+	{
+		// Insolation/
+		d_Insol.process_data_day();
+		break;
+	}
+	default:
+	{
+		String msg = "Error: processSensor_day_by_index index out of range = " + String(index);
+		sd.logStatus(msg, gps.dateTime());
+	}
+	}
+#if defined(VM_DEBUG)
+	float elapsed = (micros() - start_usec) / 1000.;
+	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
+#endif
+}
+
 
 /// <summary>
 /// Adds simulated values to sensor readings 
@@ -366,24 +582,24 @@ void readSensors(int index) {
 /// d_Insol
 /// </remarks>
 void readSensors_Simulate() {
-	//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 	DataPoint dp;	// holds reading (Values changed and reused for each sensor!)
 	// Temperature.
-	dp = DataPoint(now(), dummy_Temp_F.sawtooth(10, 0.02, 20));
+	dp = DataPoint(now(), dummy_Temp_F.sawtooth(60, 0.02, 20));
 	d_TempF.addReading(dp);
 	// UV readings.
 	/*dp = DataPoint(now(), dummy_UVA.linear(3, 0.1));
 	d_UVA.addReading(dp);
 	dp = DataPoint(now(), dummy_UVB.linear(3, 0.1));
 	d_UVB.addReading(dp);*/
-	dp = DataPoint(now(), dummy_UVIndex.sawtooth(0, 0.05, 10));
+	dp = DataPoint(now(), dummy_UVIndex.sawtooth(0, 0.05, 60));
 	d_UVIndex.addReading(dp);
 	// P, RH
 	dp = DataPoint(now(), dummy_RH.sawtooth(0, 0.05, 50));
 	d_RH.addReading(dp);
 	dp = DataPoint(now(), dummy_Pres_mb.linear(1000, 0.1) / 100);
 	d_Pres_mb.addReading(dp);			// Raw pressure in mb (hectopascals)
-	//dp = DataPoint(now(), dummy_Temp_for_RH_C.linear(10, 0.02));
+	//dp = DataPoint(now(), dummy_Temp_for_RH_C.linear(60, 0.02));
 	//d_TempC_for_RH.addReading(dp);		// Temp (C) of P, RH sensor.
 	// P adjusted to sea level.
 	float psl = pressureAtSeaLevel(
@@ -393,13 +609,13 @@ void readSensors_Simulate() {
 	dp = DataPoint(now(), psl);
 	d_Pres_seaLvl_mb.addReading(dp);
 	// IR sky
-	dp = DataPoint(now(), dummy_IRSky_C.sawtooth(10, 0.02, 20));	// .sawtooth(0, 0.02, 10));
+	dp = DataPoint(now(), dummy_IRSky_C.sawtooth(60, 0.02, 20));	// .sawtooth(0, 0.02, 10));
 	d_IRSky_C.addReading(dp);
 	// Insolation/
 	float insol_norm = insol_norm_pct(dummy_Insol.linear(0, 0.01), INSOL_REFERENCE_MAX);
 	dp = DataPoint(now(), insol_norm);
 	d_Insol.addReading(dp);	// % Insolation
-	//#endif
+#endif
 }
 
 /// <summary>
@@ -407,31 +623,22 @@ void readSensors_Simulate() {
 /// </summary>
 /// <param name="t">Time to save.</param>
 void saveLastReadTime_toFile(unsigned long t) {
-	// Save in LittleFS
-	//if (_isDatafile) {
 	fileWrite(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str(), String(t).c_str());
-	///}
 }
 
 /// <summary>
 /// Gets last reading time from LittleFS.
 /// </summary>
 /// <returns>Saved time of last reading.</returns>
-unsigned long lastReadingTime_fromFile()
-{
-	// Read from LittleFS
-	//if (_isDatafile) {
+unsigned long lastReadingTime_fromFile() {
 	return fileRead(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str()).toInt();
-	//}
-	//else {
-	//	return 0;
 }
 
 /// <summary>
 /// Saves 10-min averages of all sensor data 
 /// to lists.
 /// </summary>
-void processReadings_10_min() {
+void processReadings_10_min_XXX_TOO_MANY_SENSORS() {
 	windSpeed.process_data_10_min();
 	windGust.process_data_10_min();
 	windDir.process_data_10_min();
@@ -466,6 +673,7 @@ void processReadings_60_min() {
 	d_Insol.process_data_60_min();
 	d_IRSky_C.process_data_60_min();
 }
+
 /// <summary>
 /// Saves all readings minima and maxima 
 /// for the prior day.
@@ -504,7 +712,7 @@ void addDummyData() {
 	d_Insol.addDummy_data_10_min(2700, 25, 24, 1765412100);
 	d_UVIndex.addDummy_data_10_min(0, 0.5, 24, 1765412100);
 
-	processReadings_10_min();
+	processReadings_10_min_XXX_TOO_MANY_SENSORS();
 
 	// 60-min
 	d_TempF.addDummy_data_60_min(65, 0.1, 24, 1765412100);
@@ -545,6 +753,5 @@ void addDummyData() {
 	d_UVIndex.addDummy_data_dayMin(0, 0.5, 24, 1765412100);
 
 	processReadings_day();
-
 #endif
 }

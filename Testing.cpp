@@ -28,8 +28,8 @@ void Testing::testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop) 
 	/********************************/
 	/* INSERT TEST CODE HERE.       */
 
-	/*Serial.println("d_TempF.getData_10_min_as_String():");
-	Serial.println(d_TempF.getData_10_min_as_String()); Serial.println();
+	/*Serial.println("d_TempF.dataPoints_10_min_as_String():");
+	Serial.println(d_TempF.dataPoints_10_min_as_String()); Serial.println();
 
 	list<DataPoint> dpList = d_TempF.recovered_data_10_min();
 	String s = getString_from_List(dpList);
@@ -289,7 +289,7 @@ void Testing::windDirection(float angleStart, float angleIncrement, int cycles, 
 }
 
 //void Testing::test2() {
-//	Serial.println("Test adding rotations counts from various optional lists.");
+//	Serial.println("Test adding rotations_VOL counts from various optional lists.");
 //	// Create lists with 48 values of dummy rot counts.
 //	list<float> rotsList_all_10({ 10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10 });
 //	list<float> rotsList_varied({ 10,10,10,10,10,10,10,10,10,10,10,10,10,5,30,99,10,10,10,10,10,10,10,10,10,10,5,30,99,10,10,10,10,10,10,10,10,10,10,10,10,10,10,200,10,10,10,10 });
@@ -321,7 +321,7 @@ void Testing::windDirection(float angleStart, float angleIncrement, int cycles, 
 //		{
 //			// Every iteration adds 2 minutes.
 //			// Dummy rotation counts (from a list).
-//			elapsed += addDummyRotations(rotsList_all_zeros, windSpeed, BASE_PERIOD_SEC);
+//			elapsed += addDummyRotations(rotsList_all_zeros, windSpeed, ANEM_READ_PERIOD_SEC);
 //			//elapsed += addDummyRotations(rotsList_one_large, wind, RAW_PERIOD);
 //			//elapsed += addDummyRotations(rotsList_all_20, wind, RAW_PERIOD);
 //			if (true) {
@@ -345,9 +345,9 @@ void Testing::windDirection(float angleStart, float angleIncrement, int cycles, 
 //		{
 //			// Every iteration adds 2 minutes.
 //			// Dummy rotation counts (from a list).
-//			//elapsed += addDummyRotations(rotsList_all_10, wind, BASE_PERIOD_SEC);
-//			elapsed += addDummyRotations(rotsList_one_large, windSpeed, BASE_PERIOD_SEC);
-//			//elapsed += addDummyRotations(rotsList_all_20, wind, BASE_PERIOD_SEC);
+//			//elapsed += addDummyRotations(rotsList_all_10, wind, ANEM_READ_PERIOD_SEC);
+//			elapsed += addDummyRotations(rotsList_one_large, windSpeed, ANEM_READ_PERIOD_SEC);
+//			//elapsed += addDummyRotations(rotsList_all_20, wind, ANEM_READ_PERIOD_SEC);
 //			if (true) {
 //				Serial.print("LOOP 2: "); Serial.print("Elapsed time = "); Serial.print(elapsed / 60.); Serial.println(" min");
 //
@@ -408,14 +408,14 @@ void Testing::testStructList(long time)
 	Serial.println(d_test.label());
 
 	Serial.println("10-min");
-	Serial.println(d_test.getData_10_min_as_String());
+	Serial.println(d_test.dataPoints_10_min_as_String());
 	Serial.println();
 
 	Serial.println("10-min 1 decimal place.");
-	Serial.println(d_test.getData_10_min_as_String());
+	Serial.println(d_test.dataPoints_10_min_as_String());
 }
 
-// Add a list of rotations to a WindSpeed object, and return elapsed seconds.
+// Add a list of rotations_VOL to a WindSpeed object, and return elapsed seconds.
 float Testing::addDummyRotations(list<float> srcList, WindSpeed& speedObj, float rawPeriod) {
 	// Dummy rotation counts (from a list).
 	float elapsed = 0;
@@ -450,16 +450,16 @@ float Testing::addDummyRotations(list<float> srcList, WindSpeed& speedObj, float
 //		timeElapsed += 2.5;		// simulated time, sec
 //		countRawPeriods++;
 //
-//		// Periodicallly change speed (rotations) for some of the cycles.
+//		// Periodicallly change speed (rotations_VOL) for some of the cycles.
 //		// 1 cycle = 2.5 sec.
 //		// 48 cycles = 2 min
 //		// 240 cycles = 10 min
 //		speedChangeCount++;
 //		if (speedChangeCount < speedChangeCrossover) {
-//			rots = 10;		// rotations at first.
+//			rots = 10;		// rotations_VOL at first.
 //		}
 //		else {
-//			rots = 10;		// rotations changed.
+//			rots = 10;		// rotations_VOL changed.
 //		}
 //		if (speedChangeCount >= speedChangeCountReset) {
 //			speedChangeCount = 0;	// Reset speed change.

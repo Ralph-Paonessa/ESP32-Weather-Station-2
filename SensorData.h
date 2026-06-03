@@ -17,7 +17,7 @@ using std::list;
 using namespace DataPoint_Lists;
 using namespace App_Settings;
 #include "FileOperations.h"
-using namespace FileOperations;
+using namespace FileOps;
 
 /// <summary>
 /// Object that reads and processes data for a sensor.
@@ -139,12 +139,6 @@ public:
 	/// lists to the file system.
 	/// </summary>
 	void process_data_day();
-
-	/// <summary>
-	/// Recovers list of data points from a file.
-	/// </summary>
-	/// <param name="dataType">The type based on the period.</param>
-	void XXX_recover_data_fromFile(dataPeriod dataType);
 
 	/// <summary>
 	/// Data point (time, value) of latest sensor reading.
@@ -311,35 +305,42 @@ public:
 	/// <returns></returns>
 	String units_html();
 
+	/// <summary>
+	/// Returns true if sensor is configured to report 
+	/// only daily maximum and not minimum.
+	/// </summary>
+	/// <returns></returns>
+	bool isReportDayMaxOnly();
+
 	/******     DATA FROM MEMORY     ******/
 
 	/// <summary>
 	/// Returns list of 10-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>List of 10-min dataPoints as delimited string.</returns>
-	String getData_10_min_as_String();
+	String dataPoints_10_min_as_String();
 
 	/// <summary>
 	/// Returns list of 60-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>List of 60-min dataPoints as delimited string.</returns>
-	String getData_60_min_as_String();
+	String dataPoints_60_min_as_String();
 
 	/// <summary>
 	/// Returns list of 60-min dataPoints as delimited string.
 	/// </summary>
 	/// <returns>Delimited string of two (time, value) lists, separated by "|".</returns>
-	String getData_dayMaxMin_as_String();
+	String dataPoints_dayMaxMin_as_String();
 
 	/// <summary>
 	/// Returns list of daily maxima dataPoints as delimited string.
 	/// </summary>
-	String getData_dayMax_as_String();
+	String dataPoints_dayMax_as_String();
 
 	/// <summary>
 	/// Returns list of daily minima dataPoints as delimited string.
 	/// </summary>
-	String getData_dayMin_as_String();
+	String dataPoints_dayMin_as_String();
 
 
 	/******     DATA FROM FILE SYSTEM     ******/

@@ -19,9 +19,7 @@ free for personal use.*
   page initially requests 10-min data (dataRoute = "/data_10"). Buttons on the 
   page allow the user to request 1-hr data and daily max/min values as well.
   
-  - Depending on the chart data type (temperature, pressure, etc.), the web 
-  server serverRouteHandler() parses this request and supplies data from the 
-  appropriate sensor as a delimited string via 
+  - Depending on the chart data type (temperature, pressure, etc.), the Web Server Route Handler() parses this request and supplies data from the appropriate sensor as a delimited string via 
   .data_10_min_string_delim(.
 
   - This data string is processed by chart.js, which creates an array of
