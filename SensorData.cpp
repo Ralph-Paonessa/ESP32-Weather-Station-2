@@ -303,7 +303,7 @@ void SensorData::recover_data_dayMaxMin_from_file() {
 	// Get 10-min data from file system and place in memory.
 	if (_isDatafile) {
 		// Read file from flash LittleFS.
-		String str = fileRead(LittleFS, _sensorFilepath("_10_min").c_str());
+		String str = fileRead(LittleFS, _sensorFilepath("_dayMaxMin").c_str());
 		serial_println_DEBUG("SensorData::recover_data_dayMaxMin_from_file with prefix = " + _filenamePrefix + ":\n", str.c_str());
 		list<String> parts = getStringList_from_String(str, '|');
 		int index = 0;

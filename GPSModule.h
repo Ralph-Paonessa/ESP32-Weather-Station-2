@@ -256,6 +256,7 @@ public:
 	/// </summary>
 	/// <returns>True if Daylight Time is set</returns>
 	bool isDaylightTime();
+
 };
 
 #endif
