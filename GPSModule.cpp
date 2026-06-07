@@ -164,7 +164,7 @@ bool GPSModule::syncToGPS(SDCard& sdCard, bool isSimulate) {
 /// Uses dummy data as current time and altitude.
 /// </summary>
 void GPSModule::addDummyGpsData() {
-	data._altitude = 1234.;	// Dummy altitude (need for P at sea level)
+	data._altitude = GPS_DUMMY_ALTITUDE;	// Dummy altitude (need for P at sea level)
 	setTime(GPS_DUMMY_HOUR,
 		GPS_DUMMY_MIN,
 		GPS_DUMMY_SEC,
@@ -472,6 +472,46 @@ bool GPSModule::isDaylightTime() {
 	// in March, ends 1st Sunday in November.
 	return IS_DAYLIGHT_TIME;
 }
+
+
+
+
+bool isDST_US()
+{
+	time_t t = now();  // UTC from GPS
+
+	// approximate Pacific Standard Time (UTC-8)
+	time_t localGuess = t - 8 * SECS_PER_HOUR;
+
+	int y = year(localGuess);
+	int m = month(localGuess);
+	int d = day(localGuess);
+	int h = hour(localGuess);
+
+	// 2nd Sunday March
+	int marchFirst = 1 + ((8 - dayOfWeek(makeTime({ 0,0,0,1,3,y - 1970 }))) % 7);
+	int start = marchFirst + 7;
+
+	// 1st Sunday November
+	int novFirst = 1 + ((8 - dayOfWeek(makeTime({ 0,0,0,1,11,y - 1970 }))) % 7);
+
+	if (m < 3 || m > 11) return false;
+	if (m > 3 && m < 11) return true;
+
+	if (m == 3)
+		return (d > start || (d == start && h >= 2));
+
+	if (m == 11)
+		return (d < novFirst || (d == novFirst && h < 2));
+
+	return false;
+}
+
+
+
+
+
+
 
 /// <summary>
 /// Returns string "yyyy-mm-dd hh:mm" from 
