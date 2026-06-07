@@ -52,25 +52,38 @@ float Utilities::pressure_inches(float p_mb) {
 /// Returns air pressure adjusted to the equivalent sea level pressure.
 /// </summary>
 /// <param name="pressure">Absolute pressure (any units).</param>
-/// <param name="alt_m">Altitude, meters.</param>
+/// <param name="elev_m">Altitude, meters.</param>
 /// <param name="temp_C">Reading temperature, C.</param>
 /// <returns>Air pressure at sea level.</returns>
-float Utilities::pressureAtSeaLevel(
-	float pressure,
-	float alt_m,
-	float temp_C) {
-	float temp_Kelvin = 273.15 + temp_C;
-	// Adjust absolute pressure to sea level.
-	float scaleFactor = pow(1 - ((0.0065 * alt_m) / (temp_Kelvin + (0.0065 * alt_m))), -5.257);
+float Utilities::pressureAtSeaLevel(float pressure, float elev_m, float temp_C) {
+	// Adjust absolute pressure to Mean Sea Level Pressure.
+	float scaleFactor = pow(1.0 - (0.0065 * elev_m) / (temp_C + 273.15 + 0.0065 * elev_m), -5.25588);
 	return  pressure * scaleFactor;
 }
+
+///// <summary>
+///// Returns air pressure adjusted to the equivalent sea level pressure.
+///// </summary>
+///// <param name="pressure">Absolute pressure (any units).</param>
+///// <param name="elev_m">Altitude, meters.</param>
+///// <param name="temp_C">Reading temperature, C.</param>
+///// <returns>Air pressure at sea level.</returns>
+//float Utilities::pressureAtSeaLevel(
+//	float pressure,
+//	float alt_m,
+//	float temp_C) {
+//	float temp_Kelvin = 273.15 + temp_C;
+//	// Adjust absolute pressure to sea level.
+//	float scaleFactor = pow(1 - ((0.0065 * alt_m) / (temp_Kelvin + (0.0065 * alt_m))), -5.257);
+//	return  pressure * scaleFactor;
+//}
 
 /// <summary>
 /// Returns boiling point of water (F) as function of air pressure.
 /// </summary>
 /// <param name="pressure_mb">Air pressure, mbar</param>
 /// <returns> Boiling point of water (F).</returns>
-float Utilities::waterBoilingPoint_F(float pressure_mb){
+float Utilities::waterBoilingPoint_F(float pressure_mb) {
 	return  49.161 * log(pressure_inches(pressure_mb)) + 44.932;
 }
 

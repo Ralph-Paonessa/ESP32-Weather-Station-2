@@ -77,8 +77,8 @@ void sensors_AddLabels() {
 	windDir.addLabels("Wind direction", "windDir", "", "&deg;");
 	windGust.addLabels("Wind Gust", "gust", "mph");
 	d_TempF.addLabels("Temperature", "temp", "F", "&deg;F");
-	d_Pres_mb.addLabels("Pressure (abs)", "presAbs", "mb");
-	d_Pres_seaLvl_mb.addLabels("Pressure (SL)", "presSeaLvl", "mb");
+	d_Pres_mb.addLabels("Pressure (station)", "presSta", "mb");
+	d_Pres_seaLvl_mb.addLabels("Pressure (MSLP)", "presSeaLvl", "mb");
 	d_TempC_for_RH.addLabels("Temp for RH", "tForRH", "C", "&degC;");
 	d_RH.addLabels("Rel. Humidity", "RH", "%", "&percnt;");
 	d_IRSky_C.addLabels("Sky Temperature", "skyTemp", "C", "&degC;");
@@ -256,7 +256,7 @@ void recoverData(SensorData& sData, time_t time) {
 
 	// 10-min lists
 	Serial.println("recoverData(): 10-min lists " + sData.label());
-	if ((now() - lastTime) > DATA_RECOVERY_10_MIN_AGE_LIMIT)
+	if ((now() - lastTime) > DATA_RECOVER_10_MIN_AGE_LIMIT_SEC)
 	{
 		sData.recover_data_10_min_from_file();
 		sd.logStatus("Recovered 10-min data.", millis());
@@ -268,7 +268,7 @@ void recoverData(SensorData& sData, time_t time) {
 
 	// 60-min lists
 	Serial.println("recoverData(): 60-min lists " + sData.label());
-	if ((now() - lastTime) > DATA_RECOVERY_60_MIN_AGE_LIMIT)
+	if ((now() - lastTime) > DATA_RECOVER_60_MIN_AGE_LIMIT_SEC)
 	{
 		sData.recover_data_60_min_from_file();
 		sd.logStatus("Recovered 60-min data.", millis());
@@ -280,7 +280,7 @@ void recoverData(SensorData& sData, time_t time) {
 
 	// day lists
 	Serial.println("recoverData(): day lists " + sData.label());
-	if ((now() - lastTime) > DATA_RECOVERY_DAY_AGE_LIMIT)
+	if ((now() - lastTime) > DATA_RECOVER_DAY_AGE_LIMIT_SEC)
 	{
 		sData.recover_data_dayMaxMin_from_file();
 		sd.logStatus("Recovered dayMaxMin data.", millis());
@@ -565,6 +565,8 @@ unsigned long millis_sensors_read = 0;			// Start time of reading sensors
 unsigned long millis_sensors_Process_10 = 0;	// Start time of processing sensors at 10-min.
 unsigned long millis_sensors_Process_60 = 0;	// Start time of processing sensors at 60-min.
 
+unsigned int countSensorsRead = 0;
+
 /****************************************************************************/
 /***************************       LOOP      ********************************/
 /****************************************************************************/
@@ -600,7 +602,7 @@ void loop() {
 
 	if (interrupts_pending_anem_v > 0) {
 
-		Serial.printf("%.3fs interrupts_pending_anem_v = %i\n", millis() / 1000., interrupts_pending_anem_v);
+		//Serial.printf("%.3fs interrupts_pending_anem_v = %i\n", millis() / 1000., interrupts_pending_anem_v);
 
 		// Get wind speed data from anemometer.
 		portENTER_CRITICAL(&muxAnem);
@@ -617,7 +619,6 @@ void loop() {
 			String msg = "ERROR: Missed timer interrupts! count = " + interrupts_pending_anem_v;
 			sd.logStatus(msg, gps.dateTime());
 		}
-		
 	}
 
 	//// ====================================================
@@ -626,7 +627,12 @@ void loop() {
 	if ((millis() - millis_sensors_read) >= SENSOR_READ_PERIOD_SEC * MILLISEC_PER_SECOND) {
 		// Read data for sensors one at a time.
 
-		Serial.printf("\t%.3fs READ SENSORS\n", millis() / 1000.);
+
+		countSensorsRead++;
+		if (sensor_idx == 0) {
+			Serial.printf("------> t = %.3fs READ ALL SENSORS # %u at (ms-msSeRe) = %ul\n", millis() / 1000., countSensorsRead, millis() - millis_sensors_read);
+		}
+
 
 		readSensor_by_index(sensor_idx);
 		sensor_idx++;
@@ -641,7 +647,7 @@ void loop() {
 	//// ====================================================
 	if ((millis() - millis_fan_read) >= FAN_READ_PERIOD_SEC * MILLISEC_PER_SECOND) {
 
-		Serial.printf("\t%.3fs READ FAN\n", millis() / 1000.);
+		//Serial.printf("\t%.3fs READ FAN\n", millis() / 1000.);
 
 		// Get fan speed
 		d_fanRPM.addReading(DataPoint(now(), fanRPM(fanHalfRots, FAN_READ_PERIOD_SEC)));
@@ -654,9 +660,14 @@ void loop() {
 	//// ====================================================
 
 	if ((millis() - millis_sensors_Process_10) >= 10 * MILLISECONDS_PER_MINUTE) {
-		// Get 10-min avgs.
 
-		Serial.printf("\t\t%.3fs 10-MIN INTERVAL\n", millis() / 1000.);
+
+		//if ((millis() - millis_sensors_Process_10) >= 3 * MILLISECONDS_PER_MINUTE) {	// XXX
+
+
+			// Get 10-min avgs.
+
+		Serial.printf("========> %.3fs 10-MIN INTERVAL\n", millis() / 1000.);
 
 		// Process 10-min data for sensors one at a time.
 		processSensor_10_min_by_index(sensor_idx_10);
@@ -674,9 +685,13 @@ void loop() {
 	//// ====================================================   
 
 	if ((millis() - millis_sensors_Process_60) >= 60 * MILLISECONDS_PER_MINUTE) {
-		// Get 60-min avgs.
 
-		// Process 60-min data for sensors one at a time.
+		//if ((millis() - millis_sensors_Process_60) >= 10 * MILLISECONDS_PER_MINUTE) {	// XXX
+
+
+			// Get 60-min avgs.
+
+			// Process 60-min data for sensors one at a time.
 		processSensor_60_min_by_index(sensor_idx_60);
 		sensor_idx_60++;
 		if (sensor_idx_60 > COUNT_SENSORS_TO_PROCESS - 1) {
@@ -704,7 +719,7 @@ void loop() {
 			oldYear = year();
 			sd.logStatus("New day rollover.", gps.dateTime());
 		};
-		
+
 	}
 
 	///// ==========  TEST FOR LOST WIFI CONNECTION  ========== //

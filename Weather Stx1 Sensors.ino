@@ -82,7 +82,7 @@ float readInsol_mV() {
 	 not distinguishable (NON-LINEAR range).
 	 Return mV based on full scale (4095) = 3200mV.
 	*/
-	return (analogRead(SOLAR_PIN) / 4096.) * 3200.;    // Solar panel output in mV.
+	return analogRead(SOLAR_PIN) / 4096. * 3200.;    // Solar panel output in mV.
 }
 
 /// <summary>
@@ -339,12 +339,13 @@ void readSensor_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
+	/*
 #if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
-	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
+	Serial.printf("\tAt %.3fs Sensor %i takes %.2fus\n", millis() / 1000., index, elapsed);
 #endif
+*/
 }
-
 
 /// <summary>
 /// Processes 10-min data for a sensor specified by index.
@@ -378,20 +379,17 @@ void processSensor_10_min_by_index(int index) {
 		// UV Index
 		d_UVIndex.process_data_10_min();
 		break;
-	case 4:
-	{
+	case 4: {
 		// Raw pressure in mb (hectopascals)
 		d_Pres_mb.process_data_10_min();
 		break;
 	}
-	case 5:
-	{
+	case 5: {
 		//float temp = sensor_PRH.readTemperature();
 		d_TempC_for_RH.process_data_10_min();
 		break;
 	}
-	case 6:
-	{
+	case 6: {
 		// P adjusted to sea level.
 		d_Pres_seaLvl_mb.process_data_10_min();
 		break;
@@ -404,22 +402,21 @@ void processSensor_10_min_by_index(int index) {
 		// IR sky
 		d_IRSky_C.process_data_10_min();
 		break;
-	case 9:
-	{
+	case 9: {
 		// Insolation/
 		d_Insol.process_data_10_min();
 		break;
 	}
-	default:
-	{
+	default: {
 		String msg = "Error: processSensor_10_min_by_index index out of range = " + String(index);
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
-#if defined(VM_DEBUG)
+	//#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
-	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
-#endif
+	String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	sd.logStatus(msg, gps.dateTime());
+	//#endif
 }
 
 /// <summary>
@@ -484,10 +481,11 @@ void processSensor_60_min_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
-#if defined(VM_DEBUG)
+	//#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
-	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
-#endif
+	String msg = "Processing 60-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	sd.logStatus(msg, gps.dateTime());
+	//#endif
 }
 
 /// <summary>
@@ -560,12 +558,12 @@ void processSensor_day_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
-#if defined(VM_DEBUG)
+//#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
-	Serial.printf("Sensor %i:", index); Serial.printf(" %.2f usec\n", elapsed);
-#endif
+	String msg = "Processing Day-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	sd.logStatus(msg, gps.dateTime());
+//#endif
 }
-
 
 /// <summary>
 /// Adds simulated values to sensor readings 

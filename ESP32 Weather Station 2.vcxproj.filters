@@ -134,24 +134,6 @@
     <Text Include="board XXX IS THIS OK.txt">
       <Filter>Misc Files</Filter>
     </Text>
-    <Text Include="Data\Text.txt">
-      <Filter>Misc Files</Filter>
-    </Text>
-    <Text Include="Data\Sensor data\wind_10_min.txt">
-      <Filter>Misc Files</Filter>
-    </Text>
-    <Text Include="Data\Sensor data\last_time.txt">
-      <Filter>Misc Files</Filter>
-    </Text>
-    <Text Include="Data\test1line.txt">
-      <Filter>Misc Files</Filter>
-    </Text>
-    <Text Include="Data\test3lines.txt">
-      <Filter>Misc Files</Filter>
-    </Text>
-    <Text Include="Data\Sensor data\d_Temp_F_10_min.txt">
-      <Filter>Misc Files</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\img\chart-icon-black-150px.png">

@@ -34,9 +34,9 @@ namespace App_Settings {
 	constexpr unsigned int	FAN_READ_PERIOD_SEC = 100; // Period to sample radiation shield fan half-rots. Current default 60 sec.
 	constexpr unsigned int	SENSOR_READ_PERIOD_SEC = 60; // Period to sample radiation shield fan half-rots. Current default 60 sec.
 
-	constexpr unsigned int	DATA_RECOVERY_10_MIN_AGE_LIMIT = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than this.
-	constexpr unsigned int	DATA_RECOVERY_60_MIN_AGE_LIMIT = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than this.
-	constexpr unsigned int	DATA_RECOVERY_DAY_AGE_LIMIT = 3 * SECONDS_PER_DAY;			// Recover day data no older than this.
+	constexpr unsigned int	DATA_RECOVER_10_MIN_AGE_LIMIT_SEC = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than 30 min.
+	constexpr unsigned int	DATA_RECOVER_60_MIN_AGE_LIMIT_SEC = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than 3 hr.
+	constexpr unsigned int	DATA_RECOVER_DAY_AGE_LIMIT_SEC = 3 * SECONDS_PER_DAY;			// Recover day data no older than 3 days.
 
 	constexpr unsigned long GPS_BAUD_RATE = 9600;		// Baud rate for NEO-6M 9600 GPS.
 	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 5;// Minimum number of GPS satellites before syncing.
@@ -45,12 +45,13 @@ namespace App_Settings {
 	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 70;	// Max number of GPS cycles before quitting.
 	constexpr float			GPS_MAX_ALLOWED_HDOP = 2;	// Minimum HDOP precision for syncing.
 
-	constexpr unsigned int	GPS_DUMMY_HOUR = 23;		// Hour for dummy GPS time.
-	constexpr unsigned int	GPS_DUMMY_MIN = 05;			// Minute for dummy GPS time.
+	constexpr unsigned int	GPS_DUMMY_ALTITUDE = 700;	// Dummy altitude for GPS. (used Ridgecrest)
+	constexpr unsigned int	GPS_DUMMY_HOUR = 12;		// Hour for dummy GPS time.
+	constexpr unsigned int	GPS_DUMMY_MIN = 0;			// Minute for dummy GPS time.
 	constexpr unsigned int	GPS_DUMMY_SEC = 0;			// Second for dummy GPS time.
 	constexpr unsigned int	GPS_DUMMY_DAY = 1;			// Day for dummy GPS time.
 	constexpr unsigned int	GPS_DUMMY_MONTH = 1;		// Month for dummy GPS time.
-	constexpr unsigned int	GPS_DUMMY_YEAR = 2099;		// Year for dummy GPS time.
+	constexpr unsigned int	GPS_DUMMY_YEAR = 2020;		// Year for dummy GPS time.
 	constexpr int			UTC_OFFSET_HOURS = -8;		// Time zone offset from UTC.
 	constexpr bool			IS_DAYLIGHT_TIME = true;	// True if adjusted to Taylight Time.
 
@@ -59,8 +60,8 @@ namespace App_Settings {
 
 	constexpr unsigned int	FAN_DUTY_PERCENT = 30;		// PWM duty cycle for fan speed.
 
-	constexpr int	COUNT_SENSORS_TO_READ = 9;			// No. sensors to read in readSensor_by_index(index).
-	constexpr int	COUNT_SENSORS_TO_PROCESS = 11;		// No. sensors to process at longer intervals.
+	constexpr int	COUNT_SENSORS_TO_READ = 10;			// No. sensors to read in readSensor_by_index(index).
+	constexpr int	COUNT_SENSORS_TO_PROCESS = 10;		// No. sensors to process at longer intervals.
 	const String	SENSOR_DATA_DIR_PATH = "/Sensor data";	// Absolute path to sensor data files directory.
 	const String	SENSOR_DATA_TIME_FILE_PATH = "/Sensor data/last_time.txt";	// Absolute path to sensor read time file.
 	constexpr int	DATA_FILE_BUFFER_SIZE = 1024;		// Size of buffer when reading a readings data file from file sys.
@@ -91,12 +92,12 @@ namespace App_Settings {
 	constexpr unsigned int	LOOP_TIME_WARN_THRESHOLD_MS = 120;	// threshold for reporting long loop cycle.
 		
 	/// <summary>
-	/// Max size of data lists.
+	/// Max size of data lists in memory. Affects 
 	/// </summary>
 	enum speedListSize {
-		SIZE_10_MIN_LIST = 24,	// Max. no. of 10-min readings in that list. (At least 6 needed for 60-min avg)!
-		SIZE_60_MIN_LIST = 24,	// Max. no. of 60-min readings in that list. (At least 12 needed for 12-hr avg)!
-		SIZE_DAY_LIST = 30		// Max. no. of daily readings in list. (Hold data for 30 days.)
+		SIZE_10_MIN_LIST = 24,	// Max num 10-min readings in 10-min list. 4 hrs. (At least 6 needed for 60-min avg)!
+		SIZE_60_MIN_LIST = 24,	// Max num 60-min readings in 60-min list. 24 hrs. (At least 12 needed for 12-hr avg)!
+		SIZE_DAY_LIST = 28		// Max num daily readings in day list. 28 days. (Hold data for 4 weeks.)
 	};
 
 	/// <summary>

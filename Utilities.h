@@ -51,6 +51,7 @@ namespace Utilities {
 	/// <param name="alt_m">Altitude, meters.</param>
 	/// <param name="temp_C">Reading temperature, C.</param>
 	/// <returns>Air pressure at sea level.</returns>
+	/// <remarks>Returns pressure in whatever units are input.</remarks>
 	float pressureAtSeaLevel(float pressure, float alt_m, float temp_C);
 
 	/// <summary>

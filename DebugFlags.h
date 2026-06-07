@@ -11,7 +11,7 @@
 
 /*****************      DEBUGGING FLAGS      ******************/
 
-constexpr bool isDEBUG_BypassGPS = true;				// Bypass gps syncing.
+constexpr bool isDEBUG_BypassGPS = false;				// Bypass gps syncing.
 constexpr bool isDEBUG_BypassWifi = false;				// Bypass WiFi connect.	 XXX FAILS!!!
 constexpr bool isDEBUG_BypassSDCard = false;			// Bypass SD card.
 constexpr bool isDEBUG_ListLittleFS = true;				// List contents of LittleFS.

@@ -22,12 +22,12 @@ void printHeader() {
 String columnNames() {
 	String s = "Time";				// (1)
 	s += "\t\t\tT, F";				// (1)
-	s += "\tP, mbSL\tP, mbAB";		// (2)
+	s += "\tP, mbSL\tP, mbSt";		// (2)
 	s += "\tRH %\tBME T,C";			// (2)
 	s += "\tSolar%";				// (1)
 	s += "\tUV-A\tUV-B\tUV idx";	// (3)
 	s += "\tIR, C";					// (1)
-	s += "\tWind10\t\tGust";		// (2)
+	s += "\tWind10\tGust";		// (2)
 	s += "\tMax";					// (1)
 	s += "\tVane\tFrom";			// (2)
 	s += "\tFan rpm";				// (1)
@@ -45,8 +45,8 @@ String sensorsDataString_current() {
 	// temperature (1)
 	s += "\t" + String(d_TempF.valueLastAdded());
 	// pressure (2)
-	s += "\t" + String(d_Pres_seaLvl_mb.valueLastAdded());	// mb adjusted to sea level
-	s += "\t" + String(d_Pres_mb.valueLastAdded());			// absolute mb (hPa)
+	s += "\t" + String(d_Pres_seaLvl_mb.valueLastAdded());	// mb adjusted to sea level (MSLP)
+	s += "\t" + String(d_Pres_mb.valueLastAdded());			// absolute mb (hPa) (Station P)
 	// RH (2)
 	s += "\t" + String(d_RH.valueLastAdded());				// %RH
 	s += "\t" + String(d_TempC_for_RH.valueLastAdded());	// temp recorded by BME280
@@ -115,7 +115,7 @@ String sensorsDataString_10_min() {
 	// Wind speed (3)
 	s += "\t" + String(windSpeed.avg_10_min());
 	s += "\t" + String(windGust.max_10_min_dp().value);
-	s += "\t\tmax?";	// + String(windSpeed.max_last_10_min);  XXX  ???
+	s += "\tmax?";	// + String(windSpeed.max_last_10_min);  XXX  ???
 	// Wind direction (2)
 	if (windSpeed.avg_10_min() >= WIND_DIR_SPEED_THRESHOLD)
 	{
