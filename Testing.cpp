@@ -69,7 +69,7 @@ void Testing::testCodeForSetup_convert_DelimString_to_ListOfDataPoints(bool isIn
 	String s2 = "1,64~2,~3,63~4,~5,61";
 	Serial.println("String to convert to list:");
 	Serial.println(s2);
-	list<DataPoint> dpList2 = getDataPoints_from_String(s2);
+	list<DataPoint> dpList2 = getDataPoints_from_String(s2, 99);
 	Serial.println("String derived from list of data points:");
 	Serial.println(getString_from_List(dpList2));
 
@@ -99,7 +99,7 @@ void Testing::testCodeForSetup_list_dataPoints_fromString(bool isInfiniteLoop) {
 	DataPoint_Lists::print_List(sList);
 
 	Serial.println("Convert using getDataPoints_from_String:");
-	DataPoint_Lists::print_List(getDataPoints_from_String(s), true);
+	DataPoint_Lists::print_List(getDataPoints_from_String(s, 99), true);
 
 	Serial.println("TEST COMPLETE");
 	Serial.println(LINE_SEPARATOR);
@@ -189,7 +189,9 @@ void Testing::testCodeForSetup_printFileContents(bool isInfiniteLoop, String pat
 	Serial.println(contents);
 	Serial.println(LINE_SEPARATOR);
 	// Data points parsed from text file.
-	list<DataPoint> dPoints = getDataPoints_from_String(contents);
+	int maxListSize = 99;
+	list<DataPoint> dPoints = getDataPoints_from_String(contents, maxListSize);
+	Serial.println("Limit list to " + String(maxListSize) + " elements.");
 	Serial.println("List elements (time converted to string):");
 	DataPoint_Lists::print_List(dPoints, true);
 

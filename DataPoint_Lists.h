@@ -129,10 +129,14 @@ namespace DataPoint_Lists {
 	/// string of comma-separated "time,value" pairs.
 	/// </summary>
 	/// <param name="str">Delimited string of dataPoints.</param>
+	/// <param name="maxSize">Maximum size of list.</param>
 	/// <returns>
 	/// List of "time,value" dataPoints retrieved from a delimited string.
 	/// </returns>
-	list<DataPoint> getDataPoints_from_String(String& str);
+	/// <remarks>
+	/// Delimited string must separate points by "~" and time, val by ",".
+	/// </remarks>
+	list<DataPoint> getDataPoints_from_String(String& str, int maxSize);
 
 	/// <summary>
 	/// Prints the elements of a list of C++ std::string.

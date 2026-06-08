@@ -73,14 +73,14 @@ void FileOps::dirRemove(fs::FS& fs, const char* path) {
 String FileOps::fileRead(fs::FS& fs, const char* path) {
 
 	if (!fs.exists(path)) {
-		Serial.printf("ERROR: file not found: %s\n", path);
+		Serial.printf("FileOps::fileRead ERROR: file not found: %s\n", path);
 		return "";
 	}
 
 	File file = fs.open(path, FILE_READ);
 	
 	if (!file) {
-		Serial.print("ERROR: fileRead failed to open file for reading: ");
+		Serial.print("FileOps::fileRead ERROR: fileRead failed to open file for reading: ");
 		Serial.println(path);
 		return "";
 	}

@@ -412,11 +412,11 @@ void processSensor_10_min_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime());
 	}
 	}
-	//#if defined(VM_DEBUG)
-	float elapsed = (micros() - start_usec) / 1000.;
-	String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	sd.logStatus(msg, gps.dateTime());
-	//#endif
+	////#if defined(VM_DEBUG)
+	//float elapsed = (micros() - start_usec) / 1000.;
+	//String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	//sd.logStatus(msg, gps.dateTime());
+	////#endif
 }
 
 /// <summary>
@@ -628,7 +628,7 @@ void saveLastReadTime_toFile(unsigned long t) {
 /// Gets last reading time from LittleFS.
 /// </summary>
 /// <returns>Saved time of last reading.</returns>
-unsigned long lastReadingTime_fromFile() {
+unsigned long getLastReadingTime_from_File() {
 	return fileRead(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str()).toInt();
 }
 

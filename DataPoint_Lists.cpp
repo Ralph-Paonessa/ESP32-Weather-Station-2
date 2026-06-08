@@ -238,10 +238,14 @@ list<String> DataPoint_Lists::getStringList_from_String(const String& str, const
 /// string of comma-separated "time,value" pairs.
 /// </summary>
 /// <param name="str">Delimited string of dataPoints.</param>
+/// <param name="maxSize">Maximum size of list.</param>
 /// <returns>
 /// List of "time,value" dataPoints retrieved from a delimited string.
 /// </returns>
-list<DataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
+/// <remarks>
+/// Delimited string must separate points by "~" and time, val by ",".
+/// </remarks>
+list<DataPoint> DataPoint_Lists::getDataPoints_from_String(String& str, int maxSize) {
 	list<DataPoint> dPoints;	// List to hold data points.
 	if (str == "") {
 		Serial.println("DataPoint_Lists::getDataPoints_from_String: input str is empty");
@@ -264,6 +268,10 @@ list<DataPoint> DataPoint_Lists::getDataPoints_from_String(String& str) {
 		}
 		DataPoint dp = DataPoint(std::stoul(sub.substr(0, i)), val);
 		dPoints.push_back(dp);
+	}
+	// If list is too big, remove items from beginning.
+	while (dPoints.size() > maxSize) {
+		dPoints.pop_front();
 	}
 	return dPoints;
 }

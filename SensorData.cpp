@@ -261,8 +261,8 @@ void SensorData::process_data_day() {
 ******************************************************************/
 
 /// <summary>
-/// Retrieves data points from file system and uses 
-/// them to initialize 10-min list in memory. Used to retrieve 
+/// Retrieves data points from file system and saves them 
+/// as 10-min list in memory. Used to retrieve 
 /// any data lost at reboot.
 /// </summary>
 /// <remarks>
@@ -275,7 +275,8 @@ void SensorData::recover_data_10_min_from_file() {
 		// Read file from flash LittleFS.
 		String str = fileRead(LittleFS, _sensorFilepath("_10_min").c_str());
 		serial_println_DEBUG("In SensorData::recover_data_10_min_from_file with prefix = " + _filenamePrefix + ":\n", str.c_str());
-		_dataPoints_10_min = getDataPoints_from_String(str);
+		// Convert file to DataPoints and hold in memory.
+		_dataPoints_10_min = getDataPoints_from_String(str, SIZE_10_MIN_LIST);
 	}
 }
 
@@ -290,7 +291,7 @@ void SensorData::recover_data_60_min_from_file() {
 		// Read file from flash LittleFS.
 		String str = fileRead(LittleFS, _sensorFilepath("_60_min").c_str());
 		serial_println_DEBUG("SensorData::recover_data_60_min_from_file with prefix = " + _filenamePrefix + ":\n", str.c_str());
-		_dataPoints_60_min = getDataPoints_from_String(str);
+		_dataPoints_60_min = getDataPoints_from_String(str, SIZE_60_MIN_LIST);
 	}
 }
 
@@ -313,11 +314,11 @@ void SensorData::recover_data_dayMaxMin_from_file() {
 			switch (index) {
 			case 0:
 				// maxima list.
-				_dataPoints_dayMax = getDataPoints_from_String(s);
+				_dataPoints_dayMax = getDataPoints_from_String(s, SIZE_DAY_LIST);
 				break;
 			case 1:
 				// minima list.							
-				_dataPoints_dayMin = getDataPoints_from_String(s);
+				_dataPoints_dayMin = getDataPoints_from_String(s, SIZE_DAY_LIST);
 				break;
 			default:
 				// Unexpected index!
