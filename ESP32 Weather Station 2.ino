@@ -238,53 +238,50 @@ void littleFS_initialize() {
 }
 
 /// <summary>
-/// Read recent sensor readings from LittleFS and load them back into memory.
+/// Reads recent sensor readings from LittleFS and loads them back into memory.
 /// </summary>
-/// <param name="sData">SensorData instance.</param>
-/// <param name="time">Time of recover.</param>
-void recoverData(SensorData& sData, time_t time) {
+/// <param name="sensData">SensorData instance.</param>
+/// <param name="time">Recovery time.</param>
+void recoverData(SensorData& sensData, time_t time) {
 	String tStr = GPSModule::dateTime(time);
-	if (!sData.isDatafile()) {
-		sd.logStatus("Data file is not configured for " + sData.label(), tStr);
+	if (!sensData.isDatafile()) {
+		sd.logStatus("Data file is not configured for " + sensData.label(), tStr);
 		return;
 	}
 
-	unsigned long lastTime = lastReadingTime_fromFile();
-	Serial.printf("recoverData(): lastReadingTime_fromFile = %lu = %s\n",
-		lastTime,
-		GPSModule::dateTime(lastTime).c_str());
+	unsigned long lastDataSaveTime_num = getLastReadingTime_from_File();
+	Serial.printf("recoverData(): getLastReadingTime_from_File = %lu = %s\n",
+		lastDataSaveTime_num,
+		GPSModule::dateTime(lastDataSaveTime_num).c_str());
 
 	// 10-min lists
-	Serial.println("recoverData(): 10-min lists " + sData.label());
-	if ((now() - lastTime) > DATA_RECOVER_10_MIN_AGE_LIMIT_SEC)
-	{
-		sData.recover_data_10_min_from_file();
+	Serial.println("recoverData(): 10-min lists " + sensData.label());
+	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_10_MIN_AGE_LIMIT_SEC)	{
+		sensData.recover_data_10_min_from_file();
 		sd.logStatus("Recovered 10-min data.", millis());
-		sd.logStatus(sData.dataPoints_10_min_as_String().c_str(), tStr);
+		sd.logStatus(sensData.dataPoints_10_min_as_String().c_str(), tStr);
 	}
 	else {
 		sd.logStatus("10-min data is beyond configured age limit.", millis());
 	}
 
 	// 60-min lists
-	Serial.println("recoverData(): 60-min lists " + sData.label());
-	if ((now() - lastTime) > DATA_RECOVER_60_MIN_AGE_LIMIT_SEC)
-	{
-		sData.recover_data_60_min_from_file();
+	Serial.println("recoverData(): 60-min lists " + sensData.label());
+	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_60_MIN_AGE_LIMIT_SEC)	{
+		sensData.recover_data_60_min_from_file();
 		sd.logStatus("Recovered 60-min data.", millis());
-		sd.logStatus(sData.dataPoints_60_min_as_String().c_str(), tStr);
+		sd.logStatus(sensData.dataPoints_60_min_as_String().c_str(), tStr);
 	}
 	else {
 		sd.logStatus("60-min data is beyond configured age limit.", millis());
 	}
 
 	// day lists
-	Serial.println("recoverData(): day lists " + sData.label());
-	if ((now() - lastTime) > DATA_RECOVER_DAY_AGE_LIMIT_SEC)
-	{
-		sData.recover_data_dayMaxMin_from_file();
+	Serial.println("recoverData(): day lists " + sensData.label());
+	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_DAY_AGE_LIMIT_SEC)	{
+		sensData.recover_data_dayMaxMin_from_file();
 		sd.logStatus("Recovered dayMaxMin data.", millis());
-		sd.logStatus(sData.dataPoints_dayMaxMin_as_String().c_str(), tStr);
+		sd.logStatus(sensData.dataPoints_dayMaxMin_as_String().c_str(), tStr);
 	}
 	else {
 		sd.logStatus("dayMaxMin data is beyond configured age limit.", millis());
@@ -364,8 +361,7 @@ void setup() {
 	*/
 	// Connect to GPS
 
-#define SERIAL_CONFIGURATION SERIAL_8N1	// data, parity, and stop bits
-	//const int GPS_BAUD_RATE = 9600;     // Beitian = 9600; Brian's = 38400; NEO-6M 9600
+#define SERIAL_CONFIGURATION SERIAL_8N1		// data, parity, and stop bits
 	gps.begin(GPS_BAUD_RATE, SERIAL_CONFIGURATION, RX2_PIN, TX2_PIN);
 	sd.logStatus("Connecting to GPS.", millis());
 	// Get time and location from GPS.
@@ -382,6 +378,11 @@ void setup() {
 		msg += String(GPS_CYCLES_COUNT_MAX) + " cycles.";
 		sd.logStatus(msg, millis());
 	}
+	// What do we now say time is?
+	String msg2 = "System time assigned = " + gps.dateTime();
+	sd.logStatus(msg2, millis());
+	sd.logStatus(msg2, gps.dateTime());
+	
 
 	// ==========  SETUP LittleFS  ========== //
 #if defined(VM_DEBUG)
@@ -565,7 +566,7 @@ unsigned long millis_sensors_read = 0;			// Start time of reading sensors
 unsigned long millis_sensors_Process_10 = 0;	// Start time of processing sensors at 10-min.
 unsigned long millis_sensors_Process_60 = 0;	// Start time of processing sensors at 60-min.
 
-unsigned int countSensorsRead = 0;
+//unsigned int countSensorsRead = 0;
 
 /****************************************************************************/
 /***************************       LOOP      ********************************/
@@ -628,10 +629,10 @@ void loop() {
 		// Read data for sensors one at a time.
 
 
-		countSensorsRead++;
+		/*countSensorsRead++;
 		if (sensor_idx == 0) {
 			Serial.printf("------> t = %.3fs READ ALL SENSORS # %u at (ms-msSeRe) = %ul\n", millis() / 1000., countSensorsRead, millis() - millis_sensors_read);
-		}
+		}*/
 
 
 		readSensor_by_index(sensor_idx);
