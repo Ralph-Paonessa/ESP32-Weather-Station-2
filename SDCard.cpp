@@ -21,23 +21,23 @@ bool SDCard::create(int SPI_CS_pin, bool isBypass) {
 	if (isBypass) {
 		// Bypass initializing SD card		
 		Serial.print(millis() / 1000.);
-		Serial.println("s [SDCard.create] BYPASS SD card.");
+		Serial.println("s SDCard::create BYPASS SD card.");
 		return false;
 	}
 	// Create SD card
 	Serial.print(millis() / 1000.);
-	Serial.println("s [SDCard.create] Initializing SD card.");
+	Serial.println("s SDCard::create Initializing SD card.");
 	if (SD.begin(_SPI_CS_pin)) {
 		// Success.
 		logStatus(); logStatus();	// empty lines
 		logStatus(LINE_SEPARATOR_LOG_BEGINS);
-		logStatus("[SDCard.create] Logging has started.", millis());
-		logStatus("[SDCard.create] MicroSD card mount successful.", millis());
+		logStatus("SDCard::create Logging has started.", millis());
+		logStatus("SDCard::create MicroSD card mount successful.", millis());
 		return true;
 	}
 	else {
 		// Failure.
-		logStatus("[SDCard.create] ERROR: MicroSD card mount failed.", millis());
+		logStatus("SDCard::create ERROR: MicroSD card mount failed.", millis());
 		return false;
 	}
 }
@@ -52,7 +52,7 @@ void SDCard::logData(String msg) {
 #endif
 	if (!_isBypassSDCard) {
 		String status = msg + "\r\n";	// Append CR + LF.
-		fileAppend(SD, LOGFILE_PATH_DATA.c_str(), status.c_str());
+		FileOps::fileAppend(SD, LOG_DATA_FILEPATH_SD.c_str(), status.c_str());
 	}
 }
 
@@ -67,7 +67,7 @@ void SDCard::logStatus_indent(const String& msg) {
 #endif
 	if (!_isBypassSDCard) {
 		String status = "\t" + msg + "\r\n";	// Append CR + LF.
-		fileAppend(SD, LOGFILE_PATH_STATUS.c_str(), status.c_str());
+		FileOps::fileAppend(SD, LOG_STATUS_FILEPATH_SD.c_str(), status.c_str());
 	}
 }
 
@@ -79,7 +79,7 @@ void SDCard::logStatus() {
 	Serial.println();	// Echo to serial monitor
 #endif
 	if (!_isBypassSDCard) {
-		fileAppend(SD, LOGFILE_PATH_STATUS.c_str(), "\r\n");
+		FileOps::fileAppend(SD, LOG_STATUS_FILEPATH_SD.c_str(), "\r\n");
 	}
 }
 
@@ -93,7 +93,7 @@ void SDCard::logStatus(const String& msg) {
 #endif
 	if (!_isBypassSDCard) {
 		String status = msg + "\r\n";	// Append CR + LF.
-		fileAppend(SD, LOGFILE_PATH_STATUS.c_str(), status.c_str());
+		FileOps::fileAppend(SD, LOG_STATUS_FILEPATH_SD.c_str(), status.c_str());
 	}
 }
 
@@ -111,7 +111,7 @@ void SDCard::logStatus(const String& msg, const String& dateString) {
 #endif
 	if (!_isBypassSDCard) {
 		status += "\r\n";	// Append CR + LF.
-		fileAppend(SD, LOGFILE_PATH_STATUS.c_str(), status.c_str());
+		FileOps::fileAppend(SD, LOG_STATUS_FILEPATH_SD.c_str(), status.c_str());
 	}
 }
 
@@ -125,43 +125,12 @@ void SDCard::logStatus(const String& msg, unsigned long millisec) {
 	String status = String(millisec / 1000., 2) + "s ";
 	status += msg;
 #if defined(VM_DEBUG)
+	//Serial.print("(VM_DEBUG) "); 
 	Serial.println(status);	// Echo to serial monitor
 #endif
 	if (!_isBypassSDCard) {
 		status += "\r\n";	// Append CR + LF.
-		fileAppend(SD, LOGFILE_PATH_STATUS.c_str(), status.c_str());
-	}
-}
-
-
-
-// Returns true on success
-// or if the file already exists; otherwise
-// returns false.
-
-
-/// <summary>
-/// Creates a file on the SD card if it doesn't
-/// already exist. 
-/// </summary>
-/// <param name="path">File path.</param>
-/// <returns>True is new file created, false if </returns>
-bool SDCard::fileCreateOrExists(const String& path) {
-	if (_isBypassSDCard) {
-		return false;
-	}
-	// File does not exist, so create empty file.
-	File file = SD.open(path, FILE_WRITE);
-	if (!file) {
-		String msg = "[SDCard.fileCreateOrExists] " + path + " file could not be created.";
-		logStatus(msg, millis());
-		return false;
-	}
-	else {
-		String msg = "[SDCard.fileCreateOrExists] " + path + " file created.";
-		logStatus(msg, millis());
-		file.close();
-		return true;
+		FileOps::fileAppend(SD, LOG_STATUS_FILEPATH_SD.c_str(), status.c_str());
 	}
 }
 
@@ -340,9 +309,9 @@ void SDCard::logApp_Settings() {
 	logStatus_indent(msg);
 	msg = "WIFI_CONNECT_TIMEOUT_SEC: " + String(WIFI_CONNECT_TIMEOUT_SEC);
 	logStatus_indent(msg);
-	msg = "LOGFILE_PATH_DATA: " + String(LOGFILE_PATH_DATA);
+	msg = "LOG_DATA_FILEPATH_SD: " + String(LOG_DATA_FILEPATH_SD);
 	logStatus_indent(msg);
-	msg = "LOGFILE_PATH_STATUS: " + String(LOGFILE_PATH_STATUS);
+	msg = "LOG_STATUS_FILEPATH_SD: " + String(LOG_STATUS_FILEPATH_SD);
 	logStatus_indent(msg);
 	msg = "INSOL_REFERENCE_MAX: " + String(INSOL_REFERENCE_MAX);
 	logStatus_indent(msg);

@@ -174,7 +174,7 @@ String WindDirection::directionCardinal(float angle) {
 	else if (angle < 337)
 		return "NW";
 	else
-		return "N";
+		return String(angle);
 }
 
 /// <summary>

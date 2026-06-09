@@ -50,12 +50,12 @@ public:
 	/// <returns>True if successful SD card initialization.</returns>
 	bool create(int SPI_CS_pin, bool isBypass);
 
-	/// <summary>
+	/*/// <summary>
 	/// Create the file if it does not exist.
 	/// </summary>
 	/// <param name="path">The file path including name.</param>
 	/// <returns>True if file found or created.</returns>
-	bool fileCreateOrExists(const String& path);
+	bool fileCreateOrExists(const String& path);*/
 
 	/// <summary>
 	/// Appends data to the SD card, and advances to new line.

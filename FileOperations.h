@@ -14,7 +14,6 @@ used with both SD cards and LittleFS.
 #include "WProgram.h"
 #endif
 
-//#include "FS.h"
 #include <FS.h>
 #include <LittleFS.h>
 #include "App_Settings.h"
@@ -27,6 +26,59 @@ using namespace Utilities;
 /// Exposes methods that operate on files.
 /// </summary>
 namespace FileOps {
+
+	/// <summary>
+	/// Possible status of files in filesys.
+	/// </summary>
+	enum FileStatus
+	{
+		/// <summary>
+		/// Status unknown.
+		/// </summary>
+		Unknown,
+
+		/// <summary>
+		/// Not found in filesys.
+		/// </summary>
+		NotFound,
+
+		/// <summary>
+		/// Already exists in filesys.
+		/// </summary>
+		Found,
+
+		/// <summary>
+		/// Newly created in filesys.
+		/// </summary>
+		Created,
+
+		/// <summary>
+		/// Error creating file in filesys.
+		/// </summary>
+		ErrorCreating,
+
+		/// <summary>
+		/// Error opening file in filesys.
+		/// </summary>
+		ErrorOpening,
+
+		/// <summary>
+		/// Error writing to file in filesys.
+		/// </summary>
+		ErrorWriting,
+
+		/// <summary>
+		/// Error appending to file in filesys.
+		/// </summary>
+		ErrorAppending
+	};
+
+	/// <summary>
+	/// Returns String name of FileStatus enum item.
+	/// </summary>
+	/// <param name="status"></param>
+	/// <returns></returns>
+	String fileStatus_toString(FileStatus status);
 
 	/// <summary>
 	/// Lists contents of directory.
@@ -73,7 +125,7 @@ namespace FileOps {
 	/// <param name="path">
 	/// Full path including the filename and extension.</param>
 	/// <returns>True on success</returns>
-	bool fileCreateOrExists(FS& fsys, const String& path);
+	FileStatus fileCreateOrExists(FS& fsys, const String& path);
 
 	/// <summary>
 	/// Writes to a file, overwriting existing data.

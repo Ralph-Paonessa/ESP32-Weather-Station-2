@@ -110,7 +110,7 @@ public:
 	/// </param>
 	/// <param name="decimalPlaces">Decimal places in output strings. (Default is 0.)
 	/// </param>
-	void createFiles(bool isConvertZeroToEmpty = true, unsigned int decimalPlaces = 0);
+	void createSensorDataFiles(bool isConvertZeroToEmpty = true, unsigned int decimalPlaces = 0);
 
 	/// <summary>
 	/// Adds (time, value) DataPoint, accumulates average, 

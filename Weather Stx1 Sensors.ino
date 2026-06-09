@@ -560,7 +560,7 @@ void processSensor_day_by_index(int index) {
 	}
 //#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
-	String msg = "Processing Day-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	String msg = "Processing Day data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
 	sd.logStatus(msg, gps.dateTime());
 //#endif
 }
@@ -621,7 +621,7 @@ void readSensors_Simulate() {
 /// </summary>
 /// <param name="t">Time to save.</param>
 void saveLastReadTime_toFile(unsigned long t) {
-	fileWrite(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str(), String(t).c_str());
+	fileWrite(LittleFS, SENSOR_DATA_TIME_FILEPATH_FS.c_str(), String(t).c_str());
 }
 
 /// <summary>
@@ -629,7 +629,7 @@ void saveLastReadTime_toFile(unsigned long t) {
 /// </summary>
 /// <returns>Saved time of last reading.</returns>
 unsigned long getLastReadingTime_from_File() {
-	return fileRead(LittleFS, SENSOR_DATA_TIME_FILE_PATH.c_str()).toInt();
+	return fileRead(LittleFS, SENSOR_DATA_TIME_FILEPATH_FS.c_str()).toInt();
 }
 
 /// <summary>

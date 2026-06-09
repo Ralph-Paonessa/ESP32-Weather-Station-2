@@ -50,6 +50,7 @@ SDCard sd;		// SDCard instance for SD card routines.
 #include <freertos/task.h>
 #include <freertos/portmacro.h>
 #include <cstddef>
+#include <SD.h>
 //#endif
 
 // ==========   CREATE SENSOR OBJECTS   ==================== //
@@ -93,20 +94,20 @@ void sensors_AddLabels() {
 /// Creates filesys data files for selected SensorData instances. 
 /// </summary>
 void sensors_createFiles() {
-	windSpeed.createFiles();
-	windDir.createFiles();
-	windGust.createFiles();
-	d_TempF.createFiles();
-	//d_Pres_mb.createFiles();
-	d_Pres_seaLvl_mb.createFiles();
-	//d_TempC_for_RH.createFiles(); 
-	d_RH.createFiles();
-	d_IRSky_C.createFiles();
-	//d_UVA.createFiles();         
-	//d_UVB.createFiles();         
-	d_UVIndex.createFiles();
-	d_Insol.createFiles();
-	//d_fanRPM.createFiles();      
+	windSpeed.createSensorDataFiles();
+	windDir.createSensorDataFiles();
+	windGust.createSensorDataFiles();
+	d_TempF.createSensorDataFiles();
+	//d_Pres_mb.createSensorDataFiles();
+	d_Pres_seaLvl_mb.createSensorDataFiles();
+	//d_TempC_for_RH.createSensorDataFiles(); 
+	d_RH.createSensorDataFiles();
+	d_IRSky_C.createSensorDataFiles();
+	//d_UVA.createSensorDataFiles();         
+	//d_UVB.createSensorDataFiles();         
+	d_UVIndex.createSensorDataFiles();
+	d_Insol.createSensorDataFiles();
+	//d_fanRPM.createSensorDataFiles();      
 }
 
 #if defined(VM_DEBUG)
@@ -244,58 +245,68 @@ void littleFS_initialize() {
 /// <param name="time">Recovery time.</param>
 void recoverData(SensorData& sensData, time_t time) {
 	String tStr = GPSModule::dateTime(time);
+	String msg;
 	if (!sensData.isDatafile()) {
-		sd.logStatus("Data file is not configured for " + sensData.label(), tStr);
+		msg = "Data file is not configured for " + sensData.label();
+		sd.logStatus(msg, tStr);
 		return;
 	}
 
 	unsigned long lastDataSaveTime_num = getLastReadingTime_from_File();
-	Serial.printf("recoverData(): getLastReadingTime_from_File = %lu = %s\n",
-		lastDataSaveTime_num,
-		GPSModule::dateTime(lastDataSaveTime_num).c_str());
+	msg = "recoverData(): getLastReadingTime_from_File = " + lastDataSaveTime_num;
+	msg += " = " + GPSModule::dateTime(lastDataSaveTime_num);
+	sd.logStatus(msg, tStr);
 
 	// 10-min lists
 	Serial.println("recoverData(): 10-min lists " + sensData.label());
-	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_10_MIN_AGE_LIMIT_SEC)	{
+	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_10_MIN_AGE_LIMIT_SEC) {
 		sensData.recover_data_10_min_from_file();
 		sd.logStatus("Recovered 10-min data.", millis());
 		sd.logStatus(sensData.dataPoints_10_min_as_String().c_str(), tStr);
 	}
 	else {
-		sd.logStatus("10-min data is beyond configured age limit.", millis());
+		msg = "No 10-min data found within configured age limit of ";
+		msg += String(DATA_RECOVER_10_MIN_AGE_LIMIT_SEC / 60.) + "min";
+		sd.logStatus(msg, tStr);
 	}
 
 	// 60-min lists
 	Serial.println("recoverData(): 60-min lists " + sensData.label());
-	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_60_MIN_AGE_LIMIT_SEC)	{
+	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_60_MIN_AGE_LIMIT_SEC) {
 		sensData.recover_data_60_min_from_file();
 		sd.logStatus("Recovered 60-min data.", millis());
 		sd.logStatus(sensData.dataPoints_60_min_as_String().c_str(), tStr);
 	}
 	else {
-		sd.logStatus("60-min data is beyond configured age limit.", millis());
+		msg = "No 60-min data found within configured age limit of ";
+		msg += String(DATA_RECOVER_60_MIN_AGE_LIMIT_SEC / 60.) + "min";
+		sd.logStatus(msg, tStr);
 	}
 
 	// day lists
 	Serial.println("recoverData(): day lists " + sensData.label());
-	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_DAY_AGE_LIMIT_SEC)	{
+	if ((now() - lastDataSaveTime_num) <= DATA_RECOVER_DAY_AGE_LIMIT_SEC) {
 		sensData.recover_data_dayMaxMin_from_file();
 		sd.logStatus("Recovered dayMaxMin data.", millis());
 		sd.logStatus(sensData.dataPoints_dayMaxMin_as_String().c_str(), tStr);
 	}
 	else {
-		sd.logStatus("dayMaxMin data is beyond configured age limit.", millis());
+		msg = "No dayMaxMin data found within configured age limit of ";
+		msg += String(DATA_RECOVER_DAY_AGE_LIMIT_SEC / 3600.) + "hr";
+		sd.logStatus(msg, tStr);
 	}
 }
+
 
 
 /****************************************************************************/
 /******************************      SETUP      *****************************/
 /****************************************************************************/
+
 void setup() {
 	Serial.begin(115200);
 	// Print status message now because SD is not yet online.
-	String msg = "\n\n\n" + LINE_SEPARATOR_MAJOR + "\n";
+	String msg = "\n\n" + LINE_SEPARATOR_MAJOR + "\n";
 	msg += String(millis() / 1000.);
 	msg += "s ENTERING SETUP \nSD card not yet online.\n";
 	msg += LINE_SEPARATOR_MAJOR + "\n\n";
@@ -307,13 +318,25 @@ void setup() {
 #endif
 	// (Do this first - need SD card for logging.)
 	isGood_SDCard = sd.create(SPI_CS_PIN, isDEBUG_BypassSDCard);
+
+#if defined(VM_DEBUG)
+	//Serial.println("Listing SD card dir to Serial:");
+	//FileOps::dirList(SD, "/", 3);
+#endif
+
 	// Begin status log entries to SD card.
 	sd.logStatus();	// Empty line
 	sd.logStatus(LINE_SEPARATOR_MAJOR);
-	sd.logStatus("SETUP continues after SD card initialization.", gps.dateTime());
-	sd.fileCreateOrExists(LOGFILE_PATH_DATA);
-	sd.fileCreateOrExists(LOGFILE_PATH_STATUS);
+	sd.logStatus("SETUP continues after SD card initialization.", millis());
 
+	// SD log file.
+	FileStatus status;
+	status = FileOps::fileCreateOrExists(SD, LOG_STATUS_FILEPATH_SD);
+	sd.logStatus("Status of " + LOG_STATUS_FILEPATH_SD + " = " + fileStatus_toString(status), millis());
+	// SD data file.
+	status = FileOps::fileCreateOrExists(SD, LOG_DATA_FILEPATH_SD);
+	sd.logStatus("Status of " + LOG_DATA_FILEPATH_SD + " = " + fileStatus_toString(status), millis());
+	
 	// Log the settings to the status file.
 	sd.logDebugStatus(
 		isDEBUG_BypassGPS,
@@ -335,9 +358,6 @@ void setup() {
 	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
 #endif
 	wifi.Initialize(sd);
-
-	//XXX Should isDEBUG_BypassWifi be a parameter??
-	//XXX Or should we just skip wifiSetupAndConnect() if it's true?!
 	wifi.wifiSetupAndConnect(gps.dateTime(), isDEBUG_BypassWifi);
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
@@ -382,7 +402,7 @@ void setup() {
 	String msg2 = "System time assigned = " + gps.dateTime();
 	sd.logStatus(msg2, millis());
 	sd.logStatus(msg2, gps.dateTime());
-	
+
 
 	// ==========  SETUP LittleFS  ========== //
 #if defined(VM_DEBUG)
@@ -406,7 +426,7 @@ void setup() {
 		bool isReportDailyMaxOnly = false;
 		SensorData d(isDataInFilesys, isReportDailyMaxOnly);
 		d.addLabels("Test sensor", "testPrefix", "units");
-		d.createFiles(false, 2);
+		d.createSensorDataFiles(false, 2);
 
 		unsigned long int t = 0;
 		float val = 40;
@@ -555,11 +575,19 @@ void setup() {
 	sd.logStatus(msg);
 	sd.logStatus("SETUP END " + gps.dateTime(), millis());
 
+#if defined(VM_DEBUG)
+	//Serial.println("Listing SD card dir to Serial:");
+	//FileOps::dirList(SD, "/", 3);
+#endif
+
 	time_start_first_loop = millis();
 }
+
 /****************************************************************************/
 /************************        END SETUP       ****************************/
 /****************************************************************************/
+
+
 
 // Initialize loop timers (immediately before loop starts!).
 unsigned long millis_sensors_read = 0;			// Start time of reading sensors
@@ -568,9 +596,11 @@ unsigned long millis_sensors_Process_60 = 0;	// Start time of processing sensors
 
 //unsigned int countSensorsRead = 0;
 
+
 /****************************************************************************/
 /***************************       LOOP      ********************************/
 /****************************************************************************/
+
 void loop() {
 	time_start_current_loop = millis();	// To monitor loop execution time.
 

@@ -411,17 +411,30 @@ String SensorData::dataPoints_dayMin_as_String() {
 /// <param name="isConvertZeroToEmpty">
 /// Set to true to convert zero to empty in output strings.</param>
 /// <param name="decimalPlaces">Decimal places in output strings.</param>
-void SensorData::createFiles(bool isConvertZeroToEmpty, unsigned int decimalPlaces) {
+void SensorData::createSensorDataFiles(bool isConvertZeroToEmpty, unsigned int decimalPlaces) {
 	_isConvertZeroToEmpty = isConvertZeroToEmpty;
 	_decimalPlaces = decimalPlaces;
 #if defined(VM_DEBUG)
-	if (LittleFS.mkdir(SENSOR_DATA_DIR_PATH)) {
-		Serial.printf("Created or found folder %s for %s.\n", SENSOR_DATA_DIR_PATH.c_str(), _filenamePrefix.c_str());
+	if (LittleFS.mkdir(SENSOR_DATA_DIRPATH_FS)) {
+		Serial.printf("Created or found folder %s for %s.\n", SENSOR_DATA_DIRPATH_FS.c_str(), _filenamePrefix.c_str());
 	}
 	else {
-		Serial.printf("Failed to create or find folder %s for %s.\n", SENSOR_DATA_DIR_PATH.c_str(), _filenamePrefix.c_str());
+		Serial.printf("Failed to create or find folder %s for %s.\n", SENSOR_DATA_DIRPATH_FS.c_str(), _filenamePrefix.c_str());
 	}
 #endif
+
+	FileStatus status;
+
+	status = FileOps::fileCreateOrExists(LittleFS, _sensorFilepath("_10_min"));
+	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_10_min").c_str(), fileStatus_toString(status));
+
+	status = FileOps::fileCreateOrExists(LittleFS, _sensorFilepath("_60_min"));
+	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_60_min").c_str(), fileStatus_toString(status));
+
+	status = FileOps::fileCreateOrExists(LittleFS, _sensorFilepath("_dayMaxMin"));
+	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_dayMaxMin").c_str(), fileStatus_toString(status));
+
+	/*
 	if (!fileCreateOrExists(LittleFS, _sensorFilepath("_10_min"))) {
 		Serial.printf("ERROR: Could not create or find %s\n", _sensorFilepath("_10_min").c_str());
 	}
@@ -430,7 +443,7 @@ void SensorData::createFiles(bool isConvertZeroToEmpty, unsigned int decimalPlac
 	}
 	if (!fileCreateOrExists(LittleFS, _sensorFilepath("_dayMaxMin"))) {
 		Serial.printf("ERROR: Could not create or find %s\n", _sensorFilepath("_dayMaxMin").c_str());
-	}
+	}*/
 }
 
 /// <summary>
@@ -439,7 +452,7 @@ void SensorData::createFiles(bool isConvertZeroToEmpty, unsigned int decimalPlac
 /// <param name="fileSuffix">A suffix to append to the file name.</param>
 /// <returns>Path to a sensor data .txt file.</returns>
 String SensorData::_sensorFilepath(String fileSuffix) {
-	return SENSOR_DATA_DIR_PATH + "/" + _filenamePrefix + fileSuffix + ".txt";
+	return SENSOR_DATA_DIRPATH_FS + "/" + _filenamePrefix + fileSuffix + ".txt";
 }
 
 /*****************************************************************

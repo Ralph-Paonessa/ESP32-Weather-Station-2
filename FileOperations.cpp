@@ -7,6 +7,22 @@
 #include <freertos/task.h>
 
 /// <summary>
+/// Returns String name of FileStatus enum item.
+/// </summary>
+/// <param name="status">FileStatus.</param>
+/// <returns>String name of status.</returns>
+String FileOps::fileStatus_toString(FileStatus status) {
+	switch (status) {
+	case NotFound:   return "NotFound";
+	case Found: return "Found";
+	case Created:  return "Created";
+	case ErrorCreating:  return "ErrorCreating";
+	case ErrorOpening:  return "ErrorOpening";
+	}
+	return "Unknown"; // Fallback for invalid/cast enum values
+};
+
+/// <summary>
 /// Lists contents of directory.
 /// </summary>
 /// <param name="fs">File system.</param>
@@ -84,7 +100,7 @@ String FileOps::fileRead(fs::FS& fs, const char* path) {
 		Serial.println(path);
 		return "";
 	}
-	char stringC[DATA_FILE_BUFFER_SIZE] = {  };	// C-string array to hold values from stream.
+	char stringC[FILESTREAM_BUFFER_SIZE] = {  };	// C-string array to hold values from stream.
 	int i = 0;
 	while (file.available()) {
 		stringC[i] += file.read();	// Add each character to C-string.
@@ -94,21 +110,16 @@ String FileOps::fileRead(fs::FS& fs, const char* path) {
 	return String(stringC);
 }
 
-
 void FileOps::fileWrite(fs::FS& fs, const char* path, const char* msg) {
 
 	File file = fs.open(path, FILE_WRITE);
 	if (!file) {
-		Serial.print("ERROR: FileOps::fileWrite Failed to open file for writing: ");
+		Serial.print("ERROR: FileOps::fileWrite failed to open file for writing: ");
 		Serial.println(path);
 		return;
 	}
-	if (file.print(msg)) {
-		serial_println_DEBUG("FileOps::fileWrite to file ", path);
-		serial_println_DEBUG("write msg = ", msg);
-	}
-	else {
-		Serial.print("ERROR: FileOps::fileWrite Write failed: ");
+	if (!file.print(msg)) {
+		Serial.print("ERROR: FileOps::fileWrite file.print failed: ");
 		Serial.println(path);
 	}
 	file.close();
@@ -122,12 +133,8 @@ void FileOps::fileAppend(fs::FS& fs, const char* path, const char* msg) {
 		return;		// file did not open!
 	}
 	// File opened. Append msg.
-	if (file.print(msg)) {
-		/*serial_println_DEBUG("FileOps::fileAppend to file ", path);
-		serial_println_DEBUG("append msg = ", msg); */
-	}
-	else {
-		Serial.print("ERROR: fileAppend failed to ");
+	if (!file.print(msg)) {
+		Serial.print("ERROR: fileAppend failed to write to open file ");
 		Serial.println(path);
 	}
 	file.close();
@@ -156,30 +163,29 @@ void FileOps::fileDelete(fs::FS& fs, const char* path) {
 }
 
 /// <summary>
-/// Creates a file if it doesn't exist. Returns true on 
-/// success or if the file already exists; otherwise
-/// returns false. XXX IS THIS NEEDED?!
+/// Creates a file if it doesn't exist.
 /// </summary>
 /// <param name="fs">File system to use.</param>
 /// <param name="path">Full path including the filename and extension.</param>
-/// <returns>True on success</returns>
-bool FileOps::fileCreateOrExists(fs::FS& fs, const String& path) {
+/// <returns>Status of file operation.</returns>
+FileOps::FileStatus FileOps::fileCreateOrExists(fs::FS& fs, const String& path) {
 	// If the file doesn't exist, create it.
 	if (fs.exists(path)) {
 		Serial.printf("FileOps::fileCreateOrExists: %s exists.\n", path.c_str());
-		return true;
+		return FileStatus::Found;
 	}
+
 	// File not found, so create new file.
 	Serial.printf("FileOps::fileCreateOrExists: %s does not exist.\n", path.c_str());
 	File file = fs.open(path, FILE_WRITE);
 	if (!file) {
 		Serial.printf("FileOps::fileCreateOrExists: %s could not be created/opened.\n", path.c_str());
-		return false;
+		return FileStatus::ErrorCreating;
 	}
 	else {
 		Serial.printf("FileOps::fileCreateOrExists: %s was created/opened and will be closed.\n", path.c_str());
 		file.close();
-		return true;
+		return FileStatus::Created;
 	}
 }
 
