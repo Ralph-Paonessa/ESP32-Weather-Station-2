@@ -298,7 +298,7 @@ void DataPoint_Lists::print_List(list<DataPoint> targetList, bool isConvertTime_
 		String t;
 		if (isConvertTime_to_String) {
 			// Date-time string format.
-			t = GPSModule::dateTime(dp.time);
+			t = GPSModule::dateTime_Str(dp.time);
 		}
 		else {
 			// Numeric (Unix) format.

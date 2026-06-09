@@ -171,7 +171,7 @@ void FileOps::fileDelete(fs::FS& fs, const char* path) {
 FileOps::FileStatus FileOps::fileCreateOrExists(fs::FS& fs, const String& path) {
 	// If the file doesn't exist, create it.
 	if (fs.exists(path)) {
-		Serial.printf("FileOps::fileCreateOrExists: %s exists.\n", path.c_str());
+		//Serial.printf("FileOps::fileCreateOrExists: %s exists.\n", path.c_str());
 		return FileStatus::Found;
 	}
 
@@ -183,7 +183,7 @@ FileOps::FileStatus FileOps::fileCreateOrExists(fs::FS& fs, const String& path) 
 		return FileStatus::ErrorCreating;
 	}
 	else {
-		Serial.printf("FileOps::fileCreateOrExists: %s was created/opened and will be closed.\n", path.c_str());
+		//Serial.printf("FileOps::fileCreateOrExists: %s was created/opened and will be closed.\n", path.c_str());
 		file.close();
 		return FileStatus::Created;
 	}

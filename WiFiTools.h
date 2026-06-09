@@ -43,7 +43,7 @@ public:
 	/// Check WiFi connection and reconnect if lost.
 	/// </summary>
 	/// <returns>True if WiFi is connected.</returns>
-	bool checkWifiConnection(String dateTime);
+	bool checkWifiConnection(String dateTime_Str);
 
 	// <summary>
 	/// Returns string describing WiFi status.
@@ -71,7 +71,7 @@ public:
 	/// <summary>
 	/// Connects to the WiFi network.
 	/// </summary>
-	void wifiSetupAndConnect(String dateTime, bool isDEBUG_BypassWiFi);
+	void wifiSetupAndConnect(String dateTime_Str, bool isDEBUG_BypassWiFi);
 };
 
 #endif

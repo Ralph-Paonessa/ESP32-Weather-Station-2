@@ -38,7 +38,7 @@ bool WiFiTools::wifiConnect(unsigned int timeout_sec) {
 /// Check WiFi connection and reconnect if lost.
 /// </summary>
 /// <returns>True if WiFi is connected.</returns>
-bool WiFiTools::checkWifiConnection(String dateTime) {
+bool WiFiTools::checkWifiConnection(String dateTime_Str) {
 	// XXX Note: Can also try WL_CONNECTION_LOST !!!
 	// If WiFi is lost, reconnect.
 	bool isConnected = true;
@@ -54,7 +54,7 @@ bool WiFiTools::checkWifiConnection(String dateTime) {
 			// Log connection success.
 			String msg = "Wifi re-connect successful after ";
 			msg += String((millis() - timeStart) / 1000., 3) + "s";
-			_sd.logStatus(msg, dateTime);
+			_sd.logStatus(msg, dateTime_Str);
 			_sd.logStatus_indent(wifi_ConnectionInfo());
 			// Print IP address to serial monitor.
 			Serial.println("SERVER IP ADDRESS: " + WiFi.localIP().toString());
@@ -65,7 +65,7 @@ bool WiFiTools::checkWifiConnection(String dateTime) {
 			// Log connection failure.
 			String msg = "Wifi connect FAILED after ";
 			msg += String((millis() - timeStart) / 1000., 3) + "s";
-			_sd.logStatus(msg, dateTime);
+			_sd.logStatus(msg, dateTime_Str);
 		}
 	}
 	return isConnected;
@@ -158,25 +158,25 @@ int WiFiTools::wifiListNetworks() {
 /// <summary>
 /// Connects to the WiFi network.
 /// </summary>
-void WiFiTools::wifiSetupAndConnect(String dateTime, bool isDEBUG_BypassWiFi) {
+void WiFiTools::wifiSetupAndConnect(String dateTime_Str, bool isDEBUG_BypassWiFi) {
 	if (!isDEBUG_BypassWiFi) {
 		// Specify WiFi credentials for router(s).
 		wifiAddAccessPoints();
 		// Connect to wifi.
-		_sd.logStatus("Connecting to Wifi.", dateTime);
+		_sd.logStatus("Connecting to Wifi.", dateTime_Str);
 #if defined(VM_DEBUG)
 		wifiListNetworks();
 #endif
 		if (wifiConnect(WIFI_CONNECT_TIMEOUT_LOST_SEC)) {
-			_sd.logStatus("Wifi connected.", dateTime);
+			_sd.logStatus("Wifi connected.", dateTime_Str);
 			_sd.logStatus_indent(wifi_ConnectionInfo());
 		}
 		else {
-			_sd.logStatus("Wifi Connection FAILED.", dateTime);
+			_sd.logStatus("Wifi Connection FAILED.", dateTime_Str);
 		}
 	}
 	else {
 		// Bypassing wifi
-		_sd.logStatus("BYPASS WIFI", dateTime);
+		_sd.logStatus("BYPASS WIFI", dateTime_Str);
 	}
 }

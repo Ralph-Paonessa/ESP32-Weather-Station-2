@@ -256,7 +256,7 @@ void GPSModule::logSyncIsComplete() {
 	_sdCard.logStatus(LINE_SEPARATOR);
 	_sdCard.logStatus("[   Reminder: GPS HAS NOT BEEN POWERED DOWN.   ]");
 	_sdCard.logStatus("GPS sync complete.", millis());
-	String msg = "Local date and time " + dateTime();
+	String msg = "Local date and time " + dateTime_Str();
 	_sdCard.logStatus(msg);
 	msg = "Using offset from UTC = " + String(UTC_OFFSET_HOURS) + " hr.";
 	if (IS_DAYLIGHT_TIME) {
@@ -518,7 +518,7 @@ bool isDST_US()
 /// current date and time (using TimeLib).
 /// </summary>
 /// <returns></returns>
-String GPSModule::dateTime() {
+String GPSModule::dateTime_Str() {
 	//if (!_isGpsSynced) {
 	//	return String(millis() / 1000., 2) + "s";	// Date not yet known.
 	//}
@@ -546,7 +546,7 @@ String GPSModule::dateTime() {
 /// </summary>
 /// <param name="t_num">Numeric (Unix) time.</param>
 /// <returns>Date and time as "yyyy-mm-dd hh:mm"</returns>
-String GPSModule::dateTime(time_t t_num) {	
+String GPSModule::dateTime_Str(time_t t_num) {	
 	String s = String(year(t_num)) + "-";
 	// Month.
 	if (month(t_num) < 10) { s += "0"; }

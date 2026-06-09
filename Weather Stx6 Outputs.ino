@@ -41,7 +41,7 @@ String columnNames() {
 /// <returns>String</returns>
 String sensorsDataString_current() {
 	// time (1)
-	String s = gps.dateTime();
+	String s = gps.dateTime_Str();
 	// temperature (1)
 	s += "\t" + String(d_TempF.valueLastAdded());
 	// pressure (2)
@@ -90,7 +90,7 @@ String sensorsDataString_current() {
 /// <returns>String</returns>
 String sensorsDataString_10_min() {
 	// time (1)
-	String s = gps.dateTime();
+	String s = gps.dateTime_Str();
 	// temperature (1)
 	s += "\t" + String(d_TempF.avg_10_min());
 	// pressure (2)

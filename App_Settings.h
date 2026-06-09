@@ -42,7 +42,7 @@ namespace App_Settings {
 	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 5;// Minimum number of GPS satellites before syncing.
 	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 4;	// Minimum GPS cycles before syncing.
 	constexpr unsigned int	GPS_CYCLE_DELAY_SEC = 2;	// Delay before getting another GPS fix, sec.
-	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 7;	// XXX	XXX	Max number of GPS cycles before quitting.
+	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 40;	// XXX	XXX	Max number of GPS cycles before quitting.
 	constexpr float			GPS_MAX_ALLOWED_HDOP = 2;	// Minimum HDOP precision for syncing.
 
 	constexpr unsigned int	GPS_DUMMY_ALTITUDE = 700;	// Dummy altitude for GPS. (used Ridgecrest)
@@ -61,9 +61,9 @@ namespace App_Settings {
 	constexpr unsigned int	FAN_DUTY_PERCENT = 30;		// PWM duty cycle for fan speed.
 
 	constexpr int	COUNT_SENSORS_TO_READ = 10;			// No. sensors to read in readSensor_by_index(index).
-	constexpr int	COUNT_SENSORS_TO_PROCESS = 10;		// No. sensors to process at longer intervals.
+	constexpr int	COUNT_SENSORS_TO_PROCESS = 13;		// No. sensors to process at longer intervals.
 	const String	SENSOR_DATA_DIRPATH_FS = "/Sensor data";	// Path to sensor data files directory in filesys.
-	const String	SENSOR_DATA_TIME_FILEPATH_FS = "/Sensor data/last_time.txt";	// Path to sensor read time file in filesys.
+	const String	SENSOR_LAST_SAVE_TIME_FILEPATH_FS = "/Sensor data/last_save_time.txt";	// Path to most recent sensor read time file in filesys.
 	constexpr int	FILESTREAM_BUFFER_SIZE = 1024;		// Size of filestream buffer when reading a file.
 	const String	LOG_DATA_FILEPATH_SD = "/data.txt";	// Data file path on SD card.
 	const String	LOG_STATUS_FILEPATH_SD = "/log.txt";	// Log file path on SD card.

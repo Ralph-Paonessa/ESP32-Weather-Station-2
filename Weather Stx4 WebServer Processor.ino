@@ -32,7 +32,7 @@ String processor(const String& var) {
 	// period (except for gust and wind dir).
 
 	if (var == "LAST_READINGS_DATETIME") {
-		return gps.dateTime();
+		return gps.dateTime_Str();
 	}
 	if (var == "CURRENT_TIME") {
 		return gps.time();

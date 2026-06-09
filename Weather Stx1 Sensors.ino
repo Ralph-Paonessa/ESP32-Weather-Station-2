@@ -162,7 +162,7 @@ void sensors_begin() {
 
 	sd.logStatus("Device initialization complete.", millis());
 	sd.logDeviceStatus(
-		gps.dateTime(),
+		gps.dateTime_Str(),
 		gps.isDaylightTime(),
 		//wiFi_isConnected,		XXX NOT CODED YET!
 		gps.timeZoneOffset(),     //timeZoneOffset,
@@ -336,7 +336,7 @@ void readSensor_by_index(int index) {
 	default:
 	{
 		String msg = "Error: readSensor_by_index index out of range = " + String(index);
-		sd.logStatus(msg, gps.dateTime());
+		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
 	/*
@@ -407,15 +407,30 @@ void processSensor_10_min_by_index(int index) {
 		d_Insol.process_data_10_min();
 		break;
 	}
+	case 10: {
+		// Wind speed/
+		windSpeed.process_data_10_min();
+		break;
+	}
+	case 11: {
+		// Wind speed/
+		windGust.process_data_10_min();
+		break;
+	}
+	case 12: {
+		// Wind direction/
+		windDir.process_data_10_min();
+		break;
+	}
 	default: {
 		String msg = "Error: processSensor_10_min_by_index index out of range = " + String(index);
-		sd.logStatus(msg, gps.dateTime());
+		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
 	////#if defined(VM_DEBUG)
 	//float elapsed = (micros() - start_usec) / 1000.;
 	//String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	//sd.logStatus(msg, gps.dateTime());
+	//sd.logStatus(msg, gps.dateTime_Str());
 	////#endif
 }
 
@@ -475,16 +490,31 @@ void processSensor_60_min_by_index(int index) {
 		// Insolation/
 		d_Insol.process_data_60_min();
 		break;
+	case 10: {
+		// Wind speed/
+		windSpeed.process_data_60_min();
+		break;
+	}
+	case 11: {
+		// Wind speed/
+		windGust.process_data_60_min();
+		break;
+	}
+	case 12: {
+		// Wind direction/
+		windDir.process_data_60_min();
+		break;
+	}
 	default:
 	{
 		String msg = "Error: processSensor_60_min_by_index index out of range = " + String(index);
-		sd.logStatus(msg, gps.dateTime());
+		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
 	//#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
 	String msg = "Processing 60-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	sd.logStatus(msg, gps.dateTime());
+	sd.logStatus(msg, gps.dateTime_Str());
 	//#endif
 }
 
@@ -552,16 +582,31 @@ void processSensor_day_by_index(int index) {
 		d_Insol.process_data_day();
 		break;
 	}
+	case 10: {
+		// Wind speed/
+		windSpeed.process_data_day();
+		break;
+	}
+	case 11: {
+		// Wind speed/
+		windGust.process_data_day();
+		break;
+	}
+	case 12: {
+		// Wind direction/
+		windDir.process_data_day();
+		break;
+	}
 	default:
 	{
 		String msg = "Error: processSensor_day_by_index index out of range = " + String(index);
-		sd.logStatus(msg, gps.dateTime());
+		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
 //#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
 	String msg = "Processing Day data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	sd.logStatus(msg, gps.dateTime());
+	sd.logStatus(msg, gps.dateTime_Str());
 //#endif
 }
 
@@ -621,16 +666,17 @@ void readSensors_Simulate() {
 /// </summary>
 /// <param name="t">Time to save.</param>
 void saveLastReadTime_toFile(unsigned long t) {
-	fileWrite(LittleFS, SENSOR_DATA_TIME_FILEPATH_FS.c_str(), String(t).c_str());
+	fileWrite(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str(), String(t).c_str());
 }
 
-/// <summary>
-/// Gets last reading time from LittleFS.
-/// </summary>
-/// <returns>Saved time of last reading.</returns>
-unsigned long getLastReadingTime_from_File() {
-	return fileRead(LittleFS, SENSOR_DATA_TIME_FILEPATH_FS.c_str()).toInt();
-}
+///// <summary>
+///// Gets last reading time from LittleFS.
+///// </summary>
+///// <returns>Saved time of last reading.</returns>
+//unsigned long getLastReadingTime_from_File() {
+//	unsigned long t = fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str())
+//	return fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str()).toInt();
+//}
 
 /// <summary>
 /// Saves 10-min averages of all sensor data 

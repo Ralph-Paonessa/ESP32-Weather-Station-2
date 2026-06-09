@@ -416,7 +416,7 @@ void SensorData::createSensorDataFiles(bool isConvertZeroToEmpty, unsigned int d
 	_decimalPlaces = decimalPlaces;
 #if defined(VM_DEBUG)
 	if (LittleFS.mkdir(SENSOR_DATA_DIRPATH_FS)) {
-		Serial.printf("Created or found folder %s for %s.\n", SENSOR_DATA_DIRPATH_FS.c_str(), _filenamePrefix.c_str());
+		//Serial.printf("Created or found folder %s for %s.\n", SENSOR_DATA_DIRPATH_FS.c_str(), _filenamePrefix.c_str());
 	}
 	else {
 		Serial.printf("Failed to create or find folder %s for %s.\n", SENSOR_DATA_DIRPATH_FS.c_str(), _filenamePrefix.c_str());
