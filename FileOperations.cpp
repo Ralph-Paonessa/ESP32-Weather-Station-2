@@ -23,12 +23,12 @@ String FileOps::fileStatus_toString(FileStatus status) {
 };
 
 /// <summary>
-/// Lists contents of directory.
+/// Prints contents of directory.
 /// </summary>
 /// <param name="fs">File system.</param>
 /// <param name="dirname">Path of the directory.</param>
 /// <param name="levels">Number of levels to list.</param>
-void FileOps::dirList(fs::FS& fs, const char* dirname, uint8_t levels) {
+void FileOps::dirList_print(fs::FS& fs, const char* dirname, uint8_t levels) {
 	Serial.printf("Listing directory: %s\n", dirname);
 
 	File root = fs.open(dirname);
@@ -46,7 +46,7 @@ void FileOps::dirList(fs::FS& fs, const char* dirname, uint8_t levels) {
 			Serial.print("  DIR : ");
 			Serial.println(file.name());
 			if (levels) {
-				dirList(fs, file.path(), levels - 1);
+				dirList_print(fs, file.path(), levels - 1);
 			}
 		}
 		else {
@@ -58,6 +58,45 @@ void FileOps::dirList(fs::FS& fs, const char* dirname, uint8_t levels) {
 		file = root.openNextFile();
 	}
 }
+
+///// <summary>
+///// Returns contents of directory as a String
+///// </summary>
+///// <param name="fs">File system.</param>
+///// <param name="dirname">Path of the directory.</param>
+///// <param name="levels">Number of levels to list.</param>
+///// <returns>Contents of directory as String.</returns>
+//String FileOps::dirList_String(fs::FS& fs, const char* dirname, uint8_t levels) {
+//	String str = "Listing of directory """ + String(dirname);
+//	str += """ (1st " + String(levels) + " levels):\n";
+//	File root = fs.open(dirname);
+//	if (!root) {
+//		str += "Failed to open directory\n";
+//		return str;
+//	}
+//	if (!root.isDirectory()) {
+//		str += "Not a directory\n";
+//		return str;
+//	}
+//	File file = root.openNextFile();
+//	while (file) {
+//		if (file.isDirectory()) {
+//			str += "\tDIR : ";
+//			str += file.name();
+//			if (levels) {
+//				str += dirList_String(fs, file.path(), levels - 1);
+//			}
+//		}
+//		else {
+//			str += "\t\tFILE: ";
+//			str += file.name();
+//			str += "  SIZE: ";
+//			str += file.size() + "\n";
+//		}
+//		file = root.openNextFile();
+//	}
+//	return str + "\n";
+//}
 
 void FileOps::dirCreate(fs::FS& fs, const char* path) {
 	Serial.printf("Creating Dir: %s\n", path);
@@ -94,7 +133,7 @@ String FileOps::fileRead(fs::FS& fs, const char* path) {
 	}
 
 	File file = fs.open(path, FILE_READ);
-	
+
 	if (!file) {
 		Serial.print("FileOps::fileRead ERROR: fileRead failed to open file for reading: ");
 		Serial.println(path);

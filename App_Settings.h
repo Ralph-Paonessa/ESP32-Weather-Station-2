@@ -17,8 +17,6 @@
 namespace App_Settings {
 
 	/*****************      OPTION FLAGS      ******************/
-	constexpr bool isRECOVER_FILESYS_DATA = true;			// Recover data from file system.
-
 	constexpr unsigned int	SECONDS_PER_MINUTE = 60;
 	constexpr unsigned int	MINUTES_PER_HOUR = 60;
 	constexpr unsigned int	MILLISEC_PER_SECOND = 1000;
@@ -42,7 +40,7 @@ namespace App_Settings {
 	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 5;// Minimum number of GPS satellites before syncing.
 	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 4;	// Minimum GPS cycles before syncing.
 	constexpr unsigned int	GPS_CYCLE_DELAY_SEC = 2;	// Delay before getting another GPS fix, sec.
-	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 40;	// XXX	XXX	Max number of GPS cycles before quitting.
+	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 15;	// XXX	XXX	Max number of GPS cycles before quitting.
 	constexpr float			GPS_MAX_ALLOWED_HDOP = 2;	// Minimum HDOP precision for syncing.
 
 	constexpr unsigned int	GPS_DUMMY_ALTITUDE = 700;	// Dummy altitude for GPS. (used Ridgecrest)

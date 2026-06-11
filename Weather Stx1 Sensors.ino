@@ -253,16 +253,6 @@ void readWind_Simulate() {
 #endif
 }
 
-///// <summary>
-///// Reads and saves fan speed.
-///// </summary>
-//void readFan() {
-//	// Get fan speed.
-//	d_fanRPM.addReading(DataPoint(now(), fanRPM(fanHalfRots, FAN_READ_PERIOD_SEC)));
-//	// Reset hardware interrupt count.
-//	fanHalfRots = 0;		// Reset fan rots.
-//}
-
 /// <summary>
 /// Reads and saves data from a sensor specified by index.
 /// </summary>
@@ -432,7 +422,7 @@ void processSensor_10_min_by_index(int index) {
 	//String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
 	//sd.logStatus(msg, gps.dateTime_Str());
 	////#endif
-}
+} 
 
 /// <summary>
 /// Processes 60-min data for a sensor specified by index.
@@ -511,11 +501,11 @@ void processSensor_60_min_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
-	//#if defined(VM_DEBUG)
-	float elapsed = (micros() - start_usec) / 1000.;
-	String msg = "Processing 60-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	sd.logStatus(msg, gps.dateTime_Str());
-	//#endif
+	////#if defined(VM_DEBUG)
+	//float elapsed = (micros() - start_usec) / 1000.;
+	//String msg = "Processing 60-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	//sd.logStatus(msg, gps.dateTime_Str());
+	////#endif
 }
 
 /// <summary>
@@ -668,15 +658,6 @@ void readSensors_Simulate() {
 void saveLastReadTime_toFile(unsigned long t) {
 	fileWrite(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str(), String(t).c_str());
 }
-
-///// <summary>
-///// Gets last reading time from LittleFS.
-///// </summary>
-///// <returns>Saved time of last reading.</returns>
-//unsigned long getLastReadingTime_from_File() {
-//	unsigned long t = fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str())
-//	return fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str()).toInt();
-//}
 
 /// <summary>
 /// Saves 10-min averages of all sensor data 

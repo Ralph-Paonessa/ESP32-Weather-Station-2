@@ -158,12 +158,11 @@ unsigned long last_debounce_time_anem = 0;	// Last millis when anemometer output
 
 // INITIALIZE ANEMOMETER INTERRUPTS
 
-volatile uint32_t _anemTimer_ticks = 0;// Count unhandled anemometer timer interrupts
-volatile uint32_t _anemCount = 0;				// Count of anemometer rotations (volatile)
+volatile uint32_t _anemTimer_ticks = 0;		// Count unhandled anemometer timer interrupts
+volatile uint32_t _anemCount = 0;			// Count of anemometer rotations
+uint32_t anemRots = 0;						// Hold count of anemometer rotations
 
-uint32_t anemRots = 0;							// Count of anemometer rotations
-
-// Timer to trigger anemometer rotations count.
+// Hardware timer to trigger anemometer rotations count.
 hw_timer_t* timerAnem = NULL;
 
 // FreeRTOS spinlock (port multiplexer) to protect 
@@ -196,7 +195,7 @@ void ARDUINO_ISR_ATTR onAnemTimer() {
 	portENTER_CRITICAL_ISR(&muxAnem);
 	anemRots = _anemCount;	// hold rotation count.
 	_anemCount = 0;			// reset count for next timer cycle.
-	_anemTimer_ticks++;		// flag to calculate wind speed.
+	_anemTimer_ticks++;		// timer flag to calculate wind speed.
 	portEXIT_CRITICAL_ISR(&muxAnem);
 }
 
@@ -240,7 +239,7 @@ void littleFS_initialize() {
 	sd.logLittleFsSpaceUsage();
 
 	if (isDEBUG_ListLittleFS) {
-		dirList(LittleFS, "/", 5);
+		dirList_print(LittleFS, "/", 5), millis();
 	}
 }
 
@@ -258,7 +257,6 @@ void recoverData(SensorData& sensData, time_t lastSaveTime, time_t time) {
 		sd.logStatus(msg, tStr);
 		return;
 	}
-
 	// 10-min lists
 	Serial.println("recoverData(): 10-min lists " + sensData.label());
 	if ((now() - lastSaveTime) <= DATA_RECOVER_10_MIN_AGE_LIMIT_SEC) {
@@ -271,7 +269,6 @@ void recoverData(SensorData& sensData, time_t lastSaveTime, time_t time) {
 		msg += String(DATA_RECOVER_10_MIN_AGE_LIMIT_SEC / 60.) + "min";
 		sd.logStatus(msg, tStr);
 	}
-
 	// 60-min lists
 	Serial.println("recoverData(): 60-min lists " + sensData.label());
 	if ((now() - lastSaveTime) <= DATA_RECOVER_60_MIN_AGE_LIMIT_SEC) {
@@ -284,7 +281,6 @@ void recoverData(SensorData& sensData, time_t lastSaveTime, time_t time) {
 		msg += String(DATA_RECOVER_60_MIN_AGE_LIMIT_SEC / 60.) + "min";
 		sd.logStatus(msg, tStr);
 	}
-
 	// day lists
 	Serial.println("recoverData(): day lists " + sensData.label());
 	if ((now() - lastSaveTime) <= DATA_RECOVER_DAY_AGE_LIMIT_SEC) {
@@ -323,7 +319,7 @@ void setup() {
 
 #if defined(VM_DEBUG)
 	//Serial.println("Listing SD card dir to Serial:");
-	//FileOps::dirList(SD, "/", 3);
+	//FileOps::dirList_print(SD, "/", 3);
 #endif
 
 	// Begin status log entries to SD card.
@@ -503,7 +499,7 @@ void setup() {
 	sensors_createFiles();	// Create LittleFS files.
 
 	// ==========  RECOVER DATA   ==========
-	if (isRECOVER_FILESYS_DATA) {
+	
 #if defined(VM_DEBUG)
 		Serial.println("SETUP: ==========  RECOVER DATA FROM FILE SYSTEM   ==========");
 #endif
@@ -514,21 +510,26 @@ void setup() {
 			msg = "Last data save time = " + GPSModule::dateTime_Str(lastTimeStr.toInt());
 			sd.logStatus(msg, now());
 
-			// RECOVER DATA FOR ALL SENSORS !!!!!!!!!!!!!!!
+			// RECOVER DATA FOR ALL SENSORS.
 			recoverData(d_TempF, lastTimeStr.toInt(), now());
-
+			recoverData(d_UVA, lastTimeStr.toInt(), now());
+			recoverData(d_UVB, lastTimeStr.toInt(), now());
+			recoverData(d_UVIndex, lastTimeStr.toInt(), now()); 
+			recoverData(d_Pres_mb, lastTimeStr.toInt(), now());
+			recoverData(d_TempC_for_RH, lastTimeStr.toInt(), now());
+			recoverData(d_Pres_seaLvl_mb, lastTimeStr.toInt(), now());
+			recoverData(d_RH, lastTimeStr.toInt(), now());
+			recoverData(d_IRSky_C, lastTimeStr.toInt(), now());
+			recoverData(d_Insol, lastTimeStr.toInt(), now());			
+			recoverData(windSpeed, lastTimeStr.toInt(), now());
+			recoverData(windDir, lastTimeStr.toInt(), now());
+			recoverData(windGust, lastTimeStr.toInt(), now());
 		}
 		else {
 			msg = "Did not find last data save time. No data recovery.";
 			sd.logStatus(msg, now());
 		}
-
-
-	}
-	else {
-		Serial.println("SETUP: BYPASS RECOVER DATA FROM FILE SYSTEM");
-	}
-
+	
 	// Date info to determine when new day begins.
 	oldDay = day();
 	oldMonth = month();
@@ -555,8 +556,8 @@ void setup() {
 	ledcWrite(FAN_PWM_PIN, FAN_DUTY_PERCENT / 100. * 256);
 	*/
 
-
 	// ==========  SETUP: CREATE INTERRUPTS  ========== //
+
 #if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE INTERRUPTS   ==========");
 #endif
@@ -595,7 +596,7 @@ void setup() {
 
 #if defined(VM_DEBUG)
 	//Serial.println("Listing SD card dir to Serial:");
-	//FileOps::dirList(SD, "/", 3);
+	//FileOps::dirList_String(SD, "/", 3);
 #endif
 
 	time_start_first_loop = millis();
@@ -622,12 +623,6 @@ unsigned long millis_sensors_Process_60 = 0;	// Start time of processing sensors
 void loop() {
 	time_start_current_loop = millis();	// To monitor loop execution time.
 
-	//bool isProcessWind = false;
-
-	//// Check for timer interrupts that were 
-	//// not handled during code delays.
-	//catchUnhandledBaseTimerInterrupts();
-
 	/************************************************
 		Read sensors and process data at intervals
 		determined from timer interrupt.
@@ -652,20 +647,16 @@ void loop() {
 	// ====================================================	
 		
 	if (_anemTimer_ticks > 0) {
+		// Time to get instantaneous wind speed.
 		portENTER_CRITICAL(&muxAnem);
 		_anemTimer_ticks--;	// Anemometer timer interrupt handled.
 		portEXIT_CRITICAL(&muxAnem);
 					
-		//// anemRots holds _anemCount from latest timer ISR.
-		//processWind(anemRots);		// Wind speed, gust, direction.
+		// anemRots holds _anemCount from latest timer ISR.
+		processWind(anemRots);		// Wind speed, gust, direction.
 
-
-		processWind(18);		// XXX	XXX	XXX	XXX !!!
-
-
-		// Check for unhandled timer.
-		if (_anemTimer_ticks > 0) {
-			// If still > 0, we missed a timer tick
+		// If still > 0, we missed a timer tick
+		if (_anemTimer_ticks > 0) {			
 			String msg = "WARNING: Missed _anemTimer_ticks = " + _anemTimer_ticks;
 			sd.logStatus(msg, gps.dateTime_Str());
 		}
@@ -702,22 +693,17 @@ void loop() {
 	//// ====================================================
 
 	if ((millis() - millis_sensors_Process_10) >= 10 * MILLISECONDS_PER_MINUTE) {
+		// Get 10-min avgs.
 
-
-		//if ((millis() - millis_sensors_Process_10) >= 3 * MILLISECONDS_PER_MINUTE) {	// XXX
-
-
-			// Get 10-min avgs.
-
-		Serial.printf("========> %.3fs 10-MIN INTERVAL\n", millis() / 1000.);
+		//Serial.printf("========> %.3fs 10-MIN INTERVAL\n", millis() / 1000.);
 
 		// Process 10-min data for sensors one at a time.
 		processSensor_10_min_by_index(sensor_idx_10);
 		sensor_idx_10++;
 		if (sensor_idx_10 > COUNT_SENSORS_TO_PROCESS - 1) {	// all sensors read
 			sensor_idx_10 = 0;			// Restart sensor cycle.
-			// Save last 10-min reading ttime to LittleFS. Used 
-			// to check whether to recover data at reboot.
+			// Save last 10-min reading time to LittleFS.
+			// To check at boot whether to recover recent data.
 			saveLastReadTime_toFile(now());
 			millis_sensors_Process_10 = millis();	// restart timer
 			sd.logData(sensorsDataString_10_min());	// Save readings to SD card.
@@ -730,13 +716,7 @@ void loop() {
 	//// ====================================================   
 
 	if ((millis() - millis_sensors_Process_60) >= 60 * MILLISECONDS_PER_MINUTE) {
-
-		//if ((millis() - millis_sensors_Process_60) >= 10 * MILLISECONDS_PER_MINUTE) {	// XXX
-
-
-			// Get 60-min avgs.
-
-			// Process 60-min data for sensors one at a time.
+		// Process 60-min data for sensors one at a time.
 		processSensor_60_min_by_index(sensor_idx_60);
 		sensor_idx_60++;
 		if (sensor_idx_60 > COUNT_SENSORS_TO_PROCESS - 1) {
@@ -752,7 +732,6 @@ void loop() {
 	if (day() > oldDay || month() > oldMonth || year() > oldYear) {
 		// NEW DAY. 
 		// Save minima and maxima for previous day.
-
 		// Process day rollover data for sensors one at a time.
 		processSensor_day_by_index(sensor_idx_day);
 		sensor_idx_day++;
@@ -764,10 +743,12 @@ void loop() {
 			oldYear = year();
 			sd.logStatus("New day rollover.", gps.dateTime_Str());
 		};
-
 	}
 
+	//	XXX	XXX	XXX	XXX
+	 
 	///// ==========  TEST FOR LOST WIFI CONNECTION  ========== //
+	
 	///*
 	//If WiFi is lost, we're screwed because the time
 	//to reconnect may throw of the sensor read timings.

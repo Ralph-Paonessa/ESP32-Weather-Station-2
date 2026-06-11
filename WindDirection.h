@@ -20,13 +20,13 @@ private:
 
 	float _offsetAngle = 0;		// Degrees that reading exceeds true North.
 
-	double _eSum = 0;	// Accumulated sum of x-component of direction vector.
-	double _nSum = 0;	// Accumulated sum of y-component of direction vector.
+	float _eSum = 0;	// Accumulated sum of x-component of direction vector.
+	float _nSum = 0;	// Accumulated sum of y-component of direction vector.
 	float _bearing = 0;	// Wind direction in degrees.
 
-	float angleFromComponents(double n, double e);
-	double e_Component(float degrees);
-	double n_Component(float degrees);
+	float angleFromComponents(float n, float e);
+	float e_Component(float degrees);
+	float n_Component(float degrees);
 
 	/// <summary>
 	/// Return cardinal direction for specified wind angle (deg).

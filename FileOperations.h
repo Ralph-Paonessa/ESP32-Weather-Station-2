@@ -81,12 +81,21 @@ namespace FileOps {
 	String fileStatus_toString(FileStatus status);
 
 	/// <summary>
-	/// Lists contents of directory.
+	/// Prints contents of directory.
 	/// </summary>
 	/// <param name="fs">File system.</param>
 	/// <param name="dirname">Path of the directory.</param>
 	/// <param name="levels">Number of levels to list.</param>
-	void dirList(fs::FS& fs, const char* dirname, uint8_t levels);
+	void dirList_print(fs::FS& fs, const char* dirname, uint8_t levels);
+
+	/*/// <summary>
+	/// Returns contents of directory as a String
+	/// </summary>
+	/// <param name="fs">File system.</param>
+	/// <param name="dirname">Path of the directory.</param>
+	/// <param name="levels">Number of levels to list.</param>
+	/// <returns>Contents of directory as String.</returns>
+	String dirList_String(fs::FS& fs, const char* dirname, uint8_t levels);*/
 
 	void dirCreate(fs::FS& fs, const char* path);
 

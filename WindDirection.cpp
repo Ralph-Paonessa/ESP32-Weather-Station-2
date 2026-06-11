@@ -81,7 +81,7 @@ void WindDirection::addReading(long time, float degrees, float speed) {
 /// </summary>
 /// <param name="degrees">Angle, degrees.</param>
 /// <returns></returns>
-double WindDirection::e_Component(float degrees) {
+float WindDirection::e_Component(float degrees) {
 	return sin(degrees / DEGREES_PER_RADIAN);
 }
 
@@ -90,7 +90,7 @@ double WindDirection::e_Component(float degrees) {
 /// </summary>
 /// <param name="degrees">Angle, degrees.</param>
 /// <returns></returns>
-double WindDirection::n_Component(float degrees) {
+float WindDirection::n_Component(float degrees) {
 	return cos(degrees / DEGREES_PER_RADIAN);
 }
 
@@ -102,7 +102,7 @@ double WindDirection::n_Component(float degrees) {
 /// <param name="n">North component.</param>
 /// <param name="e">East component.</param>
 /// <returns></returns>
-float WindDirection::angleFromComponents(double n, double e) {
+float WindDirection::angleFromComponents(float n, float e) {
 	/*
 		tan = Opposite/Adjacent
 		tan = y/x -> normal xy coordinates, as used in atan2(y, x)
@@ -174,7 +174,7 @@ String WindDirection::directionCardinal(float angle) {
 	else if (angle < 337)
 		return "NW";
 	else
-		return String(angle);
+		return "N";
 }
 
 /// <summary>
@@ -202,7 +202,7 @@ list<String> WindDirection::directions_cardinal(list<float>& angleList) {
 /// <param name="numElements">Number of elements from the end to average.</param>
 /// <returns>Average angle, degrees.</returns>
 float WindDirection::angleAvg_ofList(list<DataPoint>& targetList, int numElements) {
-	double xSum = 0, ySum = 0;
+	float xSum = 0, ySum = 0;
 	// Ensure we don't iterate past the first element.
 	if (numElements > targetList.size()) {
 		numElements = targetList.size();
