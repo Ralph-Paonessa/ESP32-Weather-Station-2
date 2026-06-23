@@ -11,15 +11,8 @@
 /// </summary>
 /// <param name="calibrationFactor">
 /// Calibration factor for anemometer.</param>
-WindSpeed::WindSpeed(float calibrationFactor)
-/*bool isUseSmoothing,
-unsigned int numValuesForAvg,
-float outlierDelta*/
-{
+WindSpeed::WindSpeed(float calibrationFactor) {
 	_calibrationFactor = calibrationFactor;
-	/*_isUseSmoothing = isUseSmoothing;
-	_avgMoving_Num = numValuesForAvg;
-	_outlierDelta = outlierDelta;*/
 }
 
 /// <summary>

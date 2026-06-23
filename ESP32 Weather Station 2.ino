@@ -4,7 +4,7 @@ Custom weather station control software.
 
 Ralph Paonessa
 August 10, 2022
-Rev. May 29, 2026
+Rev. June 23, 2026
 ******************************************/
 
 // ========  ESP32 Libraries  ================  
@@ -13,6 +13,7 @@ Rev. May 29, 2026
 #include "WiFiTools.h"
 #include <Arduino.h>
 #include <ESPAsyncWebServer.h>
+#include <LittleFS.h>
 
 // ========  Custom Libraries  ================  
 
@@ -217,32 +218,6 @@ int oldMonth = 0;	// Month of previous day.
 int oldDay = 0;		// Day of previous day.
 int oldYear = 0;	// Year of previous day.
 
-// ========   Setup LittleFS   =================  //
-
-/// <summary>
-/// Initializes and mounts LittleFS filesystem. 
-/// Logs mount success or failure, records used/available space, 
-/// sets the isGood_LittleFS flag on success, and optionally 
-/// lists the root directory when debugging is enabled.
-/// </summary>
-void littleFS_initialize() {
-	if (!LittleFS.begin()) {
-		String msg = "ERROR: LittleFS didn't mount.";
-		sd.logStatus(msg, millis());
-	}
-	else {
-		isGood_LittleFS = true;
-		String msg = "LittleFS mounted.";
-		sd.logStatus(msg, millis());
-	}
-	// Log used and available space.
-	sd.logLittleFsSpaceUsage();
-
-	if (isDEBUG_ListLittleFS) {
-		dirList_print(LittleFS, "/", 5), millis();
-	}
-}
-
 /// <summary>
 /// Reads recent sensor readings from LittleFS and loads them back into memory.
 /// </summary>
@@ -407,7 +382,20 @@ void setup() {
 #if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  SETUP LittleFS   ==========");
 #endif
-	littleFS_initialize();
+	if (LittleFS.begin(true)) {		// pass true to format LittleFS on fail
+		isGood_LittleFS = true;
+		String msg = "LittleFS mounted.";
+		sd.logStatus(msg, millis());
+		// Log used and available space.
+		sd.logLittleFsSpaceUsage();
+		if (isDEBUG_ListLittleFS) {
+			dirList_print(LittleFS, "/", 5), millis();
+		}
+	}
+	else {
+		Serial.println("LittleFS mount failed");
+		isGood_LittleFS = false;
+	}
 
 #if defined(VM_DEBUG)
 	////////  TESTING   ////////
@@ -499,37 +487,37 @@ void setup() {
 	sensors_createFiles();	// Create LittleFS files.
 
 	// ==========  RECOVER DATA   ==========
-	
+
 #if defined(VM_DEBUG)
-		Serial.println("SETUP: ==========  RECOVER DATA FROM FILE SYSTEM   ==========");
+	Serial.println("SETUP: ==========  RECOVER DATA FROM FILE SYSTEM   ==========");
 #endif
-		// Retrieve recent saved data from LittleFS. (In case of inadvertent reboot.)
+	// Retrieve recent saved data from LittleFS. (In case of inadvertent reboot.)
 
-		String lastTimeStr = fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str());
-		if (lastTimeStr.length() > 0) {
-			msg = "Last data save time = " + GPSModule::dateTime_Str(lastTimeStr.toInt());
-			sd.logStatus(msg, now());
+	String lastTimeStr = fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str());
+	if (lastTimeStr.length() > 0) {
+		msg = "Last data save time = " + GPSModule::dateTime_Str(lastTimeStr.toInt());
+		sd.logStatus(msg, now());
 
-			// RECOVER DATA FOR ALL SENSORS.
-			recoverData(d_TempF, lastTimeStr.toInt(), now());
-			recoverData(d_UVA, lastTimeStr.toInt(), now());
-			recoverData(d_UVB, lastTimeStr.toInt(), now());
-			recoverData(d_UVIndex, lastTimeStr.toInt(), now()); 
-			recoverData(d_Pres_mb, lastTimeStr.toInt(), now());
-			recoverData(d_TempC_for_RH, lastTimeStr.toInt(), now());
-			recoverData(d_Pres_seaLvl_mb, lastTimeStr.toInt(), now());
-			recoverData(d_RH, lastTimeStr.toInt(), now());
-			recoverData(d_IRSky_C, lastTimeStr.toInt(), now());
-			recoverData(d_Insol, lastTimeStr.toInt(), now());			
-			recoverData(windSpeed, lastTimeStr.toInt(), now());
-			recoverData(windDir, lastTimeStr.toInt(), now());
-			recoverData(windGust, lastTimeStr.toInt(), now());
-		}
-		else {
-			msg = "Did not find last data save time. No data recovery.";
-			sd.logStatus(msg, now());
-		}
-	
+		// RECOVER DATA FOR ALL SENSORS.
+		recoverData(d_TempF, lastTimeStr.toInt(), now());
+		recoverData(d_UVA, lastTimeStr.toInt(), now());
+		recoverData(d_UVB, lastTimeStr.toInt(), now());
+		recoverData(d_UVIndex, lastTimeStr.toInt(), now());
+		recoverData(d_Pres_mb, lastTimeStr.toInt(), now());
+		recoverData(d_TempC_for_RH, lastTimeStr.toInt(), now());
+		recoverData(d_Pres_seaLvl_mb, lastTimeStr.toInt(), now());
+		recoverData(d_RH, lastTimeStr.toInt(), now());
+		recoverData(d_IRSky_C, lastTimeStr.toInt(), now());
+		recoverData(d_Insol, lastTimeStr.toInt(), now());
+		recoverData(windSpeed, lastTimeStr.toInt(), now());
+		recoverData(windDir, lastTimeStr.toInt(), now());
+		recoverData(windGust, lastTimeStr.toInt(), now());
+	}
+	else {
+		msg = "Did not find last data save time. No data recovery.";
+		sd.logStatus(msg, now());
+	}
+
 	// Date info to determine when new day begins.
 	oldDay = day();
 	oldMonth = month();
@@ -645,23 +633,23 @@ void loop() {
 	// ====================================================
 	//		ANEM_READ_PERIOD_SEC (4 sec)
 	// ====================================================	
-		
+
 	if (_anemTimer_ticks > 0) {
 		// Time to get instantaneous wind speed.
 		portENTER_CRITICAL(&muxAnem);
 		_anemTimer_ticks--;	// Anemometer timer interrupt handled.
 		portEXIT_CRITICAL(&muxAnem);
-					
+
 		// anemRots holds _anemCount from latest timer ISR.
 		processWind(anemRots);		// Wind speed, gust, direction.
 
 		// If still > 0, we missed a timer tick
-		if (_anemTimer_ticks > 0) {			
+		if (_anemTimer_ticks > 0) {
 			String msg = "WARNING: Missed _anemTimer_ticks = " + _anemTimer_ticks;
 			sd.logStatus(msg, gps.dateTime_Str());
 		}
 	}
-	
+
 	//// ====================================================
 	////		READ SENSORS
 	//// ====================================================
@@ -746,9 +734,9 @@ void loop() {
 	}
 
 	//	XXX	XXX	XXX	XXX
-	 
+
 	///// ==========  TEST FOR LOST WIFI CONNECTION  ========== //
-	
+
 	///*
 	//If WiFi is lost, we're screwed because the time
 	//to reconnect may throw of the sensor read timings.

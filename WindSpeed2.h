@@ -9,7 +9,6 @@
 #include "WProgram.h"
 #endif
 
-
 #include <list>
 using std::list;
 
@@ -44,9 +43,6 @@ public:
 	/// <param name="calibrationFactor">
 	/// Calibration factor for anemometer.</param>
 	WindSpeed(float calibrationFactor);
-		//bool isUseMovingAvg = false,
-		//unsigned int numSmoothPoints = 5,
-		//float outlierDelta = 1.75);		// Overload of SensorData.
 
 	/// <summary>
 	/// Returns wind speed from anemometer rotations_VOL.

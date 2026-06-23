@@ -264,8 +264,9 @@ void readSensor_by_index(int index) {
 		readSensors_Simulate();
 		return;
 	}
+#if defined(VM_DEBUG)
 	unsigned long start_usec = micros();	// debugging
-
+#endif
 	// Read sensor specified by index.
 	switch (index)
 	{
@@ -274,11 +275,11 @@ void readSensor_by_index(int index) {
 		d_TempF.addReading(DataPoint(now(), read_Temp_F_DS18B20()));
 		break;
 	case 1:
-		// UV A
+		// UV-A
 		d_UVA.addReading(DataPoint(now(), sensor_UV.uva()));
 		break;
 	case 2:
-		// UV B
+		// UV-B
 		d_UVB.addReading(DataPoint(now(), sensor_UV.uvb()));
 		break;
 	case 3:
@@ -294,7 +295,6 @@ void readSensor_by_index(int index) {
 	}
 	case 5:
 	{
-		//float temp = sensor_PRH.readTemperature();
 		d_TempC_for_RH.addReading(DataPoint(now(), sensor_PRH.readTemperature()));
 		break;
 	}
@@ -329,12 +329,10 @@ void readSensor_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
-	/*
 #if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
 	Serial.printf("\tAt %.3fs Sensor %i takes %.2fus\n", millis() / 1000., index, elapsed);
 #endif
-*/
 }
 
 /// <summary>
@@ -348,8 +346,9 @@ void processSensor_10_min_by_index(int index) {
 		readSensors_Simulate();
 		return;
 	}
+#if defined(VM_DEBUG)
 	unsigned long start_usec = micros();	// debugging
-
+#endif
 	// Read sensor specified by index.
 	switch (index)
 	{
@@ -435,8 +434,9 @@ void processSensor_60_min_by_index(int index) {
 		readSensors_Simulate();
 		return;
 	}
+#if defined(VM_DEBUG)
 	unsigned long start_usec = micros();	// debugging
-
+#endif
 	// Read sensor specified by index.
 	switch (index)
 	{

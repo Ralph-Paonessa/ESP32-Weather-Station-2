@@ -3,6 +3,7 @@
 // 
 
 #include "SensorData.h"
+#include "FileOperations.h"
 
 /*****************************************************************
 	CONSTRUCTOR AND INITIALIZATION
@@ -426,13 +427,13 @@ void SensorData::createSensorDataFiles(bool isConvertZeroToEmpty, unsigned int d
 	FileStatus status;
 
 	status = FileOps::fileCreateOrExists(LittleFS, _sensorFilepath("_10_min"));
-	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_10_min").c_str(), fileStatus_toString(status));
+	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_10_min").c_str(), fileStatus_toString(status).c_str());
 
 	status = FileOps::fileCreateOrExists(LittleFS, _sensorFilepath("_60_min"));
-	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_60_min").c_str(), fileStatus_toString(status));
+	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_60_min").c_str(), fileStatus_toString(status).c_str());
 
 	status = FileOps::fileCreateOrExists(LittleFS, _sensorFilepath("_dayMaxMin"));
-	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_dayMaxMin").c_str(), fileStatus_toString(status));
+	Serial.printf("%s FileStatus = %s\n", _sensorFilepath("_dayMaxMin").c_str(), fileStatus_toString(status).c_str());
 
 	/*
 	if (!fileCreateOrExists(LittleFS, _sensorFilepath("_10_min"))) {
