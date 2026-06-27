@@ -44,7 +44,6 @@ SDCard sd;		// SDCard instance for SD card routines.
 #include <esp32-hal-timer.h>
 #include <esp32-hal.h>
 #include <HardwareSerial.h>
-#include <WString.h>
 #include <WiFi.h>
 #include <WiFiType.h>
 #include <esp_attr.h>

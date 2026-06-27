@@ -18,11 +18,7 @@ logged to the SD card.
 #ifndef _GPSMODULE_h
 #define _GPSMODULE_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 #include <TinyGPSPlus.h>	// Mikal Hart - includes TinyGPS++.h
 #include <TimeLib.h>		// Paul Stoffregen - Time

@@ -4,12 +4,7 @@
 #ifndef _APP_SETTINGS_h
 #define _APP_SETTINGS_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
-#include <WString.h>
+#include <Arduino.h>
 
 /// <summary>
 /// Exposes parameters for weather station.

@@ -8,11 +8,7 @@ used with both SD cards and LittleFS.
 #ifndef _FILEOPERATIONS_h
 #define _FILEOPERATIONS_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 #include <FS.h>
 #include <LittleFS.h>

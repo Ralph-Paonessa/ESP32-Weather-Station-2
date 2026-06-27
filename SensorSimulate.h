@@ -3,11 +3,7 @@
 #ifndef _SENSORSIMULATE_h
 #define _SENSORSIMULATE_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
-#else
-#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 //#include "App_Settings.h"
 

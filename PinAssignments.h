@@ -3,11 +3,7 @@
 #ifndef _PINASSIGNMENTS_h
 #define _PINASSIGNMENTS_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
-#else
-	#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 const int SPI_CS_PIN = 5;	// CS pin for the SD card module
 const int RX2_PIN = 16;                 // UART2 U2_RXD

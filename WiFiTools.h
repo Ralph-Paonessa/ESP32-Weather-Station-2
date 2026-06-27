@@ -3,14 +3,10 @@
 #ifndef _WIFITOOLS_h
 #define _WIFITOOLS_h
 
-#if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
-#else
-	#include "WProgram.h"
-#endif
+#include <Arduino.h>
 
 #include "SDCard.h"
-#include <WString.h>
+
 
 /// <summary>
 /// Exposes methods to handle WiFi operations.
