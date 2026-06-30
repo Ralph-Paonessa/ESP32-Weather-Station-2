@@ -270,25 +270,25 @@ String Testing::readData()
 	return "12.34,10,12.95,13,16,8.7234";
 }
 
-// Tests WindSpeed2.h wind directionCardinal handling.
-void Testing::windDirection(float angleStart, float angleIncrement, int cycles, float VANE_OFFSET) {
-	Serial.println("WindSpeed2.h windDirection test. Add deg readings and average.");
-	WindDirection windDirect(VANE_OFFSET);
-	windDirect.begin();
-	for (int i = 0; i < cycles; i++)
-	{
-		///////////windDirect.addReading(now(), angleStart);   now() not defined in this scope!!!!
-		////////////Serial.print("Readings = "); Serial.print(windDirect.countReadings(), 0);
-		Serial.print(" - addReading("); Serial.print(angleStart);
-		Serial.print(") ... \tangleAvg() = "); Serial.println(windDirect.angleAvg_now());
-		angleStart += angleIncrement;
-	}
-
-	windDirect._clear_10_min();
-	Serial.println("\nAFTER ALL VALUES CLEARED ...");
-	///////////////Serial.print(" Readings = "); Serial.println(windDirect.countReadings(), 0);
-	Serial.print("angleAvg_now() = "); Serial.println(windDirect.angleAvg_now());
-}
+//// Tests WindSpeed2.h wind directionCardinal handling.
+//void Testing::windDirection(float angleStart, float angleIncrement, int cycles, float VANE_OFFSET) {
+//	Serial.println("WindSpeed2.h windDirection test. Add deg readings and average.");
+//	WindDirection windDirect(VANE_OFFSET);
+//	windDirect.begin();
+//	for (int i = 0; i < cycles; i++)
+//	{
+//		///////////windDirect.addReading(now(), angleStart);   now() not defined in this scope!!!!
+//		////////////Serial.print("Readings = "); Serial.print(windDirect.countReadings(), 0);
+//		Serial.print(" - addReading("); Serial.print(angleStart);
+//		Serial.print(") ... \tangleAvg() = "); Serial.println(windDirect.avg_now());
+//		angleStart += angleIncrement;
+//	}
+//
+//	windDirect._clear_10_min();
+//	Serial.println("\nAFTER ALL VALUES CLEARED ...");
+//	///////////////Serial.print(" Readings = "); Serial.println(windDirect.countReadings(), 0);
+//	Serial.print("angleAvg_now() = "); Serial.println(windDirect.avg_now());
+//}
 
 //void Testing::test2() {
 //	Serial.println("Test adding rotations_VOL counts from various optional lists.");
@@ -593,6 +593,6 @@ float Testing::addDummyRotations(list<float> srcList, WindSpeed& speedObj, float
 //
 //void Testing::PrintWindDirection() {
 //	Serial.print(F("Wind directionCardinal : \t"));
-//	Serial.print(F("Raw = ")); Serial.print(windDir.angleAvg_now()); Serial.print(F(" ADU\t"));
+//	Serial.print(F("Raw = ")); Serial.print(windDir.avg_now()); Serial.print(F(" ADU\t"));
 //	Serial.print(F("WindDirection = ")); Serial.print(windDir.heading()); Serial.println();
 //}

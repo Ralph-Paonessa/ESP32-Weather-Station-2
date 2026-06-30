@@ -29,7 +29,11 @@ float WindSpeed::speedInstant(int rots, unsigned int period)
 			where
 			time = time during which rots are counted (sec).
 	*************************************************************/
-	return rots * _calibrationFactor / period;
+	
+	
+	/*	XXX	return rots * _calibrationFactor / period;*/
+
+	return 111.;	// XXX	XXX
 }
 
 /// <summary>

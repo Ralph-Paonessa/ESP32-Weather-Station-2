@@ -396,7 +396,7 @@ void setup() {
 		isGood_LittleFS = false;
 	}
 
-#if defined(VM_DEBUG)
+//#if defined(VM_DEBUG)
 	////////  TESTING   ////////
 	Serial.println("SETUP: ==========  TESTING   ==========");
 	if (isDEBUG_addDummyDataLists) {
@@ -408,6 +408,30 @@ void setup() {
 		Serial.println();
 	}
 	if (isDEBUG_run_test_in_setup) {
+
+#include <cmath>
+		float x, y;
+
+		x = 1;
+		y = 1;
+		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
+		x = -1;
+		y = -1;
+		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
+		x = 0;
+		y = 1;
+		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
+		x = 1;
+		y = 0;
+		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
+		x = 0;
+		y = 0;
+		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
+		x = 100000;
+		y = 0;
+		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
+
+		/*
 		bool isDataInFilesys = true;
 		bool isReportDailyMaxOnly = false;
 		SensorData d(isDataInFilesys, isReportDailyMaxOnly);
@@ -461,6 +485,7 @@ void setup() {
 			d.max_today_dp().time,
 			d.max_today_dp().value);
 		Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
+		*/
 
 		//// File contents.
 		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/RH_10_min.txt");
@@ -475,7 +500,7 @@ void setup() {
 
 		Testing::infiniteLoop();
 	}
-#endif
+//#endif
 
 	// ==========  CREATE SENSORS  ========== //
 #if defined(VM_DEBUG)

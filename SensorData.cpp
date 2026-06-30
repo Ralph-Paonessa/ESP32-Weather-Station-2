@@ -173,7 +173,7 @@ void SensorData::_updateMinMax(DataPoint dp) {
 /// <summary>
 /// Clears running average and min, max for 10-min period.
 /// </summary>
-void SensorData::_clear_10_min() {
+void SensorData::clear_10_min() {
 	_sumReadings = 0;
 	_countReadings = 0;
 	// Reset to highest possible.
@@ -214,11 +214,11 @@ void SensorData::process_data_10_min() {
 		SIZE_10_MIN_LIST);
 	// Store in LittleFS
 	if (_isDatafile) {
-		fileWrite(LittleFS,
-			_sensorFilepath("_10_min").c_str(),
+		fileWrite(LittleFS, 
+			_sensorFilepath("_10_min").c_str(), 
 			dataPoints_10_min_as_String().c_str());
 	}
-	_clear_10_min();	// Start another 10-min period.
+	clear_10_min();	// Start another 10-min period.
 }
 
 /// <summary>

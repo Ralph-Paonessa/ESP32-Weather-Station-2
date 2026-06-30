@@ -330,8 +330,8 @@ void readSensor_by_index(int index) {
 	}
 	}
 #if defined(VM_DEBUG)
-	float elapsed = (micros() - start_usec) / 1000.;
-	Serial.printf("\tAt %.3fs Sensor %i takes %.2fus\n", millis() / 1000., index, elapsed);
+	//float elapsed = (micros() - start_usec) / 1000.;
+	//Serial.printf("\tAt %.3fs Sensor %i takes %.2fus\n", millis() / 1000., index, elapsed);
 #endif
 }
 
@@ -408,7 +408,7 @@ void processSensor_10_min_by_index(int index) {
 	}
 	case 12: {
 		// Wind direction/
-		windDir.process_data_10_min();
+		windDir.process_data_10_min();	// XXX NEED SPECIAL VERSION FOR windDir!!!	XXX
 		break;
 	}
 	default: {

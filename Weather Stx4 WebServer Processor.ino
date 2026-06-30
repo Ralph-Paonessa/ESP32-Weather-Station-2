@@ -52,7 +52,7 @@ String processor(const String& var) {
 		return String(windDir.directionCardinal());		// avg since last cleared (<= 10 min)
 	}
 	if (var == "WIND_ANGLE") {
-		return String(windDir.angleAvg_now(), 0);		// avg since last cleared (<= 10 min)
+		return String(windDir.avg_now(), 0);		// avg since last cleared (<= 10 min)
 	}
 	if (var == "GPS_ALTITUDE") {
 		return String(gps.data.altitude(), 0);

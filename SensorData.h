@@ -65,7 +65,7 @@ protected:		// Protected items are accessible by inherited classes.
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.
 	/// </summary>
-	void _clear_10_min();
+	virtual void clear_10_min();		// virtual to allow override!
 
 	bool _isDatafile = true;			// Set true to save periodic data in LittleFS file system.
 	bool _isReportDayMaxOnly = false;	// Set true to save maxima but not minima on LittleFS file system.
@@ -121,8 +121,8 @@ public:
 	/// will RESET ACCUMULATED SUMS for 10-min avg and reset 
 	/// 10-min min and max.
 	/// </summary>
-	void process_data_10_min();
-
+	virtual void process_data_10_min();		// virtual so it can be overridden!
+	 
 	/// <summary>
 	/// Calculates 60-min avg and saves data to 60-min 
 	/// list. Writes this list to file system.
@@ -155,7 +155,7 @@ public:
 	/// data smoothing is enabled, outlier values are excluded.
 	/// </summary>
 	/// <returns>Average now.</returns>
-	float avg_now();
+	virtual float avg_now();		// virtual to allow override!
 
 	/*/// <summary>
 	/// Returns moving average of last several reading values.
