@@ -73,86 +73,24 @@ void SensorData::addReading(DataPoint dp) {
 	// Accumulate avg.
 	_countReadings++;
 	_sumReadings += dp.value;
+	/*Serial.printf(
+		"\tSensorData::addReading t = %li, v = %f, _countReadings = %i, _sumReadings = %f\n\n", 
+		dp.time, 
+		dp.value, 
+		_countReadings, 
+		_sumReadings);*/
 	// Check for 10-min and daily min max.
-	_updateMinMax(dp);
+	_updateMinMax(dp);	
+}
 
-	/*
-
-	XXX   XXX   ELIMINATED ALL MOVING AVG AND OUTLIER CODE!   XXX   XXX
-
-	Want outlier detection so that a large wind gust won't "pollute"
-	the moving avg wind speed. Outlier will still be reported as the last
-	value read and it will still be compared by windGust to the moving
-	avg to decide if it's a wind gust.
-	*/
-
-	/*
-	* XXX
-	*
-	USING A FACTOR TO DEFINE THE OUTLIER RANGE *SUCKS*
-	FOR READINGS NEAR ZERO!!!
-	*/
-	/*
-	DANGER:
-	On the first pass, _avg_moving = 0, and so the high and low outlier
-	comparisons will all be zero! That means that any reading value will
-	be ouside the range [0, 0] and will be declared an outlier, and won't
-	be added to the moving avg. Thus, the moving avg will always be zero,
-	and all values will be outliers!
-
-	Have to do something to break out of this cycle when starting.
-
-	Can skip outlier check the first time through.
-
-		- This will fail if the first value happens to be 0!
-	*/
-	/*
-	NOTE: If this is the first cycle, there's not yet
-	a value assigned to _avg_moving nor any data points
-	in _avg_moving_List.
-
-		_avg_moving = 0 (as initialized).
-
-	When _avg_moving is zero, the multiples used for the
-	outlier range will be [0, 0]. Therefore, any nonzero
-	value will be outside this range and marked as an outlier!
-
-	So, NO VALUE will be saved!!!
-	*/
-	//// First value begins moving avg. (First value CAN'T BE AN OUTLIER!!)
-	//if (!_isMovingAvgStarted) {
-	//	_avg_moving = dp.value;
-	//	_isMovingAvgStarted = true;
-	//}
-
-	//if (!_isUseSmoothing) {
-		// No smoothing. No moving avg.
-		/*_countReadings++;
-		_sumReadings += dp.value;*/
-		//}
-		//else
-		//{
-		//	// Apply SMOOTHING and OUTLIER REJECTION.
-		//	// First value begins moving avg. (First value CAN'T BE AN OUTLIER!!)
-		//	if (!_isMovingAvgStarted) {
-		//		_avg_moving = dp.value;
-		//		_isMovingAvgStarted = true;
-		//	}
-		//	if (!isOutlier(dp))
-		//	{
-		//		// Not an outlier, so include in 10-min avg.
-		//		_countReadings++;
-		//		_sumReadings += dp.value;
-		//		// Not an outlier, so include in moving avg.
-		//		addDataPoint_to_List(_avg_moving_List, dp.value, _avgMoving_Num);
-		//		_avg_moving = listAverage(_avg_moving_List, _avgMoving_Num);
-		//		_isMovingAvgStarted = true;
-		//	}
-		//	else {
-		//		Serial.printf("OUTLIER DETECTED for (%li, %f)\n", dp.time, dp.value);
-		//	}
-		//}
-		//_updateMinMax(dp);
+/// <summary>
+/// Adds reading time and value, accumulates average, 
+/// and updates min and max.
+/// </summary>
+/// <param name="time">Reading time.</param>
+/// <param name="val">Sensor reading.</param>
+void SensorData::addReading(long int time, float val){
+	addReading(DataPoint(time, val));
 }
 
 /// <summary>
@@ -173,7 +111,7 @@ void SensorData::_updateMinMax(DataPoint dp) {
 /// <summary>
 /// Clears running average and min, max for 10-min period.
 /// </summary>
-void SensorData::clear_10_min() {
+void SensorData::_clear_10_min() {
 	_sumReadings = 0;
 	_countReadings = 0;
 	// Reset to highest possible.
@@ -218,7 +156,7 @@ void SensorData::process_data_10_min() {
 			_sensorFilepath("_10_min").c_str(), 
 			dataPoints_10_min_as_String().c_str());
 	}
-	clear_10_min();	// Start another 10-min period.
+	_clear_10_min();	// Start another 10-min period.
 }
 
 /// <summary>

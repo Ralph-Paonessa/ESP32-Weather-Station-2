@@ -65,7 +65,7 @@ protected:		// Protected items are accessible by inherited classes.
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.
 	/// </summary>
-	virtual void clear_10_min();		// virtual to allow override!
+	virtual void _clear_10_min();		// virtual to allow override!
 
 	bool _isDatafile = true;			// Set true to save periodic data in LittleFS file system.
 	bool _isReportDayMaxOnly = false;	// Set true to save maxima but not minima on LittleFS file system.
@@ -109,11 +109,19 @@ public:
 	void createSensorDataFiles(bool isConvertZeroToEmpty = true, unsigned int decimalPlaces = 0);
 
 	/// <summary>
-	/// Adds (time, value) DataPoint, accumulates average, 
+	/// Adds sensor reading (time, value) DataPoint, accumulates average, 
 	/// and processes min, max.
 	/// </summary>
 	/// <param name="dp">(time, value) DataPoint.</param>
 	void addReading(DataPoint dp);
+
+	/// <summary>
+	/// Adds sensor reading time and value) for calculating 10-min 
+	/// average direction, weighted by speed.
+	/// </summary>
+	/// <param name="time">Reading time.</param>
+	/// <param name="val">Sensor reading.</param>
+	void addReading(long int time, float val);
 
 	/// <summary>
 	/// Calculates 10-min avg and saves data to 10-min 

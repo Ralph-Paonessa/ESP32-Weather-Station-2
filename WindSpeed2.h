@@ -23,11 +23,12 @@ class WindSpeed : public SensorData {	// Inherits SensorData.
 
 private:
 
-	float _calibrationFactor;			// Anemometer calibration factor to convert rotations_VOL to speed.
+	float _calibrationFactor;					// Anem cal factor to convert rots to speed.
 
-	// For identification of gusts.
-	static constexpr float GUST_THRESHOLD = 18.41;	// WindSpeed must exceed this to be a gust.
-	static constexpr float GUST_SPREAD = 10.36;	// WindSpeed must exceed low by this amount to be a gust.
+	//// For identification of gusts.
+	//static constexpr float GUST_THRESHOLD = 8;	// Minimum speed that qualifies as gust.
+	//static constexpr float GUST_SPREAD = 10.36;	// Speed must exceed avg speed by this amount.
+	//static constexpr float GUST_FACTOR = 1.5;	// Speed must exceed avg by this factor.
 
 public:
 
@@ -48,7 +49,7 @@ public:
 	/// <returns>Wind speed, mph</returns>
 	float speedInstant(int rotations_VOL, unsigned int period);
 
-	/// <summary>
+	/*/// <summary>
 	/// Checks for and returns a gust datPoint if the speed satisfies 
 	/// gust criteria. Otherwise, the returned value will be zero if 
 	/// the speed doesn't satisfy gust criteria.
@@ -56,7 +57,7 @@ public:
 	/// <param name="speed">(time, value) point to evaluate for gust.</param>
 	/// <param name="avgSpeed">Current average wind speed.</param>
 	/// <returns>Gust as (time, value) data point.</returns>
-	DataPoint gust(DataPoint speed, float avgSpeed);
+	DataPoint gust(DataPoint speed, float avgSpeed);*/
 
 	/// <summary>
 	/// Returns wind speed description in Beaufort 

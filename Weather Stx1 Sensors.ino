@@ -192,8 +192,20 @@ void processWind(uint32_t rots) {
 
 	// Record any gusts.
 	float avg = windSpeed.avg_now();
-	DataPoint dpGust = windSpeed.gust(dpSpeed, avg);
-	windGust.addReading(dpGust);
+
+
+
+	Serial.println("Not programmed!!");
+
+
+	// XXX	XXX	XXX
+
+	//DataPoint dpGust = windSpeed.gust(dpSpeed, avg);
+	//windGust.addReading(dpGust);
+
+
+
+
 
 	// Read wind direction.
 	float windAngle = getWindAngle();

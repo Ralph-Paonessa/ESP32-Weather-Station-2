@@ -2,59 +2,6 @@
 // 
 // 
 
-#include "WindDirection.h"
-
-#include <cmath>
-#include "DataPoint.h"
-
-/// <summary>
-/// Create with an angle offset to subtract from readings.
-/// </summary>
-/// <param name="offsetAngle">
-/// Degrees by which reading exceeds true north.
-/// </param>
-WindDirection::WindDirection(float offsetAngle) {
-	_offsetAngle = offsetAngle;
-}
-
-/// <summary>
-/// Create the WindDirection object.
-/// </summary>
-void WindDirection::begin() {
-	WindDirection::clear_10_min();
-}
-
-
-
-void WindDirection::process_data_10_min() {
-	// Avg over last 10 min.
-	_avg_10_min = avg_now();
-
-	// Add to 10-min list of observations.
-	addDataPoint_to_List(_dataPoints_10_min,
-		DataPoint(_dataPointLastAdded.time, _avg_10_min),
-		SIZE_10_MIN_LIST);
-	// Store in LittleFS
-	if (_isDatafile) {
-		fileWrite(LittleFS,
-			_sensorFilepath("_10_min").c_str(),
-			dataPoints_10_min_as_String().c_str());
-	}
-	clear_10_min();	// Start another 10-min period.
-}
-
-/// <summary>
-/// Clears all direction values and averages.
-/// </summary>
-/// <remarks>OVERRIDES SensorData to handle vector avgs!</remarks>
-void WindDirection::clear_10_min() {
-	_eSum = 0;
-	_nSum = 0;
-	_isDirection_measured = false;
-	//_sumReadings = 0;		// invalid for vector avg
-	_countReadings = 0;		// INHERITED - WILL WE EVEN USE THIS?! Vector avg doesn't need count!!
-}
-
 /*
 		XXX  ???
 		This solves the problem of updating the read time, even
@@ -78,47 +25,123 @@ void WindDirection::clear_10_min() {
 		DIRECTIONS ASSOCIATED WITH NO SPEED.
 
 		NOTE: If direction angle is logged as exactly zero, (which would
-		be the case for a 10-min_today_dp period with no wind)then web server
+		be the case for a 10-min_today_dp period with no wind) then web server
 		returns it as "" for that time.
 */
 
+#include "WindDirection.h"
+
+#include <cmath>
+#include "DataPoint.h"
+
 /// <summary>
-/// Adds wind direction reading for calculating 10-min_today_dp 
+/// Create WindDirection object with an anemometer angle offset.
+/// </summary>
+/// <param name="offsetAngle">
+/// Degrees by which reading exceeds true north.
+/// </param>
+WindDirection::WindDirection(float offsetAngle) {
+	_offsetAngle = offsetAngle;
+}
+
+/// <summary>
+/// Create the WindDirection object.
+/// </summary>
+void WindDirection::begin() {
+	WindDirection::_clear_10_min();
+}
+
+
+
+
+
+/// <summary>
+/// Adds wind direction (time, value) DataPoint for calculating
 /// average direction, weighted by speed.
 /// </summary>
-/// <param name="time">Reading time, sec.</param>
-/// <param name="deg">Wind direction (uncorrected), degrees.</param>
+/// <param name="dp">Data point with time and dir angle.</param>
 /// <param name="speed">Speed at time of reading, mph.</param>
-void WindDirection::addReading(long time, float deg, float speed) {
-	_dataPointLastAdded = DataPoint(time, deg);
+/// <remarks>Overloads inherited SensorData::addReading</remarks>
+void WindDirection::addReading(DataPoint dp, float speed) {
+	_dataPointLastAdded = dp;
 	///////////_timeLastAdded = time;
 	// Only record direction for speeds greater than threshold.
 	if (speed >= WIND_DIR_SPEED_THRESHOLD) {
-		deg = normalizedAngle360(deg -= _offsetAngle);	// Adjust for any offset.
+		float deg = dp.value;
+		deg = _normalizedAngle360(deg -= _offsetAngle);	// Adjust for any offset.
 		// Converts angle into North and East components of
 		// the direction vector and sums each component.
 		// Weight these by the speed.
-		_eSum += e_Component(deg) * speed;
-		_nSum += n_Component(deg) * speed;
-		_isDirection_measured = true;
+		_eSum += _e_Component(deg) * speed;
+		_nSum += _n_Component(deg) * speed;
+
+		Serial.printf("_eSum = %f, _nSum = %f, ", _eSum, _nSum);
+
+		_isReadingTaken = true;
+		_countReadings++;
+
+		Serial.printf("_countReadings = %d\n", _countReadings);
+
 	}
 }
 
 /// <summary>
-/// Returns East component of a unit vector based on angle.
+/// Adds wind direction reading for calculating
+/// average direction, weighted by speed.
+/// </summary>
+/// <param name="time">Reading time.</param>
+/// <param name="val">Wind direction reading.</param>
+/// <param name="speed">Speed at time of reading, mph.</param>
+void WindDirection::addReading(long int time, float val, float speed) {
+	addReading(DataPoint(time, val), speed);
+}
+
+/// <summary>
+/// Creates a 10-min data point and adds to 10-min list.
+/// </summary>
+void WindDirection::process_data_10_min() {
+	// Avg over last 10 min.
+	_avg_10_min = avg_now();
+	// Add to 10-min list of observations.
+	addDataPoint_to_List(_dataPoints_10_min,
+		DataPoint(_dataPointLastAdded.time, _avg_10_min),
+		SIZE_10_MIN_LIST);
+	// Store in LittleFS
+	if (_isDatafile) {
+		fileWrite(LittleFS,
+			_sensorFilepath("_10_min").c_str(),
+			dataPoints_10_min_as_String().c_str());
+	}
+	_clear_10_min();	// Start another 10-min period.
+}
+
+/// <summary>
+/// Clears all direction values and averages.
+/// </summary>
+void WindDirection::_clear_10_min() {
+	_eSum = 0;
+	_nSum = 0;
+	_isReadingTaken = false;
+	_countReadings = 0;		// INHERITED - WILL WE EVEN USE THIS?! Vector avg doesn't need count!!
+}
+
+
+
+/// <summary>
+/// Extracts East component of wind direction unit vector.
 /// </summary>
 /// <param name="degrees">Angle, degrees.</param>
-/// <returns></returns>
-float WindDirection::e_Component(float degrees) {
+/// <returns>East component of wind direction unit vector.</returns>
+float WindDirection::_e_Component(float degrees) {
 	return sin(degrees / DEGREES_PER_RADIAN);
 }
 
 /// <summary>
-/// Returns North component of aunit vector based on angle.
+/// Extracts North component of wind direction unit vector.
 /// </summary>
 /// <param name="degrees">Angle, degrees.</param>
-/// <returns></returns>
-float WindDirection::n_Component(float degrees) {
+/// <returns>North component of wind direction unit vector.</returns>.
+float WindDirection::_n_Component(float degrees) {
 	return cos(degrees / DEGREES_PER_RADIAN);
 }
 
@@ -131,10 +154,10 @@ float WindDirection::n_Component(float degrees) {
 /// <returns>Direction vector angle from 0-360 degrees.</returns>
 /// <remarks>Treats atan2(y, x) as atan2(e, n), with 
 /// angle from N(=x) through E(=y) increasing from 0 to 360.</remarks>
-float WindDirection::atan_360(float e, float n) {
+float WindDirection::_atan_360(float e, float n) {
 	float deg = atan2(e, n) * DEGREES_PER_RADIAN;
 	// modify negative quadrants 3, 4 (-180 - 180) to positive (0 - 360)
-	return normalizedAngle360(deg);
+	return _normalizedAngle360(deg);
 }
 
 /// <summary>
@@ -142,7 +165,7 @@ float WindDirection::atan_360(float e, float n) {
 /// </summary>
 /// <param name="deg">Angle in degrees.</param>
 /// <returns>Positive angle from 0-360 degrees.</returns>
-float WindDirection::normalizedAngle360(float deg) {
+float WindDirection::_normalizedAngle360(float deg) {
 	deg = std::fmod(deg, 360.0);	// angle from 0-360, but could be NEGATIVE!
 	// Convert neg. angle to pos. representation.
 	if (deg < 0.0) {
@@ -163,7 +186,7 @@ float WindDirection::normalizedAngle360(float deg) {
 /// <returns>Wind direction angle (0-360 deg)</returns>
 /// <remarks>Number of readings is not used in this "average" 
 /// because it is a vector calculation.</remarks>
-float WindDirection::angleFromComponents(float n, float e) {
+float WindDirection::_angleFromComponents(float n, float e) {
 	/*
 		tan = Opposite/Adjacent
 		tan = y/x -> normal xy coordinates, as used in atan2(y, x)
@@ -199,7 +222,7 @@ float WindDirection::angleFromComponents(float n, float e) {
 	*/
 
 	float angle = atan2(n, e) * DEGREES_PER_RADIAN;		// Use degrees.
-	return normalizedAngle360(angle);
+	return _normalizedAngle360(angle);
 }
 
 /// <summary>
@@ -207,15 +230,24 @@ float WindDirection::angleFromComponents(float n, float e) {
 /// </summary>
 /// <returns>Average wind direction.</returns>
 float WindDirection::avg_now() {
-	return normalizedAngle360(angleFromComponents(_eSum, _nSum));
+	return _normalizedAngle360(_angleFromComponents(_eSum, _nSum));
 }
 
 /// <summary>
-/// Returns true if direction has been calculated from accepted inputs.
+/// Returns true if direction was read.
 /// </summary>
-/// <returns>True if direction is valid.</returns>
-bool WindDirection::isDirection_measured() {
-	return _isDirection_measured;
+/// <returns>True if direction reading was read.</returns>
+bool WindDirection::isReadingTaken() {
+	return _isReadingTaken;
+}
+
+/// <summary>
+/// Returns latest cardinal direction using 
+/// current avg wind angle.
+/// </summary>
+/// <returns>Cardinal direction as string.</returns>
+String WindDirection::dirCardinal_now() {
+	return _dirCardinal(avg_now());
 }
 
 /// <summary>
@@ -223,8 +255,8 @@ bool WindDirection::isDirection_measured() {
 /// latest 10-min_today_dp avg wind angle.
 /// </summary>
 /// <returns>Cardinal direction as string.</returns>
-String WindDirection::directionCardinal() {
-	return directionCardinal(_avg_10_min);	//	XXX	ONLY VALID AFTER process_data_10_min()
+String WindDirection::dirCardinal_10_min() {
+	return _dirCardinal(_avg_10_min);	//	XXX	ONLY VALID AFTER process_data_10_min()
 }
 
 /// <summary>
@@ -234,7 +266,7 @@ String WindDirection::directionCardinal() {
 /// <param name="e"></param>
 /// <returns></returns>
 float WindDirection::atan_360_pub(float e, float n) {
-	return atan_360(e, n);
+	return _atan_360(e, n);
 }
 
 /// <summary>
@@ -243,7 +275,7 @@ float WindDirection::atan_360_pub(float e, float n) {
 /// <param name="deg"></param>
 /// <returns></returns>
 float WindDirection::e_Component_pub(float deg) {
-	return e_Component(deg);
+	return _e_Component(deg);
 }
 
 /// <summary>
@@ -252,7 +284,7 @@ float WindDirection::e_Component_pub(float deg) {
 /// <param name="deg"></param>
 /// <returns></returns>
 float WindDirection::n_Component_pub(float deg) {
-	return n_Component(deg);
+	return _n_Component(deg);
 }
 
 /// <summary>
@@ -260,7 +292,7 @@ float WindDirection::n_Component_pub(float deg) {
 /// </summary>
 /// <param name="angle">Wind angle, deg.</param>
 /// <returns>Wind cardinal direction.</returns>
-String WindDirection::directionCardinal(float angle) {
+String WindDirection::_dirCardinal(float angle) {
 	if (std::isnan(angle))	// hardware/math error
 		return "err: NaN input";
 	if (angle < 0.0 || angle >= 360.0)
@@ -292,13 +324,13 @@ String WindDirection::directionCardinal(float angle) {
 /// </summary>
 /// <param name="angles">List containing wind angles.</param>
 /// <returns>List of cardinal direction strings.</returns>
-list<String> WindDirection::directions_cardinal_XXX(list<float>& angleList) {
+list<String> WindDirection::dir_cardinal_list(list<float>& angleList) {
 	// Create list to hold cardinal direction strings.
 	list<String> cardinals;
 	//int i = 0;
 	for (list<float>::iterator it = angleList.begin(); it != angleList.end(); ++it) {
 		// Add the corresponding cardinal directions.
-		cardinals.push_back(directionCardinal(*it));
+		cardinals.push_back(_dirCardinal(*it));
 	}
 	return cardinals;
 }

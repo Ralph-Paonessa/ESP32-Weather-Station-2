@@ -3,6 +3,7 @@
 // 
 
 #include "WindSpeed2.h"
+#include "DataPoint.h"
 
 // Constructor.
 
@@ -29,33 +30,33 @@ float WindSpeed::speedInstant(int rots, unsigned int period)
 			where
 			time = time during which rots are counted (sec).
 	*************************************************************/
-	
-	
-	/*	XXX	return rots * _calibrationFactor / period;*/
-
-	return 111.;	// XXX	XXX
+	return rots * _calibrationFactor / period;
 }
 
-/// <summary>
-/// Checks for and returns a gust datPoint if the speed satisfies 
-/// gust criteria. Otherwise, the returned value will be zero if 
-/// the speed doesn't satisfy gust criteria.
-/// </summary>
-/// <param name="speed">(time, value) point to evaluate for gust.</param>
-/// <param name="avgSpeed">Current average wind speed.</param>
-/// <returns>Gust as (time, value) data point.</returns>
-DataPoint WindSpeed::gust(DataPoint speed, float avgSpeed)
-{
-	if (speed.value >= GUST_THRESHOLD &&			// Gust exceeds threshold		
-		(speed.value - avg_now() >= GUST_SPREAD)) {	// Gust exceeds avg by GUST_SPREAD		
-		// Report this as a gust.
-		return speed;
-	}
-	else {
-		// Not a gust, so return value of zero.
-		return DataPoint(speed.time, 0);
-	}
-}
+///// <summary>
+///// Checks for and returns a gust datPoint if the speed satisfies 
+///// gust criteria. Otherwise, the returned value will be zero if 
+///// the speed doesn't satisfy gust criteria.
+///// </summary>
+///// <param name="speed">(time, value) point to evaluate for gust.</param>
+///// <param name="avgSpeed">Current average wind speed.</param>
+///// <returns>Gust as (time, value) data point.</returns>
+//DataPoint WindSpeed::gust(DataPoint speed, float avgSpeed) {
+//	if (speed.value >= GUST_THRESHOLD &&			// Speed exceeds threshold		
+//		(speed.value - avg_now() >= GUST_SPREAD) &&	// Speed exceeds avg by GUST_SPREAD
+//		speed.value >= GUST_FACTOR * avg_now()) {	// Speed exceeds avg by GUST_FACTOR	
+//		// Record this as a gust.
+//
+//		Serial.printf("speed %f recorded as gust, avg_now() = %f\n", speed.value, avg_now());
+//
+//		return speed;
+//	}
+//	else {
+//		// Not a gust, so return value of zero.
+//		Serial.printf("speed %f NOT recorded as gust, avg_now() = %f\n", speed.value, avg_now());
+//		return DataPoint(speed.time, 0);
+//	}
+//}
 
 /// <summary>
 /// Returns wind speed description in Beaufort 

@@ -7,30 +7,33 @@
 
 A timer interrupt every short BASE_PERIOD_SEC signals that we should 
 get the "instantaneous" wind speed, which we define here as the speed 
-during the shortest period we can practially measure. This is 
-set by BASE_PERIOD_SEC, which is on the order of 1 to 5 
-seconds.
+during the most practical short period we can practially measure. This is set by ANEM_READ_PERIOD_SEC, which is on the order of 1 to 5 seconds.
 
-One reason to keep this period short is that the instantaneous 
+The main reason to keep this period short is that the instantaneous 
 speed will be used to determine wind gusts, which can be as short as 
 a few seconds.
 
 ### Wind Speed data available in user interface:
 
  - Current speed = instantaneous speed
- - Wind speeds averaged over 10- and 60-minutes intervals.
+ - Wind speed averages over 10- and 60-minutes intervals.
  - Today's current high and low speed.
  - Daily highs and lows over several days.
 
  ## Measuring wind gusts
 
- A wind gust is defined here as an instantaneous speed that is 
- "significantly"  greater the the previous one. (See later for 
- what is considered "significant.")
+ A wind gust is defined here as an instantaneous speed that exceeds the the current average over the current short period (chosen as 10 minutes).
 
- Each time a gust is found, it will be compared to the highest
- previous gust (_maxGust). If it is greater, it will be set 
- as the new _maxGust.
+ ### Gust criteria
+
+A gust will be recorded if it
+
+- exceeds a minimum absolute threshhold
+- exceeds the avg speed by a given spread
+- exceeds the avg speed by a defined factor
+
+Each time a gust is found, it will be compared to the highest
+previous gust (_maxGust) in this 10-min period. If it is greater, it will be set as the new _maxGust.
 
  At the end of each 10-min period, _maxGust will be saved as the
  reported wind gust for that period; then _maxGust will be reset 
@@ -151,30 +154,26 @@ HOW TO IMPLEMENT:
 
 
 
-| Attempt | #1    | #2    |
-| :---:   | :---: | :---: |
-| Seconds | 301   | 283   |
-
-
 ----------------------------------------------------
 ### SAMPLE WIND SPEED MEASUREMENT VALUES
 ----------------------------------------------------
-|WindSpeed mph	|Freq. Hz		|Counts	in 0.25s	|Counts	in 2.5s	|Counts in 120s|
 
-|mph		Hz						
-|-----	------		--------	--------	--------
-|1		0.44		0.1			1.1			53
-|2		0.89		0.2			2.2			107
+| Speed		| Freq. Hz | Counts	0.25s 	|Counts 2.5s	|Counts in 120s
+| --------	| -------- | --------		| --------		|-------- 
+| 1			| 0.44		|	0.1			|	1.1			|53
+|2			|0.89		|0.2			|2.2		|107
+|3			|1.33		|0.3			|3.3		|160
+|4			|1.78		|0.4			|4.4		|213
+|2			|0.89		|0.2			|2.2		|107
+|3			|1.33		|0.3			|3.3		|160
+|4			|1.78		|0.4			|4.4		|213
+|5			|2.22		|0.6			|5.6		|267
+|6			|2.67		|0.7			|6.7		|320
+|7			|3.11		|0.8			|7.8		|373
+|8			|3.56		|0.9			|8.9		|427
+|9			|4.00		|1.0			|10.0		|480
 
 
-
-3		1.33		0.3			3.3			160
-4		1.78		0.4			4.4			213
-5		2.22		0.6			5.6			267
-6		2.67		0.7			6.7			320
-7		3.11		0.8			7.8			373
-8		3.56		0.9			8.9			427
-9		4.00		1.0			10.0		480
 10		4.44		1.1			11.1		533
 11		4.89		1.2			12.2		587
 12		5.33		1.3			13.3		640
@@ -199,9 +198,11 @@ HOW TO IMPLEMENT:
 ----------------------------------------------------
 ### SAMPLE WIND SPEED MEASUREMENT VALUES
 ----------------------------------------------------
+
 WindSpeed	Freq.		Counts		Counts		Counts
 mph		Hz			in 0.25s	in 2.5s		in 120s
 -----	------		--------	--------	--------
+
 1		0.44		0.1			1.1			53
 2		0.89		0.2			2.2			107
 3		1.33		0.3			3.3			160

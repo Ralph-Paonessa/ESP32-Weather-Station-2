@@ -71,7 +71,7 @@ String sensorsDataString_current() {
 	if (windSpeed.avg_10_min() > 0.5)
 	{
 		s += "\t" + String(windDir.avg_now());
-		s += "\t" + windDir.directionCardinal();
+		s += "\t" + windDir.dirCardinal_now();
 	}
 	else {
 		// WindSpeed too low to determine direction.
@@ -120,7 +120,7 @@ String sensorsDataString_10_min() {
 	if (windSpeed.avg_10_min() >= WIND_DIR_SPEED_THRESHOLD)
 	{
 		s += "\t" + String(windDir.avg_10_min());
-		s += "\t" + windDir.directionCardinal();
+		s += "\t" + windDir.dirCardinal_10_min();
 	}
 	else {
 		// Speed too low to report wind direction.
@@ -200,7 +200,7 @@ void PrintSensorOutputs() {
 	// Wind direction.
 	Serial.print(windDir.avg_now());
 	Serial.print(windDir.avg_now()); Serial.print(F("deg\t"));
-	Serial.print(windDir.directionCardinal()); Serial.print(F("\t"));
+	Serial.print(windDir.dirCardinal_now()); Serial.print(F("\t"));
 	Serial.print(d_fanRPM.valueLastAdded()); Serial.print(F(" rpm"));
 	// Advance to new line.
 	Serial.println();

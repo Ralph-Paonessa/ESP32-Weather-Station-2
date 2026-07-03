@@ -49,7 +49,7 @@ String processor(const String& var) {
 		return String(windGust.max_10_min_dp().value, 0);	// 10-min max for gusts
 	}
 	if (var == "WIND_DIRECTION") {
-		return String(windDir.directionCardinal());		// avg since last cleared (<= 10 min)
+		return String(windDir.dirCardinal_10_min());		// avg since last cleared (<= 10 min)
 	}
 	if (var == "WIND_ANGLE") {
 		return String(windDir.avg_now(), 0);		// avg since last cleared (<= 10 min)
