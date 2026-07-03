@@ -79,13 +79,12 @@ namespace App_Settings {
 	constexpr unsigned int	DAVIS_ANEM_DEBOUNCE_TIMEOUT_MS = 15;// Debounce timeout (millisec)
 	constexpr float			VANE_OFFSET = 0;					// Degrees that wind direction reading exceeds north.
 	constexpr float			WIND_DIR_SPEED_THRESHOLD = 1;		// WindSpeed below which wind direction is not reported.
-	// For identification of gusts.
-	static constexpr float GUST_THRESHOLD = 8;					// Minimum speed that qualifies as gust.
-	static constexpr float GUST_SPREAD = 10.36;					// Speed must exceed avg speed by this amount.
-	static constexpr float GUST_FACTOR = 1.5;					// Speed must exceed avg by this factor.
+	static constexpr float	GUST_THRESHOLD = 8;					// Minimum speed that qualifies as gust.
+	static constexpr float	GUST_SPREAD = 10.36;				// Speed must exceed avg speed by this amount.
+	static constexpr float	GUST_FACTOR = 1.5;					// Speed must exceed avg by this factor.
 
 	constexpr unsigned int	LOOP_TIME_WARN_THRESHOLD_MS = 120;	// threshold for reporting long loop cycle.
-		
+
 	/// <summary>
 	/// Max size of data lists in memory. Affects 
 	/// </summary>
