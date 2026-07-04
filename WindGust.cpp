@@ -6,38 +6,35 @@
 #include "DataPoint.h"
 
 /// <summary>
-/// Create WindGust object.
+/// Creates WindGust object.
 /// </summary>
 WindGust::WindGust() {
 }
 
 /// <summary>
-/// Create the WindGust object.
-/// </summary>
-void WindGust::begin() {
-	WindGust::_clear_10_min();
-}
-
-
-/// <summary>
 /// Adds wind gust (time, value) DataPoint.
 /// </summary>
 /// <param name="dp">Data point with time and dir angle.</param>
-/// <param name="speed">Speed at time of reading, mph.</param>
+/// <param name="speedAvg">Avg speed at time of reading, mph.</param>
 /// <remarks>Overloads inherited SensorData::addReading</remarks>
-void WindGust::addReading_WhatToDoWithThis(DataPoint dp, float speed) {
+void WindGust::addReading(DataPoint dp, float speedAvg) {
 	_dataPointLastAdded = dp;
-	///////////_timeLastAdded = time;
-	// Only record direction for speeds greater than threshold.
-	if (speed >= WIND_DIR_SPEED_THRESHOLD) {
-
-
-		_countReadings++;
-
-		Serial.printf("_countReadings = %d\n", _countReadings);
-
+	// Only record gusts that match criteria.
+	if (dp.value >= GUST_THRESHOLD &&			// Speed exceeds threshold		
+		(dp.value - speedAvg >= GUST_SPREAD) &&	// Speed exceeds avg by GUST_SPREAD
+		dp.value >= GUST_FACTOR * speedAvg) {	// Speed exceeds avg by GUST_FACTOR	
+		// Qualifies as a gust.
+		_countGusts++;
+		if (dp.value >= _max_10_min_dp.value) {
+			// Hold new gust.
+			_gust_10_min_dp = dp;
+		}
 	}
+	_countReadings++;
+
+	Serial.printf("WindGust::addReading: _countReadings = %i, _countGusts = %i\n", _countReadings, _countGusts);
 }
+
 
 /// <summary>
 /// Adds wind direction reading for calculating
@@ -45,40 +42,19 @@ void WindGust::addReading_WhatToDoWithThis(DataPoint dp, float speed) {
 /// </summary>
 /// <param name="time">Reading time.</param>
 /// <param name="val">Wind direction reading.</param>
-/// <param name="speed">Speed at time of reading, mph.</param>
-void WindGust::addReading_WhatToDoWithThis(long int time, float val, float speed) {
-	addReading_WhatToDoWithThis(DataPoint(time, val), speed);
-}
-
-
-/// <summary>
-/// Returns true if speed is a wind gust.
-/// </summary>
-/// <param name="speed">Wind speed reading.</param>
-/// <param name="speed_avg">Current average wind speed.</param>
-/// <returns>True if speed is a wind gust.</returns>
-bool WindGust::isGust(float speed, float speed_avg) {
-	if (speed >= GUST_THRESHOLD &&			// Speed exceeds threshold		
-		(speed - speed_avg >= GUST_SPREAD) &&	// Speed exceeds avg by GUST_SPREAD
-		speed >= GUST_FACTOR * avg_now()) {	// Speed exceeds avg by GUST_FACTOR	
-		// Record this as a gust.
-		return true;
-	}
-	else {
-		return false;
-	}
+/// <param name="speedAvg">Avg speed at time of reading, mph.</param>
+void WindGust::addReading(long int time, float val, float speedAvg) {
+	addReading(DataPoint(time, val), speedAvg);
 }
 
 /// <summary>
 /// Creates a 10-min data point and adds to 10-min list.
 /// </summary>
+/// <remarks>NOTE: WindGust uses max, not avg.</remarks>
 void WindGust::process_data_10_min() {
-	// Avg over last 10 min.
-	_avg_10_min = avg_now();
 	// Add to 10-min list of observations.
-	addDataPoint_to_List(_dataPoints_10_min,
-		DataPoint(_dataPointLastAdded.time, _avg_10_min),
-		SIZE_10_MIN_LIST);
+	// Gust is max from last 10 min.
+	addDataPoint_to_List(_dataPoints_10_min, _max_10_min_dp, SIZE_10_MIN_LIST);
 	// Store in LittleFS
 	if (_isDatafile) {
 		fileWrite(LittleFS,
@@ -88,20 +64,23 @@ void WindGust::process_data_10_min() {
 	_clear_10_min();	// Start another 10-min period.
 }
 
-/// <summary>
-/// Clears all direction values and averages.
-/// </summary>
-void WindGust::_clear_10_min() {
-	/*_eSum = 0;
-	_nSum = 0;
-	_isReadingTaken = false;*/
-	_countReadings = 0;		// INHERITED - WILL WE EVEN USE THIS?! Vector avg doesn't need count!!
+DataPoint WindGust::gust_10_min_dp() {
+	return _gust_10_min_dp;
 }
 
-///// <summary>
-///// Average wind direction from current accumulated readings, deg.
-///// </summary>
-///// <returns>Average wind direction.</returns>
-//float WindGust::avg_now() {
-//	return _normalizedAngle360(_angleFromComponents(_eSum, _nSum));
-//}
+DataPoint WindGust::gust_today_dp() {
+	return _gust_today_dp;
+}
+
+/// <summary>
+/// Clears accumulated 10-min gust data.
+/// </summary>
+void WindGust::_clear_10_min() {
+	_countReadings = 0;
+	_countGusts = 0;
+	_gust_10_min_dp = DataPoint(0, 0);	// reset gust
+
+	// Reset to extremes. (Real values will always surpass these.)
+	_min_10_min_dp = DataPoint(0, +VAL_LIMIT);	// not used anywhere!
+	_max_10_min_dp = DataPoint(0, -VAL_LIMIT);	// not used anywhere!
+}

@@ -154,7 +154,6 @@ void sensors_begin() {
 		sd.logStatus(msg, millis());
 	}
 	//  ---------------  Davis wind sensors   ---------------
-	windDir.begin();	// Create WindDirection.
 	String msg = "[ No connection test implemented for Davis anemometer. ]";
 	sd.logStatus(msg, millis());
 	isGood_WindDir = true;      // How can this be tested?? XXX

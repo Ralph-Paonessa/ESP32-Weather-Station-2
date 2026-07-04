@@ -74,13 +74,13 @@ void SensorData::addReading(DataPoint dp) {
 	_countReadings++;
 	_sumReadings += dp.value;
 	/*Serial.printf(
-		"\tSensorData::addReading t = %li, v = %f, _countReadings = %i, _sumReadings = %f\n\n", 
-		dp.time, 
-		dp.value, 
-		_countReadings, 
+		"\tSensorData::addReading t = %li, v = %f, _countReadings = %i, _sumReadings = %f\n\n",
+		dp.time,
+		dp.value,
+		_countReadings,
 		_sumReadings);*/
-	// Check for 10-min and daily min max.
-	_updateMinMax(dp);	
+		// Check for 10-min and daily min max.
+	_updateMinMax(dp);
 }
 
 /// <summary>
@@ -89,7 +89,7 @@ void SensorData::addReading(DataPoint dp) {
 /// </summary>
 /// <param name="time">Reading time.</param>
 /// <param name="val">Sensor reading.</param>
-void SensorData::addReading(long int time, float val){
+void SensorData::addReading(long int time, float val) {
 	addReading(DataPoint(time, val));
 }
 
@@ -102,7 +102,6 @@ void SensorData::_updateMinMax(DataPoint dp) {
 	// Update min and max so far for this 10-min period.
 	_min_10_min_dp = (dp.value < _min_10_min_dp.value) ? dp : _min_10_min_dp;
 	_max_10_min_dp = (dp.value > _max_10_min_dp.value) ? dp : _max_10_min_dp;
-
 	// Update min and max so far for all of today.
 	_min_today_dp = (dp.value < _min_today_dp.value) ? dp : _min_today_dp;
 	_max_today_dp = (dp.value > _max_today_dp.value) ? dp : _max_today_dp;
@@ -114,13 +113,12 @@ void SensorData::_updateMinMax(DataPoint dp) {
 void SensorData::_clear_10_min() {
 	_sumReadings = 0;
 	_countReadings = 0;
-	// Reset to highest possible.
-	_min_10_min_dp = DataPoint(0, VAL_LIMIT);
+	// Reset to extremes. (Real values will always surpass these.)
+	_min_10_min_dp = DataPoint(0, +VAL_LIMIT);
 	_max_10_min_dp = DataPoint(0, -VAL_LIMIT);
 }
 
-int SensorData::countReadings()
-{
+int SensorData::countReadings() {
 	return _countReadings;
 }
 
@@ -128,8 +126,8 @@ int SensorData::countReadings()
 /// Clears saved minimum and maximum for today.
 /// </summary>
 void SensorData::clearMinMax_day() {
-	// Reset to highest possible.
-	_min_today_dp = DataPoint(0, VAL_LIMIT);
+	// Reset to extremes. (Real values will always surpass these.)
+	_min_today_dp = DataPoint(0, +VAL_LIMIT);
 	_max_today_dp = DataPoint(0, -VAL_LIMIT);
 }
 
@@ -152,8 +150,8 @@ void SensorData::process_data_10_min() {
 		SIZE_10_MIN_LIST);
 	// Store in LittleFS
 	if (_isDatafile) {
-		fileWrite(LittleFS, 
-			_sensorFilepath("_10_min").c_str(), 
+		fileWrite(LittleFS,
+			_sensorFilepath("_10_min").c_str(),
 			dataPoints_10_min_as_String().c_str());
 	}
 	_clear_10_min();	// Start another 10-min period.

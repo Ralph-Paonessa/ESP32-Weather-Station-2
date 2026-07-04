@@ -44,12 +44,12 @@ WindDirection::WindDirection(float offsetAngle) {
 	_offsetAngle = offsetAngle;
 }
 
-/// <summary>
-/// Create the WindDirection object.
-/// </summary>
-void WindDirection::begin() {
-	WindDirection::_clear_10_min();
-}
+///// <summary>
+///// Create the WindDirection object.
+///// </summary>
+//void WindDirection::begin() {
+//	WindDirection::_clear_10_min();
+//}
 
 
 

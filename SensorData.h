@@ -47,21 +47,11 @@ protected:		// Protected items are accessible by inherited classes.
 	/// <param name="dp">Data point with value to evaluate.</param>
 	void _updateMinMax(DataPoint dp);
 
-	// Initialize at impossible extremes.
-
-	DataPoint _min_today_dp = DataPoint(0, VAL_LIMIT);		// Today's minimum.
-	DataPoint _max_today_dp = DataPoint(0, -VAL_LIMIT);	// Today's maximum.
-
-	/// <summary>
-	/// Minimum sensor reading in the current 10-min period.
-	/// </summary>
-	DataPoint _min_10_min_dp = DataPoint(0, VAL_LIMIT);	// Initialize at high extreme.
-
-	/// <summary>
-	/// Maximum sensor reading in the current 10-min period.
-	/// </summary>
-	DataPoint _max_10_min_dp = DataPoint(0, -VAL_LIMIT);	// Initialize at low extreme.
-
+	DataPoint _min_10_min_dp = DataPoint(0, +VAL_LIMIT);	// Current 10-min minimum.
+	DataPoint _max_10_min_dp = DataPoint(0, -VAL_LIMIT);	// Current 10-min maximum.
+	DataPoint _min_today_dp = DataPoint(0, +VAL_LIMIT);		// Today's minimum.
+	DataPoint _max_today_dp = DataPoint(0, -VAL_LIMIT);		// Today's maximum.
+		
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.
 	/// </summary>

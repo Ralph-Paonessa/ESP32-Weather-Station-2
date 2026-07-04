@@ -89,10 +89,10 @@ public:
 	/// </param>
 	WindDirection(float offsetAngle = 0);
 
-	/// <summary>
+	/*/// <summary>
 	/// Create the WindDirection object.
 	/// </summary>
-	void begin();
+	void begin();*/
 
 	/// <summary>
 	/// Adds wind direction reading for calculating 10-min 
