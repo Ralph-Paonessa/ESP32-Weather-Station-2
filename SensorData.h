@@ -8,12 +8,8 @@
 #include <list>
 using std::list;
 #include "dataPoint.h"
-#include "DataPoint_Lists.h"
-#include "App_settings.h"
-using namespace DataPoint_Lists;
-using namespace App_Settings;
-#include "FileOperations.h"
-using namespace FileOps;
+
+
 
 /// <summary>
 /// Object that reads and processes data for a sensor.
@@ -114,10 +110,10 @@ public:
 	void addReading(long int time, float val);
 
 	/// <summary>
-	/// Calculates 10-min avg and saves data to 10-min 
-	/// list. Writes this list to file system. WARNING: This 
-	/// will RESET ACCUMULATED SUMS for 10-min avg and reset 
-	/// 10-min min and max.
+	/// Calculates 10-min avg and saves to 10-min 
+	/// list. Writes this list to file system. (Resets 
+	/// accumulated sums for 10-min avg and resets 
+	/// 10-min min and max.)
 	/// </summary>
 	virtual void process_data_10_min();		// virtual so it can be overridden!
 	 
@@ -125,14 +121,14 @@ public:
 	/// Calculates 60-min avg and saves data to 60-min 
 	/// list. Writes this list to file system.
 	/// </summary>
-	void process_data_60_min();
+	virtual void process_data_60_min();		// virtual so it can be overridden!
 
 	/// <summary>
 	/// Adds day maximum to dayMax list and day minimum 
 	/// to dayMin list. Writes a combination of these 
 	/// lists to the file system.
 	/// </summary>
-	void process_data_day();
+	virtual void process_data_day();		// virtual so it can be overridden!
 
 	/// <summary>
 	/// Data point (time, value) of latest sensor reading.
@@ -149,10 +145,9 @@ public:
 	float valueLastAdded();
 
 	/// <summary>
-	/// The accumulated avg now (cleared every 10 minutes). When 
-	/// data smoothing is enabled, outlier values are excluded.
+	/// The  avg so far in current 10-min period. 
 	/// </summary>
-	/// <returns>Average now.</returns>
+	/// <returns>Average now in current 10-min period.</returns>
 	virtual float avg_now();		// virtual to allow override!
 
 	/*/// <summary>
@@ -185,7 +180,7 @@ public:
 	/// <summary>
 	/// Clears saved minimum and maximum for today.
 	/// </summary>
-	void clearMinMax_day();
+	void _clearMinMax_day();
 
 	/// <summary>
 	/// Returns a (time, value) data point containing the 

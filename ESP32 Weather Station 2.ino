@@ -396,7 +396,7 @@ void setup() {
 		isGood_LittleFS = false;
 	}
 
-//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 	////////  TESTING   ////////
 	Serial.println("SETUP: ==========  TESTING   ==========");
 	if (isDEBUG_addDummyDataLists) {
@@ -409,98 +409,9 @@ void setup() {
 	}
 	if (isDEBUG_run_test_in_setup) {
 
-#include <cmath>
-		float x, y;
-
-		x = 1;
-		y = 1;
-		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
-		x = -1;
-		y = -1;
-		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
-		x = 0;
-		y = 1;
-		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
-		x = 1;
-		y = 0;
-		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
-		x = 0;
-		y = 0;
-		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
-		x = 100000;
-		y = 0;
-		Serial.printf("atan2(%f, %f) = %fdeg\n", y, x, atan2(y, x) * DEGREES_PER_RADIAN);
-
-		/*
-		bool isDataInFilesys = true;
-		bool isReportDailyMaxOnly = false;
-		SensorData d(isDataInFilesys, isReportDailyMaxOnly);
-		d.addLabels("Test sensor", "testPrefix", "units");
-		d.createSensorDataFiles(false, 2);
-
-		unsigned long int t = 0;
-		float val = 40;
-		float delta = 15. / 150.;
-		Serial.printf("Delta = %.3f\n", delta);
-
-		int num = 150;
-		for (size_t i = 0; i < num; i++)
-		{
-			t += SECONDS_PER_DAY;	// Increase datetime by 1 day.
-			d.addReading(DataPoint(t, val));
-			Serial.printf("Add reading (%li, %.3f), countReadings = %i\n", t, val, d.countReadings());
-			Serial.printf("avg_now = %.3f, avg_10_min = %.3f\n", d.avg_now(), d.avg_10_min());
-			Serial.printf("Point just added = (%li, %.3f)\n", d.dataPointLastAdded().time, d.dataPointLastAdded().value);
-			Serial.printf("min_10_min_dp = (%i, %.3f), max_10_min_dp = (%i, %.3f)\n",
-				d.min_10_min_dp().time,
-				d.min_10_min_dp().value,
-				d.max_10_min_dp().time,
-				d.max_10_min_dp().value);
-			Serial.printf("min_today_dp = (%i, %.3f), max_today_dp = (%i, %.3f)\n",
-				d.min_today_dp().time,
-				d.min_today_dp().value,
-				d.max_today_dp().time,
-				d.max_today_dp().value);
-			//d.process_data_10_min();	// XXX	will reset averages
-			Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
-			Serial.println(LINE_SEPARATOR);
-			//delay(1000);
-			val += delta;	// Change value for next time.
-		}
-		Serial.println(LINE_SEPARATOR_MAJOR);
-		Serial.printf("avg_now() = %.3f\n", d.avg_now());
-		Serial.printf("max_10_min_dp() = %.3f\n", d.max_10_min_dp().value);
-		Serial.printf("min_10_min_dp() = %.3f\n", d.min_10_min_dp().value);
-		Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
-		Serial.println("process_data_10_min!!!");
-		d.process_data_10_min();
-		Serial.printf("min_10_min_dp = (%i, %.3f), max_10_min_dp = (%i, %.3f)\n",
-			d.min_10_min_dp().time,
-			d.min_10_min_dp().value,
-			d.max_10_min_dp().time,
-			d.max_10_min_dp().value);
-		Serial.printf("min_today_dp = (%i, %.3f), max_today_dp = (%i, %.3f)\n",
-			d.min_today_dp().time,
-			d.min_today_dp().value,
-			d.max_today_dp().time,
-			d.max_today_dp().value);
-		Serial.printf("dataPoints_10_min_as_String: %s\n", d.dataPoints_10_min_as_String().c_str());
-		*/
-
-		//// File contents.
-		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/RH_10_min.txt");
-		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/wind_10_min.txt");
-		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/windDir_10_min.txt");
-		//Testing::.testCodeForSetup_printFileContents(false, "/Sensor data/d_Temp_F_10_min.txt");
-		//Testing::.testCodeForSetup_printFileContents(true, "/Sensor data/skyTemp_10_min.txt");
-
-		/*Testing::testCodeForSetup_convert_DelimString_to_ListOfDataPoints(false);
-		Testing::testCodeForSetup_list_dataPoints_fromString(false);
-		Testing::testCodeForSetup_getStringList_from_String(true);*/
-
-		Testing::infiniteLoop();
+		//Testing::infiniteLoop();
 	}
-//#endif
+#endif
 
 	// ==========  CREATE SENSORS  ========== //
 #if defined(VM_DEBUG)

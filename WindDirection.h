@@ -146,6 +146,7 @@ public:
 	/// <returns>Cardinal direction as string.</returns>
 	String dirCardinal_10_min();
 
+#if defined(CODE_TESTING)
 	// <summary>
 	/// Custom arctangent function that returns direction 
 	/// vector angle based on 0-360 degrees. PUBLIC VERSION!
@@ -159,6 +160,7 @@ public:
 
 	float e_Component_pub(float deg);
 	float n_Component_pub(float deg);
+#endif
 
 	/// <summary>
 	/// Returns list of cardinal directions from list of wind angles.

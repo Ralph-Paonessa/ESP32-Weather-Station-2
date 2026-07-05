@@ -33,6 +33,11 @@
 
 #include <cmath>
 #include "DataPoint.h"
+#include "App_Settings.h"
+#include "DataPoint_Lists.h"
+using namespace DataPoint_Lists;
+#include "FileOperations.h"
+using namespace FileOps;
 
 /// <summary>
 /// Create WindDirection object with an anemometer angle offset.
@@ -259,6 +264,7 @@ String WindDirection::dirCardinal_10_min() {
 	return _dirCardinal(_avg_10_min);	//	XXX	ONLY VALID AFTER process_data_10_min()
 }
 
+#if defined(CODE_TESTING)
 /// <summary>
 /// 
 /// </summary>
@@ -286,6 +292,7 @@ float WindDirection::e_Component_pub(float deg) {
 float WindDirection::n_Component_pub(float deg) {
 	return _n_Component(deg);
 }
+#endif
 
 /// <summary>
 /// Return cardinal direction for specified wind angle (deg).

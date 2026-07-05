@@ -4,6 +4,13 @@
 
 #include "SensorData.h"
 #include "FileOperations.h"
+#include "DataPoint_Lists.h"
+using namespace DataPoint_Lists;
+#include "App_settings.h"
+using namespace App_Settings;
+#include "FileOperations.h"
+using namespace FileOps;
+
 
 /*****************************************************************
 	CONSTRUCTOR AND INITIALIZATION
@@ -125,7 +132,7 @@ int SensorData::countReadings() {
 /// <summary>
 /// Clears saved minimum and maximum for today.
 /// </summary>
-void SensorData::clearMinMax_day() {
+void SensorData::_clearMinMax_day() {
 	// Reset to extremes. (Real values will always surpass these.)
 	_min_today_dp = DataPoint(0, +VAL_LIMIT);
 	_max_today_dp = DataPoint(0, -VAL_LIMIT);
@@ -135,11 +142,11 @@ void SensorData::clearMinMax_day() {
 	PERIODIC DATA PROCESSING
 ******************************************************************/
 
-/// <summary>
-/// Calculates 10-min avg and saves data to 10-min 
-/// list. Writes this list to file system. WARNING: This 
-/// will RESET ACCUMULATED SUMS for 10-min avg and reset 
-/// 10-min min and max.
+// <summary>
+/// Calculates 10-min avg and saves to 10-min 
+/// list. Writes this list to file system. (Resets 
+/// accumulated sums for 10-min avg and resets 
+/// 10-min min and max.)
 /// </summary>
 void SensorData::process_data_10_min() {
 	// Avg over last 10 min.
@@ -163,9 +170,9 @@ void SensorData::process_data_10_min() {
 /// </summary>
 void SensorData::process_data_60_min() {
 	// Average last 6 x 10 min and add to 60-min list.
-	_avg_60_min = listAverage(_dataPoints_10_min, 6);	// Save latest average.
+	_avg_60_min = listAverage(_dataPoints_10_min, 6);		// Save latest average.
 	addDataPoint_to_List(_dataPoints_60_min,
-		DataPoint(_dataPointLastAdded.time, _avg_60_min),
+		DataPoint(_dataPointLastAdded.time, _avg_60_min),	// use most recent data time
 		SIZE_60_MIN_LIST);
 	// Store in LittleFS
 	if (_isDatafile) {
@@ -184,7 +191,7 @@ void SensorData::process_data_day() {
 	// Save list of daily minima and maxima.
 	addDataPoint_to_List(_dataPoints_dayMin, _min_today_dp, SIZE_DAY_LIST);
 	addDataPoint_to_List(_dataPoints_dayMax, _max_today_dp, SIZE_DAY_LIST);
-	clearMinMax_day();
+	_clearMinMax_day();
 	// Store in LittleFS
 	if (_isDatafile) {
 		fileWrite(LittleFS,
@@ -544,21 +551,12 @@ float SensorData::valueLastAdded() {
 }
 
 /// <summary>
-/// The accumulated avg now (cleared every 10 minutes). When 
-/// data smoothing is enabled, outlier values are excluded.
+/// The avg so far in the current 10-min period. 
 /// </summary>
-/// <returns>Average now.</returns>
+/// <returns>Average now in the current 10-min period.</returns>
 float SensorData::avg_now() {
 	return _sumReadings / _countReadings;
 }
-
-///// <summary>
-///// Returns moving average of last several reading values.
-///// </summary>
-///// <returns>Moving average.</returns>
-//float SensorData::avg_moving() {
-//	return _avg_moving;
-//}
 
 /// <summary>
 /// The last average saved to the 10-min list.
