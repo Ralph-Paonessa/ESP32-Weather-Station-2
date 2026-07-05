@@ -29,8 +29,9 @@ using namespace FileOps;
 #include "SDCard.h"
 //#include "DataPoint.h"
 #include "SensorData.h"
-#include "WindSpeed2.h"
+#include "WindSpeed.h"
 #include "WindDirection.h"
+#include "WindGust.h"
 
 // ==========   SD card module   ==================== //
 SDCard sd;		// SDCard instance for SD card routines. 
@@ -66,9 +67,9 @@ SensorData d_UVIndex;				// UV Index
 SensorData d_Insol(true, true);		// Insolation			(Data not in filesys, no minima)
 SensorData d_IRSky_C;				// IR sky temp
 SensorData d_fanRPM(false);			// Fan RPM
-SensorData windGust;
 WindSpeed windSpeed(DAVIS_SPEED_CAL_FACTOR);	// Wind speed
 WindDirection windDir(VANE_OFFSET);	// Wind direction
+WindGust windGust;
 
 /// <summary>
 /// Adds labels and units to SensorData instances.

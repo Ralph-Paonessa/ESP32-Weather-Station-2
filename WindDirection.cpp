@@ -324,6 +324,7 @@ String WindDirection::_dirCardinal(float angle) {
 		return "NW";
 	if (angle >= 337.5 && angle < 360.0) // isolate 337.5-360 range
 		return "N";
+	return "err";
 }
 
 /// <summary>

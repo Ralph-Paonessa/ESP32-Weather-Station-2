@@ -8,7 +8,7 @@
 #include "SDCard.h"
 #include "dataPoint.h"
 #include "SensorData.h"
-#include "WindSpeed2.h"
+#include "WindSpeed.h"
 #include "WindDirection.h"
 
 #include <Adafruit_MLX90614.h>
@@ -186,25 +186,10 @@ void processWind(uint32_t rots) {
 	}
 	// Read wind speed.
 	float speed = windSpeed.speedInstant(rots, ANEM_READ_PERIOD_SEC);
-	DataPoint dpSpeed(now(), speed);
-	windSpeed.addReading(DataPoint(dpSpeed));
+	windSpeed.addReading(now(), speed);
 
 	// Record any gusts.
-	float avg = windSpeed.avg_now();
-
-
-
-	Serial.println("Not programmed!!");
-
-
-	// XXX	XXX	XXX
-
-	//DataPoint dpGust = windSpeed.gust(dpSpeed, avg);
-	//windGust.addReading(dpGust);
-
-
-
-
+	windGust.addReading(now(), speed, windSpeed.avg_now());
 
 	// Read wind direction.
 	float windAngle = getWindAngle();
@@ -341,8 +326,8 @@ void readSensor_by_index(int index) {
 	}
 	}
 #if defined(VM_DEBUG)
-	//float elapsed = (micros() - start_usec) / 1000.;
-	//Serial.printf("\tAt %.3fs Sensor %i takes %.2fus\n", millis() / 1000., index, elapsed);
+	float elapsed = (micros() - start_usec) / 1000.;
+	Serial.printf("\tAt %.3fs Sensor %i takes %.2fus\n", millis() / 1000., index, elapsed);
 #endif
 }
 
@@ -427,12 +412,12 @@ void processSensor_10_min_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
-	////#if defined(VM_DEBUG)
-	//float elapsed = (micros() - start_usec) / 1000.;
-	//String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	//sd.logStatus(msg, gps.dateTime_Str());
-	////#endif
-} 
+#if defined(VM_DEBUG)
+	float elapsed = (micros() - start_usec) / 1000.;
+	String msg = "Processing 10-min data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	sd.logStatus(msg, gps.dateTime_Str());
+#endif
+}
 
 /// <summary>
 /// Processes 60-min data for a sensor specified by index.
@@ -512,11 +497,11 @@ void processSensor_60_min_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
-	////#if defined(VM_DEBUG)
-	//float elapsed = (micros() - start_usec) / 1000.;
-	//String msg = "Processing 60-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
-	//sd.logStatus(msg, gps.dateTime_Str());
-	////#endif
+#if defined(VM_DEBUG)
+	float elapsed = (micros() - start_usec) / 1000.;
+	String msg = "Processing 60-data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
+	sd.logStatus(msg, gps.dateTime_Str());
+#endif
 }
 
 /// <summary>
@@ -604,11 +589,11 @@ void processSensor_day_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
-//#if defined(VM_DEBUG)
+	//#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
 	String msg = "Processing Day data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
 	sd.logStatus(msg, gps.dateTime_Str());
-//#endif
+	//#endif
 }
 
 /// <summary>

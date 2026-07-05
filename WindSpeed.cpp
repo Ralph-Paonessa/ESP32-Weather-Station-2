@@ -2,7 +2,7 @@
 // 
 // 
 
-#include "WindSpeed2.h"
+#include "WindSpeed.h"
 
 // Constructor.
 

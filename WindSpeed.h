@@ -1,7 +1,7 @@
-// WindSpeed2.h
+// WindSpeed.h
 
-#ifndef _WINDSPEED2_h
-#define _WINDSPEED2_h
+#ifndef _WindSpeed_h
+#define _WindSpeed_h
 
 #include <Arduino.h>
 

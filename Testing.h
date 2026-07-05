@@ -5,7 +5,7 @@
 
 #include <Arduino.h>
 
-#include "WindSpeed2.h"
+#include "WindSpeed.h"
 #include "WindDirection.h"
 
 #include <list>
@@ -31,8 +31,8 @@ private:
 
 public:
 
-	// Tests WindSpeed2.h wind directionCardinal handling.
-	static void windDirection(float angleStart, float angleIncrement, int cycles, float VANE_OFFSET);
+	// Tests WindSpeed.h wind directionCardinal handling.
+	//static void windDirection(float angleStart, float angleIncrement, int cycles, float VANE_OFFSET);
 
 	static void testCodeForSetup1(unsigned long runTime_sec, bool isInfiniteLoop);
 

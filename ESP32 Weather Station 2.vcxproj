@@ -91,7 +91,7 @@
     <ClCompile Include="WiFiTools.cpp" />
     <ClCompile Include="WindDirection.cpp" />
     <ClCompile Include="WindGust.cpp" />
-    <ClCompile Include="WindSpeed2.cpp" />
+    <ClCompile Include="WindSpeed.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ESP32 Weather Station 2.ino">
@@ -157,7 +157,7 @@
     <ClInclude Include="WiFiTools.h" />
     <ClInclude Include="WindDirection.h" />
     <ClInclude Include="WindGust.h" />
-    <ClInclude Include="WindSpeed2.h" />
+    <ClInclude Include="WindSpeed.h" />
     <ClInclude Include="__vm\.ESP32 Weather Station 2.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>

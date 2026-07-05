@@ -270,9 +270,9 @@ String Testing::readData()
 	return "12.34,10,12.95,13,16,8.7234";
 }
 
-//// Tests WindSpeed2.h wind directionCardinal handling.
+//// Tests WindSpeed.h wind directionCardinal handling.
 //void Testing::windDirection(float angleStart, float angleIncrement, int cycles, float VANE_OFFSET) {
-//	Serial.println("WindSpeed2.h windDirection test. Add deg readings and average.");
+//	Serial.println("WindSpeed.h windDirection test. Add deg readings and average.");
 //	WindDirection windDirect(VANE_OFFSET);
 //	windDirect.begin();
 //	for (int i = 0; i < cycles; i++)
