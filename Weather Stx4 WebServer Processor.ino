@@ -41,9 +41,9 @@ String processor(const String& var) {
 		return String(gps.dayName());
 	}
 	if (var == "TEMPERATURE_F")
-		return String(d_TempF.avg_now(), 0);
+		return String(d_TempF.valueLastAdded(), 0);
 	if (var == "WIND_SPEED") {
-		return String(windSpeed.avg_now(), 0);	// 10-min avg
+		return String(windSpeed.valueLastAdded(), 0);	// 10-min avg
 	}
 	if (var == "WIND_GUST") {
 		return String(windGust.max_10_min_dp().value, 0);	// 10-min max for gusts
@@ -52,29 +52,29 @@ String processor(const String& var) {
 		return String(windDir.dirCardinal_10_min());		// avg since last cleared (<= 10 min)
 	}
 	if (var == "WIND_ANGLE") {
-		return String(windDir.avg_now(), 0);		// avg since last cleared (<= 10 min)
+		return String(windDir.valueLastAdded(), 0);		// avg since last cleared (<= 10 min)
 	}
 	if (var == "GPS_ALTITUDE") {
 		return String(gps.data.altitude(), 0);
 	}
 	if (var == "PRESSURE_MB_SL") {
-		return String(d_Pres_seaLvl_mb.avg_now(), 0);
+		return String(d_Pres_seaLvl_mb.valueLastAdded(), 0);
 	}
 	if (var == "PRESSURE_MB_ABS") {
-		return String(d_Pres_mb.avg_now(), 0);
+		return String(d_Pres_mb.valueLastAdded(), 0);
 	}
 	if (var == "WATER_BOILING_POINT") {
-		return String(waterBoilingPoint_F(d_Pres_mb.avg_now()), 0);
+		return String(waterBoilingPoint_F(d_Pres_mb.valueLastAdded()), 0);
 	}
 	if (var == "INSOLATION_PERCENT") {
-		return String(d_Insol.avg_now(), 0);
+		return String(d_Insol.valueLastAdded(), 0);
 	}
 	if (var == "REL_HUMIDITY") {
-		return String(d_RH.avg_now(), 0);
+		return String(d_RH.valueLastAdded(), 0);
 	}
 	if (var == "UV_A") {
 		if (isGood_UV) {
-			return String(d_UVA.avg_now(), 0);
+			return String(d_UVA.valueLastAdded(), 0);
 		}
 		else {
 			return String("na");
@@ -82,7 +82,7 @@ String processor(const String& var) {
 	}
 	if (var == "UV_B") {
 		if (isGood_UV) {
-			return String(d_UVB.avg_now(), 0);
+			return String(d_UVB.valueLastAdded(), 0);
 		}
 		else {
 			return String("na");
@@ -90,14 +90,14 @@ String processor(const String& var) {
 	}
 	if (var == "UV_INDEX") {
 		//if (isGood_UV) {
-		return String(d_UVIndex.avg_now(), 1);
+		return String(d_UVIndex.valueLastAdded(), 1);
 		//}
 		//else {
 		//	return String("na");
 		//}
 	}
 	if (var == "IR_T_SKY") {
-		return String(d_IRSky_C.avg_now(), 0);
+		return String(d_IRSky_C.valueLastAdded(), 0);
 	}
 
 	///  DAILY MAXIMA  ///////////////////
