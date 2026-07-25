@@ -510,14 +510,10 @@ bool isDST_US()
 
 
 
-
-
-
 /// <summary>
-/// Returns string "yyyy-mm-dd hh:mm" from 
-/// current date and time (using TimeLib).
+/// Returns current (GPS-synced) date and time as String.
 /// </summary>
-/// <returns></returns>
+/// <returns>Date and time as "yyyy-mm-dd hh:mm"</returns>
 String GPSModule::dateTime_Str() {
 	//if (!_isGpsSynced) {
 	//	return String(millis() / 1000., 2) + "s";	// Date not yet known.

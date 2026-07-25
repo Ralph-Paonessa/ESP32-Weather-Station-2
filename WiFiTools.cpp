@@ -2,73 +2,116 @@
 #include <WiFiMulti.h>
 #include <HardwareSerial.h>
 #include "SDCard.h"
+#include <WiFiGeneric.h>
 
-void WiFiTools::Initialize(SDCard& sd)
-{
-	_sd = sd;
+
+void WiFiTools::Begin() {
+	_wifiState = WifiState::DISCONNECTED;	// initial state
 }
 
 WiFiMulti wifiMulti;	// WiFiMulti instance to connect to wifi.
 
 /// <summary>
-/// Connect to strongest WiFi access point. 
-/// Will not return until connection succeeds 
-/// or timeout is reached.
+/// Handles events triggered by Wifi status changes.
 /// </summary>
-/// <param name="timeout_sec">
-/// Maximum number of seconds to try until failure.</param>
-/// <returns>True if connection is successful.</returns>
-bool WiFiTools::wifiConnect(unsigned int timeout_sec) {
-	unsigned long timeStart = millis();
-	// Try to connect for timeout_sec.
-	while (
-		wifiMulti.run(WIFI_CONNECT_TIMEOUT_SEC * 1000) != WL_CONNECTED
-		&&
-		millis() - timeStart < timeout_sec * 1000
-		) {
-		// Trying to connect ...
+/// <param name="event"></param>
+/// <remarks>Events are enumerated in WiFiGeneric.h.</remarks>
+void WiFiTools::WiFiEvent(WiFiEvent_t event) {
+	switch (event)
+	{
+	case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+		_wifiState = WifiState::CONNECTED;
+		break;
+	case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+		_wifiState = WifiState::DISCONNECTED;
+		break;
 	}
-	String msg = "Connecting to WiFi required ";
-	msg += String((millis() - timeStart) / 1000.) + "s";
-	_sd.logStatus(msg);
-	return  WiFi.isConnected();
 }
 
 /// <summary>
-/// Check WiFi connection and reconnect if lost.
+/// Connect in background to strongest WiFi access point. Log connection attempt.
 /// </summary>
-/// <returns>True if WiFi is connected.</returns>
-bool WiFiTools::checkWifiConnection(String dateTime_Str) {
-	// XXX Note: Can also try WL_CONNECTION_LOST !!!
-	// If WiFi is lost, reconnect.
-	bool isConnected = true;
-	if (WiFi.status() != WL_CONNECTED) {	// XXX THIS DID NOT WORK?!?!?!
-		// Wifi not connected.
-		unsigned long timeStart = millis();
-		//bool isResetTimerCounts = true;	// Flag to reset rotation count
-		// Attempt to reconnect to wifi.
-		isConnected = false;
-		if (wifiConnect(WIFI_CONNECT_TIMEOUT_LOST_SEC)) {
-			// Success.
-			isConnected = true;
-			// Log connection success.
-			String msg = "Wifi re-connect successful after ";
-			msg += String((millis() - timeStart) / 1000., 3) + "s";
-			_sd.logStatus(msg, dateTime_Str);
-			_sd.logStatus_indent(wifi_ConnectionInfo());
-			// Print IP address to serial monitor.
-			Serial.println("SERVER IP ADDRESS: " + WiFi.localIP().toString());
-		}
-		else {
-			// Failure.
-			isConnected = false;
-			// Log connection failure.
-			String msg = "Wifi connect FAILED after ";
-			msg += String((millis() - timeStart) / 1000., 3) + "s";
-			_sd.logStatus(msg, dateTime_Str);
-		}
-	}
-	return isConnected;
+/// <time>String with current time for log (h:mm:ss or millis()).</time>
+void WiFiTools::connectWiFi() {
+	// Identify that we are connecting.
+	_wifiState = WifiState::CONNECTING;
+	// Connect to strongest access point.
+	wifiMulti.run();
+}
+
+///// <summary>
+///// Connect to strongest WiFi access point. 
+///// Will not return until connection succeeds 
+///// or timeout is reached.
+///// </summary>
+///// <param name="timeout_sec">
+///// Maximum number of seconds to try until failure.</param>
+///// <returns>True if connection is successful.</returns>
+//bool WiFiTools::connectWiFi(unsigned int timeout_sec) {
+//	unsigned long timeStart = millis();
+//	// Try to connect for timeout_sec.
+//	while (
+//		wifiMulti.run(WIFI_CONNECT_TIMEOUT_SEC * 1000) != WL_CONNECTED
+//		&&
+//		millis() - timeStart < timeout_sec * 1000
+//		) {
+//		// Trying to connect ...
+//	}
+//	String s = "Connecting to WiFi required ";
+//	s += String((millis() - timeStart) / 1000.) + "s";
+//	_sd.logStatus(s);
+//	return  WiFi.isConnected();
+//}
+
+///// <summary>
+///// Check WiFi connection and reconnect if lost.
+///// </summary>
+///// <returns>True if WiFi is connected.</returns>
+//bool WiFiTools::checkWifiConnection_OLD(String dateTime_Str) {
+//	// XXX Note: Can also try WL_CONNECTION_LOST !!!
+//	// If WiFi is lost, reconnect.
+//	bool isConnected = true;
+//	if (WiFi.status() != WL_CONNECTED) {	// XXX THIS DID NOT WORK?!?!?!
+//		// Wifi not connected.
+//		unsigned long timeStart = millis();
+//		//bool isResetTimerCounts = true;	// Flag to reset rotation count
+//		// Attempt to reconnect to wifi.
+//		isConnected = false;
+//		if (connectWiFi(dateTime_Str)) {
+//			// Success.
+//			isConnected = true;
+//			// Log connection success.
+//			String s = "Wifi re-connect successful after ";
+//			s += String((millis() - timeStart) / 1000., 3) + "s";
+//			_sd.logStatus(s, dateTime_Str);
+//			_sd.logStatus_indent(connectionInfo());
+//			// Print IP address to serial monitor.
+//			Serial.println("SERVER IP ADDRESS: " + WiFi.localIP().toString());
+//		}
+//		else {
+//			// Failure.
+//			isConnected = false;
+//			// Log connection failure.
+//			String s = "Wifi connect FAILED after ";
+//			s += String((millis() - timeStart) / 1000., 3) + "s";
+//			_sd.logStatus(s, dateTime_Str);
+//		}
+//	}
+//	return isConnected;
+//}
+
+/// <summary>
+/// Returns last state of WiFi connnection.
+/// </summary>
+/// <returns>State of WiFi connnection.</returns>
+/// <remarks>
+/// State is set by WiFiTools routines:
+///		- Begin (DISCONNECTED);
+///		- Connection atempt via WiFiConnect (CONNECTING);
+///		- WiFi event handler WiFiTools::WiFiEvent (CONNECTED, DISCONNECTED);
+/// </remarks>
+WifiState WiFiTools::getWifiState() const {
+	return _wifiState;
 }
 
 /// <summary>
@@ -121,8 +164,8 @@ void WiFiTools::wifiAddAccessPoints() {
 /// <summary>
 /// Returns string listing connected WiFi SSID, RSSI, and IP adresss.
 /// </summary>
-/// <returns></returns>
-String WiFiTools::wifi_ConnectionInfo() {
+/// <returns>String with connected WiFi SSID, RSSI, and IP adresss.</returns>
+String WiFiTools::connectionInfo() {
 	String s = "WiFi connection: SSID ";
 	s += String(WiFi.SSID());
 	s += ", RSSI " + String(WiFi.RSSI());
@@ -131,52 +174,45 @@ String WiFiTools::wifi_ConnectionInfo() {
 }
 
 /// <summary>
-/// Lists WiFi networks that are in range. 
+/// Returns s on WiFi networks in range. 
 /// </summary>
-/// <returns>Number of networks found.</returns>
-int WiFiTools::wifiListNetworks() {
-	int n = WiFi.scanNetworks();	// returns number of networks
-	String msg = "Network scan complete.";
-	_sd.logStatus(msg, millis());
-	if (n == 0) {
-		_sd.logStatus("No networks found.");
+/// <returns>Info on WiFi networks in range.</returns>
+String WiFiTools::networks_found_info() {
+	int n = WiFi.scanNetworks();	// num networks found
+	String s = "Network scan complete.";
+	s += " Found " + String(n) + " networks:";
+	for (int i = 0; i < n; ++i) {
+		// Print SSID and RSSI for each network found
+		s += "\n\t";
+		s += String(WiFi.SSID(i));
+		s += "\t";
+		s += String(WiFi.RSSI(i));
 	}
-	else {
-		msg = "Found " + String(n) + " networks:";
-		_sd.logStatus(msg, millis());
-		for (int i = 0; i < n; ++i) {
-			// Print SSID and RSSI for each network found
-			msg = String(WiFi.SSID(i));
-			msg += "\t";
-			msg += String(WiFi.RSSI(i));
-			_sd.logStatus_indent(msg);
-		}
-	}
-	return n;
+	return s;
 }
 
-/// <summary>
-/// Connects to the WiFi network.
-/// </summary>
-void WiFiTools::wifiSetupAndConnect(String dateTime_Str, bool isDEBUG_BypassWiFi) {
-	if (!isDEBUG_BypassWiFi) {
-		// Specify WiFi credentials for router(s).
-		wifiAddAccessPoints();
-		// Connect to wifi.
-		_sd.logStatus("Connecting to Wifi.", dateTime_Str);
-#if defined(VM_DEBUG)
-		wifiListNetworks();
-#endif
-		if (wifiConnect(WIFI_CONNECT_TIMEOUT_LOST_SEC)) {
-			_sd.logStatus("Wifi connected.", dateTime_Str);
-			_sd.logStatus_indent(wifi_ConnectionInfo());
-		}
-		else {
-			_sd.logStatus("Wifi Connection FAILED.", dateTime_Str);
-		}
-	}
-	else {
-		// Bypassing wifi
-		_sd.logStatus("BYPASS WIFI", dateTime_Str);
-	}
-}
+///// <summary>
+///// Connects to the WiFi network.
+///// </summary>
+//void WiFiTools::wifiSetupAndConnect_OLD(String dateTime_Str, bool isDEBUG_BypassWiFi) {
+//	if (!isDEBUG_BypassWiFi) {
+//		// Specify WiFi credentials for router(s).
+//		wifiAddAccessPoints();
+//		// Connect to wifi.
+//		_sd.logStatus("Connecting to Wifi.", dateTime_Str);
+//#if defined(VM_DEBUG)
+//		networks_found_info();
+//#endif
+//		if (connectWiFi(WIFI_CONNECT_TIMEOUT_LOST_SEC)) {
+//			_sd.logStatus("Wifi connected.", dateTime_Str);
+//			_sd.logStatus_indent(connectionInfo());
+//		}
+//		else {
+//			_sd.logStatus("Wifi Connection FAILED.", dateTime_Str);
+//		}
+//	}
+//	else {
+//		// Bypassing wifi
+//		_sd.logStatus("BYPASS WIFI", dateTime_Str);
+//	}
+//}

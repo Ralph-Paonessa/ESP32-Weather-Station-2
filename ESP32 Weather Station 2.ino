@@ -331,8 +331,23 @@ void setup() {
 #if defined(VM_DEBUG)
 	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
 #endif
-	wifi.Initialize(sd);
-	wifi.wifiSetupAndConnect(gps.dateTime_Str(), isDEBUG_BypassWifi);
+	wifi.Begin();
+
+	if (!isDEBUG_BypassWifi) {
+		// Specify WiFi credentials for networks.
+		wifi.wifiAddAccessPoints();
+//#if defined(VM_DEBUG)
+		// List networks found.
+		sd.logStatus(wifi.networks_found_info());
+//#endif
+		// Connect to wifi.
+		sd.logStatus("Connecting to Wifi.", millis());
+		wifi.connectWiFi();
+	}
+	else {
+		// Bypassing wifi
+		sd.logStatus("BYPASS WIFI", millis());
+	}
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
 #if defined(VM_DEBUG)
@@ -536,6 +551,7 @@ void setup() {
 unsigned long millis_sensors_read = 0;			// Start time of reading sensors
 unsigned long millis_sensors_Process_10 = 0;	// Start time of processing sensors at 10-min.
 unsigned long millis_sensors_Process_60 = 0;	// Start time of processing sensors at 60-min.
+unsigned long millis_wifi_check = 0;			// Start time of processing sensors at 60-min.
 
 //unsigned int countSensorsRead = 0;
 
@@ -589,7 +605,7 @@ void loop() {
 	//// ====================================================
 	////		READ SENSORS
 	//// ====================================================
-	if ((millis() - millis_sensors_read) >= SENSOR_READ_PERIOD_SEC * MILLISEC_PER_SECOND) {
+	if ((millis() - millis_sensors_read) >= SENSORS_READ_INTERVAL_SEC * MILLISEC_PER_SECOND) {
 		// Read data for sensors one at a time.
 		readSensor_by_index(sensor_idx);
 		sensor_idx++;
@@ -669,30 +685,17 @@ void loop() {
 		};
 	}
 
-	//	XXX	XXX	XXX	XXX
+	//// ====================================================
+	////		TEST FOR LOST WIFI CONNECTION
+	//// ====================================================
+	if ((millis() - millis_wifi_check) >= WIFI_CHECK_INTERVAL_SEC * MILLISEC_PER_SECOND
+		&& wifi.getWifiState() == WifiState::DISCONNECTED) {
+		// Trigger background reconnect.
+		wifi.connectWiFi();
+		sd.logStatus("Lost wifi. Reconnect", gps.dateTime_Str());
 
-	///// ==========  TEST FOR LOST WIFI CONNECTION  ========== //
-
-	///*
-	//If WiFi is lost, we're screwed because the time
-	//to reconnect may throw of the sensor read timings.
-	//Just bite the bullet and take the time to reconnect,
-	//then recover.
-
-	//If WiFi was lost, the time to reconnect will cause
-	//the timer interrupt counts to delta beyond where
-	//they should have been handled.
-	//*/
-	//if (!isDEBUG_BypassWifi) {
-	//	if (WiFi.status() != WL_CONNECTED) {
-	//		wifi.checkWifiConnection(gps.dateTime_Str());
-
-	//		// XXX Moved here from WiFiTools::checkWifiConnection()
-	//		resetInterruptCounts();
-	//		String msg = "Read cycle skipped after WiFi was lost.";
-	//		sd.logStatus(msg, gps.dateTime_Str());
-	//	}
-	//}
+		millis_wifi_check = millis();	// restart timer
+	}
 
 #if defined(VM_DEBUG)
 	// Add delay for DEBUG.

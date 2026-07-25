@@ -23,9 +23,11 @@ namespace App_Settings {
 	constexpr unsigned long MILLISECONDS_PER_MINUTE = MILLISEC_PER_SECOND * SECONDS_PER_MINUTE;		// 60,000 ms
 	constexpr float			DEGREES_PER_RADIAN = 57.2957795130823;	// Degrees in 1 radian.
 
-	constexpr unsigned int	ANEM_READ_PERIOD_SEC = 4; // Period to sample anemometer rots. Current default 4 sec.
-	constexpr unsigned int	FAN_READ_PERIOD_SEC = 100; // Period to sample radiation shield fan half-rots. Current default 60 sec.
-	constexpr unsigned int	SENSOR_READ_PERIOD_SEC = 60; // Period to sample radiation shield fan half-rots. Current default 60 sec.
+	constexpr unsigned int	ANEM_READ_PERIOD_SEC = 4;		// Period to sample anemometer rots. Current default 4 sec.
+	constexpr unsigned int	FAN_READ_PERIOD_SEC = 100;		// Period to sample radiation shield fan half-rots. Current default 60 sec.
+	
+	constexpr unsigned int	SENSORS_READ_INTERVAL_SEC = 60;	// Interval between start of reading sensors.
+	constexpr unsigned int	WIFI_CHECK_INTERVAL_SEC = 60;	// Interval between check for WiFi connection.
 
 	constexpr unsigned int	DATA_RECOVER_10_MIN_AGE_LIMIT_SEC = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than 30 min.
 	constexpr unsigned int	DATA_RECOVER_60_MIN_AGE_LIMIT_SEC = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than 3 hr.
@@ -48,8 +50,8 @@ namespace App_Settings {
 	constexpr int			UTC_OFFSET_HOURS = -8;		// Time zone offset from UTC.
 	constexpr bool			IS_DAYLIGHT_TIME = true;	// True if adjusted to Taylight Time.
 
-	constexpr float			WIFI_CONNECT_TIMEOUT_SEC = 10;		// Timeout for connecting to WiFi SSID, sec.
-	constexpr float			WIFI_CONNECT_TIMEOUT_LOST_SEC = 60;	// Timeout for connecting to WiFi SSID, sec.
+	constexpr unsigned int	WIFI_CONNECT_TIMEOUT_SEC = 10;		// Timeout for connecting to WiFi SSID, sec.
+	constexpr unsigned int	WIFI_CONNECT_TIMEOUT_LOST_SEC = 60;	// Timeout for connecting to WiFi SSID, sec.
 
 	constexpr unsigned int	FAN_DUTY_PERCENT = 30;		// PWM duty cycle for fan speed.
 

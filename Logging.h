@@ -40,12 +40,12 @@
 //	// Constructor
 //
 //	/// <summary>
-//	/// Initialize logging.
+//	/// Begin logging.
 //	/// </summary>
 //	/// <param name="offsetAngle">
 //	/// XXX
 //	/// </param>
-//	void Initialize(SDCard& sd);
+//	void Begin(SDCard& sd);
 //
 //
 //	void SetValues(
