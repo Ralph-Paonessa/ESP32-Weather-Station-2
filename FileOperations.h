@@ -129,7 +129,7 @@ namespace FileOps {
 	/// <param name="fs">File system to use.</param>
 	/// <param name="path">
 	/// Full path including the filename and extension.</param>
-	/// <returns>True on success</returns>
+	/// <returns>FileStatus of the file.</returns>
 	FileStatus fileCreateOrExists(FS& fsys, const String& path);
 
 	/// <summary>

@@ -206,7 +206,7 @@ void FileOps::fileDelete(fs::FS& fs, const char* path) {
 /// </summary>
 /// <param name="fs">File system to use.</param>
 /// <param name="path">Full path including the filename and extension.</param>
-/// <returns>Status of file operation.</returns>
+/// <returns>FileStatus of the file.</returns>
 FileOps::FileStatus FileOps::fileCreateOrExists(fs::FS& fs, const String& path) {
 	// If the file doesn't exist, create it.
 	if (fs.exists(path)) {
