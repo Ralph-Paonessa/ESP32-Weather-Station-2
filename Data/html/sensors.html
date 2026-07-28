@@ -15,7 +15,7 @@
 
     <div class="content">
         <h2>WMA Weather-Star</h2>
-        <h1>Current Weather</h1>
+        <h1>Current Weather Readings</h1>
         <div class="navigation">
             <div class="time">
                 %CURRENT_TIME%
@@ -37,10 +37,10 @@
                 </div>
             </div>
             <div class="card">
-                <h2>IR sky</h2>
+                <h2>Humidity</h2>
                 <div class="data">
-                    <div>%IR_T_SKY% &deg;C</div>
-                    <a href="/chart_IR"><img class="icon" src="chart-icon.png"></a>
+                    <div>%REL_HUMIDITY% &percnt;</div>
+                    <a href="/chart_RH"><img class="icon" src="chart-icon.png"></a>
                 </div>
             </div>
 
@@ -66,13 +66,7 @@
                     <a href="/chart_Wdir"><img class="icon" src="chart-icon.png"></a>
                 </div>
             </div>
-            <div class="card">
-                <h2>Humidity</h2>
-                <div class="data">
-                    <div>%REL_HUMIDITY% &percnt;</div>
-                    <a href="/chart_RH"><img class="icon" src="chart-icon.png"></a>
-                </div>
-            </div>
+
 
             <div class="card">
                 <h2>Pressure</h2>
@@ -82,6 +76,15 @@
                 </div>
                 <p><a href="/g_P"></a></p>
             </div>
+
+            <div class="card">
+                <h2>IR sky</h2>
+                <div class="data">
+                    <div>%IR_T_SKY% &deg;C</div>
+                    <a href="/chart_IR"><img class="icon" src="chart-icon.png"></a>
+                </div>
+            </div>
+
             <div class="card">
                 <h2>Insolation</h2>
                 <div class="data">
@@ -89,6 +92,7 @@
                     <a href="/chart_Insol"><img class="icon" src="chart-icon.png"></a>
                 </div>
             </div>
+
 
             <div class="card">
                 <h2>UV Index</h2>
@@ -110,6 +114,14 @@
                 <div class="data">
                     <div></div>
                     <a href="/Admin">Admin</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>(Temp BME sensor)</h2>
+                <div class="data">
+                    <div>%TEMPERATURE_BME_F% &deg;F</div>
+                    <a href="/chart_T"><img class="icon" src="chart-icon.png"></a>
                 </div>
             </div>
         </div>

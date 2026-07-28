@@ -100,6 +100,10 @@ String processor(const String& var) {
 		return String(d_IRSky_C.valueLastAdded(), 0);
 	}
 
+	// Added for terrarium monitor.
+	if (var == "TEMPERATURE_BME_F")
+		return String(Utilities::temperature_F(d_TempC_for_RH.valueLastAdded()), 0);
+
 	///  DAILY MAXIMA  ///////////////////
 
 	if (var == "TEMPERATURE_F_HI") {

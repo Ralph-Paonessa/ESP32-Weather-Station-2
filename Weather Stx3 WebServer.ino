@@ -100,6 +100,11 @@ void createServerRouteHandler() {
 			request->send(LittleFS, "/html/sensors.html", "text/html", false, processor);
 			});
 
+		// XXX Terrarium monitoring.
+		server.on("/buddy", HTTP_GET, [](AsyncWebServerRequest* request) {
+			request->send(LittleFS, "/html/terrarium.html", "text/html", false, processor);
+			});
+
 		// Summary data.
 		server.on("/summary", HTTP_GET, [](AsyncWebServerRequest* request) {
 			request->send(LittleFS, "/html/summary.html", "text/html", false, processor);

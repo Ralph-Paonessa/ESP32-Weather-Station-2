@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Terrarium monitor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <link href="style.min.css" rel="stylesheet" media="all" type="text/css" />
+    <link rel="icon" type="image/png" sizes="32x32" target="_blank" href="/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="180x180" target="_blank" href="/favicon-180.png">
+    %CSS_LIGHT_STYLE%
+</head>
+<body>
+
+    <div id="loading" class="loading loading--full-height"></div>
+
+    <div class="content">
+        <h2>WMA Weather-Star</h2>
+        <h1>Terrarium Readings</h1>
+        <div class="navigation">
+            <div class="time">
+                %CURRENT_TIME%
+            </div>
+            <div class="nav">
+                <a href="/buddy">Refresh</a>
+            </div>
+            <div class="nav">
+                <a href="/summary">Summary</a>
+            </div>
+        </div>
+
+        <div class="flex-container">
+            <div class="card">
+                <h2>Terrarium temperature</h2>
+                <div class="data">
+                    <div>%TEMPERATURE_BME_F% &deg;F</div>
+                    <a href="/chart_T"><img class="icon" src="chart-icon.png"></a>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Humidity</h2>
+                <div class="data">
+                    <div>%REL_HUMIDITY% &percnt;</div>
+                    <a href="/chart_RH"><img class="icon" src="chart-icon.png"></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Room temperature</h2>
+                <div class="data">
+                    <div>%TEMPERATURE_F% &deg;F</div>
+                    <a href="/chart_T"><img class="icon" src="chart-icon.png"></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Admin</h2>
+                <div class="data">
+                    <div></div>
+                    <a href="/Admin">Admin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            document.getElementById("loading").style.display = "none";
+        }
+    </script>
+</body>
+</html>
