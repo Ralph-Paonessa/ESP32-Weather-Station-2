@@ -26,7 +26,7 @@ namespace App_Settings {
 	constexpr unsigned int	ANEM_READ_PERIOD_SEC = 4;		// Period to sample anemometer rots. Current default 4 sec.
 	constexpr unsigned int	FAN_READ_PERIOD_SEC = 100;		// Period to sample radiation shield fan half-rots. Current default 60 sec.
 	
-	constexpr unsigned int	SENSORS_READ_INTERVAL_SEC = 60;	// Interval between start of reading sensors.
+	constexpr unsigned int	SENSORS_READ_INTERVAL_SEC = 15;	// Interval between start of reading sensors.
 	constexpr unsigned int	WIFI_CHECK_INTERVAL_SEC = 60;	// Interval between check for WiFi connection.
 
 	constexpr unsigned int	DATA_RECOVER_10_MIN_AGE_LIMIT_SEC = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than 30 min.
