@@ -112,7 +112,7 @@ void sensors_createFiles() {
 
 	// File to hold most recent sensor read time.
 	FileStatus status = FileOps::fileCreateOrExists(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS);
-	sd.logStatus("Status of " + SENSOR_LAST_SAVE_TIME_FILEPATH_FS + " = " + fileStatus_toString(status), millis());
+	sd.logStatus(SENSOR_LAST_SAVE_TIME_FILEPATH_FS + " FileStatus = " + fileStatus_toString(status), millis());
 }
 
 #if defined(VM_DEBUG)
@@ -286,36 +286,64 @@ void setup() {
 	Serial.print(msg);
 
 	//  SETUP: ==========  CREATE SD CARD   ========== //
-#if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  CREATE SD CARD   ==========");
-#endif
 	// (Do this first - need SD card for logging.)
-	isGood_SDCard = sd.create(SPI_CS_PIN, isDEBUG_BypassSDCard);
-
 #if defined(VM_DEBUG)
-	//Serial.println("Listing SD card dir to Serial:");
-	//FileOps::dirList_print(SD, "/", 3);
+	Serial.println("SETUP: ==========  CREATING SD CARD   ==========");
 #endif
+	if (!isDEBUG_BypassSDCard) {
+		Serial.printf("%.2fs Creating SD card.\n", millis() / 1000.);
+		if (sd.create(SPI_CS_PIN, isDEBUG_BypassSDCard)) {
+			// Success.
+			isGood_SDCard = true;
 
-	// Begin status log entries to SD card.
+			// SD card files.
+			if (isDEBUG_DeleteSDCardFiles) {
+				sd.logStatus("Delete existing data and status log files.", millis());
+				FileOps::fileDelete(SD, LOG_STATUS_FILEPATH_SD.c_str());
+				FileOps::fileDelete(SD, LOG_DATA_FILEPATH_SD.c_str());
+			}
+
+			// Begin logging.
+			sd.logStatus(); sd.logStatus();	// empty lines
+			sd.logStatus(LINE_SEPARATOR_LOG_BEGINS);
+			sd.logStatus("MicroSD card mount successful.", millis());
+		}
+		else {
+			// Failure.
+			sd.logStatus("ERROR: MicroSD card mount failed.", millis());
+			isGood_SDCard = false;
+		}
+	}
+	else {
+		// Bypass SD card.
+		Serial.printf("%.2fs BYPASSING SD card.", millis() / 1000.);
+	}
+
+	//#if defined(VM_DEBUG)
+	Serial.println("Listing SD card dir to Serial:");
+	FileOps::dirList_print(SD, "/", 3);
+	//#endif
+
+		// Begin status log entries to SD card.
 	sd.logStatus();	// Empty line
 	sd.logStatus(LINE_SEPARATOR_MAJOR);
 	sd.logStatus("SETUP continues after SD card initialization.", millis());
 
-	// SD log file.
 	FileStatus status;
+	// SD status log.
 	status = FileOps::fileCreateOrExists(SD, LOG_STATUS_FILEPATH_SD);
-	sd.logStatus("Status of " + LOG_STATUS_FILEPATH_SD + " = " + fileStatus_toString(status), millis());
+	sd.logStatus(LOG_STATUS_FILEPATH_SD + " FileStatus = " + fileStatus_toString(status), millis());
 	// SD data file.
 	status = FileOps::fileCreateOrExists(SD, LOG_DATA_FILEPATH_SD);
-	sd.logStatus("Status of " + LOG_DATA_FILEPATH_SD + " = " + fileStatus_toString(status), millis());
+	sd.logStatus(LOG_DATA_FILEPATH_SD + " FileStatus = " + fileStatus_toString(status), millis());
 
-
-	// Log the settings to the status file.
+	// Log the debug and app settings.
+	sd.logStatus("Debug flags:");
 	sd.logDebugStatus(
 		isDEBUG_BypassGPS,
 		isDEBUG_BypassWifi,
 		isDEBUG_BypassSDCard,
+		isDEBUG_DeleteSDCardFiles,
 		isDEBUG_ListLittleFS,
 		isDEBUG_BypassWebServer,
 		isDEBUG_run_test_in_setup,
@@ -325,22 +353,24 @@ void setup() {
 		isDEBUG_simulateWindReadings,
 		isDEBUG_AddDelayInLoop,
 		LOOP_DELAY_DEBUG_ms);
+
+	sd.logStatus("App settings:");
 	sd.logApp_Settings();
 
 	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
-#if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  CREATE WIFI NETWORK   ==========");
-#endif
+//#if defined(VM_DEBUG)
+	Serial.println("SETUP: ==========  CREATING WIFI NETWORK   ==========");
+	//#endif
 	wifi.Begin();
 
 	if (!isDEBUG_BypassWifi) {
 		// Specify WiFi credentials for networks.
 		wifi.wifiAddAccessPoints();
-//#if defined(VM_DEBUG)
-		// List networks found.
+		//#if defined(VM_DEBUG)
+				// List networks found.
 		sd.logStatus(wifi.networks_found_info());
-//#endif
-		// Connect to wifi.
+		//#endif
+				// Connect to wifi.
 		sd.logStatus("Connecting to Wifi.", millis());
 		wifi.connectWiFi();
 	}
@@ -351,7 +381,7 @@ void setup() {
 
 	//  ==========  CREATE ASYNC WEB SERVER   ========== //	
 #if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  CREATE ASYNC WEB SERVER   ==========");
+	Serial.println("SETUP: ==========  CREATING ASYNC WEB SERVER   ==========");
 #endif
 	createServerRouteHandler();	// Define routes for server requests.
 	sd.logStatus("Async web server routes defined.", millis());
@@ -360,7 +390,7 @@ void setup() {
 
 	// ==========   CREATE GPS AND SYNC TO GET TIME   ========== //
 #if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  CREATE GPS AND SYNC TO GET TIME   ==========");
+	Serial.println("SETUP: ==========  CREATING GPS AND SYNCING TO GET TIME   ==========");
 #endif
 	// XXX  Need code to alter power of GPS!!!  XXX
 
@@ -395,7 +425,7 @@ void setup() {
 
 	// ==========  SETUP LittleFS  ========== //
 #if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  SETUP LittleFS   ==========");
+	Serial.println("SETUP: ==========  SETTING UP LittleFS   ==========");
 #endif
 	if (LittleFS.begin(true)) {		// pass true to format LittleFS on fail
 		isGood_LittleFS = true;
@@ -431,7 +461,7 @@ void setup() {
 
 	// ==========  CREATE SENSORS  ========== //
 #if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  CREATE SENSORS   ==========");
+	Serial.println("SETUP: ==========  CREATING SENSORS   ==========");
 #endif
 	sensors_AddLabels();	// Add labels and units to the SensorData instances.
 	sensors_begin();		// Initialize all sensors.
@@ -440,7 +470,7 @@ void setup() {
 	// ==========  RECOVER DATA   ==========
 
 #if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  RECOVER DATA FROM FILE SYSTEM   ==========");
+	Serial.println("SETUP: ==========  RECOVERING DATA FROM FILE SYSTEM   ==========");
 #endif
 	// Retrieve recent saved data from LittleFS. (In case of inadvertent reboot.)
 
@@ -498,7 +528,7 @@ void setup() {
 	// ==========  SETUP: CREATE INTERRUPTS  ========== //
 
 #if defined(VM_DEBUG)
-	Serial.println("SETUP: ==========  CREATE INTERRUPTS   ==========");
+	Serial.println("SETUP: ==========  CREATING INTERRUPTS   ==========");
 #endif
 	// ANEMOMETER HARDWARE INTERRUPT (every rotation).
 	pinMode(WIND_SPEED_PIN, INPUT_PULLUP);
@@ -526,7 +556,7 @@ void setup() {
 	timerAlarm(timerAnem, duration_count, true, 0);		// Trigger every ANEM_READ_PERIOD_SEC.
 	*/
 
-	Serial.println("SETUP: ==========  COMPLETED CREATE TIMER INTERRUPT   ==========");
+	Serial.println("SETUP: ==========  SETUP COMPLETE   ==========");
 
 	msg = "CURRENT LOCAL TIME is " + gps.dateTime_Str();
 	(IS_DAYLIGHT_TIME) ? msg = " Daylight time." : msg = " Standard time.";

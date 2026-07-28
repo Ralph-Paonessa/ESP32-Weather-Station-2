@@ -110,6 +110,7 @@
     <None Include="Data\html\summary.html" />
     <None Include="Data\js\chart.js" />
     <None Include="Data\js\highcharts.js" />
+    <None Include="Data\html\terrarium.html" />
     <None Include="README_ProjectStatus.md" />
     <None Include="partitions.csv" />
     <None Include="README.md" />
@@ -195,7 +196,7 @@
       <CLanguageStandard>gnu99</CLanguageStandard>
       <CAdditionalWarning />
       <CppAdditionalWarning />
-      <ForcedIncludeFiles>$(ProjectDir)..\..\..\..\..\program files\microsoft visual studio\18\community\common7\ide\extensions\5aja4wzp.vqz\Micro Platforms\default\vm-intelli-pre.h;$(ProjectDir)..\..\..\AppData\Local\Temp\VMBuilds\ESP32 Weather Station 2\esp32_esp32doit-devkit-v1\Debug\.vmintelli\4c0995dfcf495aa88a28c5f47aacb3f0\vm-intelli-gcc-defines.h;$(ProjectDir)..\..\..\..\..\program files\microsoft visual studio\18\community\common7\ide\extensions\5aja4wzp.vqz\Micro Platforms\default\vm-intelli-post.h;$(ProjectDir)__vm\.ESP32 Weather Station 2.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles>$(ProjectDir)..\..\..\..\..\program files\microsoft visual studio\18\community\common7\ide\extensions\oenqsh01.dvc\Micro Platforms\default\vm-intelli-pre.h;$(ProjectDir)..\..\..\AppData\Local\Temp\VMBuilds\ESP32 Weather Station 2\esp32_esp32doit-devkit-v1\Debug\.vmintelli\c7adb2c69231ee755a767a474c821426\vm-intelli-gcc-defines.h;$(ProjectDir)..\..\..\..\..\program files\microsoft visual studio\18\community\common7\ide\extensions\oenqsh01.dvc\Micro Platforms\default\vm-intelli-post.h;$(ProjectDir)__vm\.ESP32 Weather Station 2.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
       <UndefineAllPreprocessorDefinitions>true</UndefineAllPreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>_VMICRO_INTELLISENSE;__ESP32_esp32__;__ESP32_ESP32__;_VMDEBUG=1;HAVE_CONFIG_H;MBEDTLS_CONFIG_FILE=mbedtls/esp_config.h;UNITY_INCLUDE_CONFIG_H;WITH_POSIX;_GNU_SOURCE;IDF_VER=v4.4.7-dirty;ESP_PLATFORM;_POSIX_READER_WRITER_LOCKS;F_CPU=240000000L;ARDUINO=108010;ARDUINO_ESP32_DEV;ARDUINO_ARCH_ESP32;ARDUINO_BOARD=ESP32_DEV;ARDUINO_VARIANT=doitESP32devkitV1;ARDUINO_PARTITION_default;ESP32;CORE_DEBUG_LEVEL=0;ARDUINO_USB_CDC_ON_BOOT=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>

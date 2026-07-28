@@ -21,23 +21,16 @@ bool SDCard::create(int SPI_CS_pin, bool isBypass) {
 	if (isBypass) {
 		// Bypass initializing SD card		
 		Serial.print(millis() / 1000.);
-		Serial.println("s SDCard::create BYPASS SD card.");
+		Serial.println("s SDCard::create: BYPASSING SD card.");
 		return false;
 	}
 	// Create SD card
-	Serial.print(millis() / 1000.);
-	Serial.println("s SDCard::create Initializing SD card.");
 	if (SD.begin(_SPI_CS_pin)) {
-		// Success.
-		logStatus(); logStatus();	// empty lines
-		logStatus(LINE_SEPARATOR_LOG_BEGINS);
-		logStatus("SDCard::create Logging has started.", millis());
-		logStatus("SDCard::create MicroSD card mount successful.", millis());
+		//// Success.
 		return true;
 	}
 	else {
 		// Failure.
-		logStatus("SDCard::create ERROR: MicroSD card mount failed.", millis());
 		return false;
 	}
 }
@@ -151,7 +144,7 @@ void SDCard::logDeviceStatus(
 	String msg = "DEVICE STATUS REPORT:";
 	logStatus(msg, gpsDateTime);
 
-	msg = "WiFi connected: XXX THIS IS NOT CODED YET!!";
+	msg = "WiFi connected: XXX THIS STATUS IS NOT CODED YET!!";
 	//msg += Utilities::bool_OK_Error(wiFi_isConnected);
 	logStatus_indent(msg);
 
@@ -212,6 +205,7 @@ void SDCard::logDebugStatus(
 	bool isDEBUG_BypassGPS,
 	bool isDEBUG_BypassWifi,
 	bool isDEBUG_BypassSDCard,
+	bool isDEBUG_DeleteSDCardFiles,
 	bool isDEBUG_ListLittleFS,
 	bool isDEBUG_BypassWebServer,
 	bool isDEBUG_run_test_in_setup,
@@ -240,6 +234,9 @@ void SDCard::logDebugStatus(
 	}
 	if (isDEBUG_BypassSDCard) {
 		Serial.println("BYPASS SD CARD");	// Can't log to SD!
+	}
+	if (isDEBUG_DeleteSDCardFiles) {
+		logStatus_indent("DELETE DATA AND LOG FILES FROM SD CARD");
 	}
 	if (isDEBUG_BypassWebServer) {
 		logStatus_indent("BYPASS WEB SERVER");

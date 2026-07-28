@@ -39,6 +39,7 @@
     <None Include="Data\css\highcharts-custom.css" />
     <None Include="Data\css\style.light.min.css" />
     <None Include="Data\css\style.min.css" />
+    <None Include="Data\html\terrarium.html" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileOperations.cpp">

@@ -115,6 +115,7 @@ public:
 		bool isDEBUG_BypassGPS,
 		bool isDEBUG_BypassWifi,
 		bool isDEBUG_BypassSDCard,
+		bool isDEBUG_DeleteSDCardFiles,
 		bool isDEBUG_ListLittleFS,
 		bool isDEBUG_BypassWebServer,
 		bool isDEBUG_run_test_in_setup,
