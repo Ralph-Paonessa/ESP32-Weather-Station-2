@@ -14,13 +14,13 @@ free for personal use.*
     1. Y_MAX
     1. Y_TICK_AMOUNT
 
-  - Upon html load, javascript function getChartData(dataRoute) is called to 
+  - Upon html load, javascript function `getChartData(dataRoute)` is called to 
   asynchronously request and display the appropriate chart data. The chart 
   page initially requests 10-min data (dataRoute = "/data_10"). Buttons on the 
   page allow the user to request 1-hr data and daily max/min values as well.
   
   - Depending on the chart data type (temperature, pressure, etc.), the Web Server Route Handler() parses this request and supplies data from the appropriate sensor as a delimited string via 
-  .data_10_min_string_delim(.
+  `SensorData::data_10_min_string_delim()`.
 
   - This data string is processed by chart.js, which creates an array of
   (time, value) data points that are fed to the highcharts data series in 
@@ -31,7 +31,7 @@ free for personal use.*
   millisec from 1/1/1970.
 
   - The Hourly button in chart.html asynchronously loads the 
-  60-min data into the chart. SensorData::data_60_min_string_delim().
+  60-min data into the chart: `SensorData::data_60_min_string_delim()`.
 
   ## chart_min_max.html -- _UNDER DEVELOPMENT_
 

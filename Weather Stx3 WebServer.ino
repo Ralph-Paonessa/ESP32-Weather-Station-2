@@ -140,14 +140,11 @@ void createServerRouteHandler() {
 			request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
 			});
 
-
 		// BME Temperature graph page.
-		server.on("/chart_BME_T", HTTP_GET, [](AsyncWebServerRequest* request) {
+		server.on("/chart_T_BME_F", HTTP_GET, [](AsyncWebServerRequest* request) {
 			_chart_request = CHART_TEMPERATURE_BME_F;
 			request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
 			});
-
-
 
 		// Wind speed graph page.
 		server.on("/chart_W", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -300,11 +297,9 @@ void createServerRouteHandler() {
 				case CHART_WIND_GUST:
 					request->send(200, "text/plain", windGust.dataPoints_10_min_as_String().c_str());
 					break;
-
 				case CHART_TEMPERATURE_BME_F:
 					request->send(200, "text/plain", d_TempF_for_RH.dataPoints_10_min_as_String().c_str());
 					break;
-
 				default:
 					request->send(200, "text/plain", "");
 					break;
@@ -350,6 +345,9 @@ void createServerRouteHandler() {
 					break;
 				case CHART_WIND_GUST:
 					request->send(200, "text/plain", windGust.dataPoints_60_min_as_String().c_str());
+					break;
+				case CHART_TEMPERATURE_BME_F:
+					request->send(200, "text/plain", d_TempF_for_RH.dataPoints_60_min_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");
@@ -397,6 +395,9 @@ void createServerRouteHandler() {
 				case CHART_WIND_GUST:
 					request->send(200, "text/plain", windGust.dataPoints_dayMaxMin_as_String().c_str());
 					break;
+				case CHART_TEMPERATURE_BME_F:
+					request->send(200, "text/plain", d_TempF_for_RH.dataPoints_dayMaxMin_as_String().c_str());
+					break;
 				default:
 					request->send(200, "text/plain", "");
 					break;
@@ -439,6 +440,9 @@ void createServerRouteHandler() {
 					break;
 				case CHART_WIND_GUST:
 					request->send(200, "text/plain", windGust.dataPoints_dayMax_as_String().c_str());
+					break;
+				case CHART_TEMPERATURE_BME_F:
+					request->send(200, "text/plain", d_TempF_for_RH.dataPoints_dayMax_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");
@@ -483,6 +487,9 @@ void createServerRouteHandler() {
 					break;
 				case CHART_WIND_GUST:
 					request->send(200, "text/plain", windGust.dataPoints_dayMin_as_String().c_str());
+					break;
+				case CHART_TEMPERATURE_BME_F:
+					request->send(200, "text/plain", d_TempF_for_RH.dataPoints_dayMin_as_String().c_str());
 					break;
 				default:
 					request->send(200, "text/plain", "");

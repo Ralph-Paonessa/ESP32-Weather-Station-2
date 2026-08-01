@@ -458,7 +458,7 @@ void processSensor_60_min_by_index(int index) {
 		d_Pres_mb.process_data_60_min();
 		break;
 	case 5:
-		//float temp = sensor_PRH.readTemperature();
+		// Temperature from BME280 P/T/RH sensor.
 		d_TempF_for_RH.process_data_60_min();
 		break;
 	case 6:
@@ -545,7 +545,7 @@ void processSensor_day_by_index(int index) {
 	}
 	case 5:
 	{
-		//float temp = sensor_PRH.readTemperature();
+		// Temperature from BME280 P/T/RH sensor.
 		d_TempF_for_RH.process_data_day();
 		break;
 	}

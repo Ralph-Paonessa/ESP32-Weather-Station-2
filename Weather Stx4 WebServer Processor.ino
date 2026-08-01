@@ -96,8 +96,12 @@ String processor(const String& var) {
 		//	return String("na");
 		//}
 	}
-	if (var == "IR_T_SKY") {
+	if (var == "IR_T_SKY_C") {
 		return String(d_IRSky_C.valueLastAdded(), 0);
+	}
+
+	if (var == "IR_T_SKY_F") {
+		return String(Utilities::temperature_F(d_IRSky_C.valueLastAdded()), 0);
 	}
 
 	// Added for terrarium monitor.
@@ -113,7 +117,13 @@ String processor(const String& var) {
 		return String(windSpeed.max_today_dp().value, 0);
 	}
 	if (var == "WIND_GUST_HI") {
-		return String(windGust.max_today_dp().value, 0);
+		if (windGust.max_today_dp().value == SENSOR_VAL_LIMIT) {
+			return "?";
+		}
+		else {
+			return String(windGust.max_today_dp().value, 0);
+		}
+
 	}
 	if (var == "WIND_ANGLE_HI") {
 		return "??";		// avg since last cleared (<= 10 min)
@@ -164,7 +174,12 @@ String processor(const String& var) {
 		return String(windSpeed.min_today_dp().value, 0);	// 10-min avg
 	}
 	if (var == "WIND_GUST_LO") {
-		return String(windGust.min_today_dp().value, 0);
+		if (windGust.min_today_dp().value == -SENSOR_VAL_LIMIT) {
+			return "?";
+		}
+		else {
+			return String(windGust.max_today_dp().value, 0);
+		}
 	}
 	if (var == "PRESSURE_MB_SL_LO") {
 		return String(d_Pres_seaLvl_mb.min_today_dp().value, 0);
