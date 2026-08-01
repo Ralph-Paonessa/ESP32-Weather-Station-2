@@ -17,7 +17,7 @@ private:
 	int _countGusts = 0;
 
 	DataPoint _gust_now = DataPoint(0, 0);					// Current 10-min gust.
-	DataPoint _gust_60_min_dp = DataPoint(0, -VAL_LIMIT);	// Current 60-min maximum gust.
+	DataPoint _gust_60_min_dp = DataPoint(0, -SENSOR_VAL_LIMIT);	// Current 60-min maximum gust.
 	DataPoint _gust_today_dp = DataPoint(0, 0);				// Today's highest gust.	
 		
 	/// <summary>

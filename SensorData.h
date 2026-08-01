@@ -5,6 +5,9 @@
 
 #include <Arduino.h>
 
+#include "App_settings.h"
+using namespace App_Settings;
+
 #include <list>
 using std::list;
 #include "dataPoint.h"
@@ -34,19 +37,17 @@ protected:		// Protected items are accessible by inherited classes.
 
 	float _avg_10_min = 0;			// Average over 10 min.
 	float _avg_60_min = 0;			// Average over 60 min.
-
-	static constexpr float VAL_LIMIT = 999999;	// No reading absolute value will ever be greater.
-
+		
 	/// <summary>
 	/// Updates saved min and max values for 10-min period and today.
 	/// </summary>
 	/// <param name="dp">Data point with value to evaluate.</param>
 	void _updateMinMax(DataPoint dp);
 
-	DataPoint _min_10_min_dp = DataPoint(0, +VAL_LIMIT);	// Current 10-min minimum.
-	DataPoint _max_10_min_dp = DataPoint(0, -VAL_LIMIT);	// Current 10-min maximum.
-	DataPoint _min_today_dp = DataPoint(0, +VAL_LIMIT);		// Today's minimum.
-	DataPoint _max_today_dp = DataPoint(0, -VAL_LIMIT);		// Today's maximum.
+	DataPoint _min_10_min_dp = DataPoint(0, +SENSOR_VAL_LIMIT);	// Current 10-min minimum.
+	DataPoint _max_10_min_dp = DataPoint(0, -SENSOR_VAL_LIMIT);	// Current 10-min maximum.
+	DataPoint _min_today_dp = DataPoint(0, +SENSOR_VAL_LIMIT);		// Today's minimum.
+	DataPoint _max_today_dp = DataPoint(0, -SENSOR_VAL_LIMIT);		// Today's maximum.
 		
 	/// <summary>
 	/// Clears running average and min, max for 10-min period.

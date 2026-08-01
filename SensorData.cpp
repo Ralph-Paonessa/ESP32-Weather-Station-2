@@ -121,8 +121,8 @@ void SensorData::_clear_10_min() {
 	_sumReadings = 0;
 	_countReadings = 0;
 	// Reset to extremes. (Real values will always surpass these.)
-	_min_10_min_dp = DataPoint(0, +VAL_LIMIT);
-	_max_10_min_dp = DataPoint(0, -VAL_LIMIT);
+	_min_10_min_dp = DataPoint(0, +SENSOR_VAL_LIMIT);
+	_max_10_min_dp = DataPoint(0, -SENSOR_VAL_LIMIT);
 }
 
 int SensorData::countReadings() {
@@ -134,8 +134,8 @@ int SensorData::countReadings() {
 /// </summary>
 void SensorData::_clearMinMax_day() {
 	// Reset to extremes. (Real values will always surpass these.)
-	_min_today_dp = DataPoint(0, +VAL_LIMIT);
-	_max_today_dp = DataPoint(0, -VAL_LIMIT);
+	_min_today_dp = DataPoint(0, +SENSOR_VAL_LIMIT);
+	_max_today_dp = DataPoint(0, -SENSOR_VAL_LIMIT);
 }
 
 /*****************************************************************

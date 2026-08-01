@@ -80,6 +80,7 @@ namespace App_Settings {
 	constexpr float			DAVIS_SPEED_CAL_FACTOR = 2.25;		// WindSpeed calibration factor for Davis anemometer.
 	constexpr unsigned int	DAVIS_ANEM_DEBOUNCE_TIMEOUT_MS = 15;// Debounce timeout (millisec)
 	constexpr float			VANE_OFFSET = 0;					// Degrees that wind direction reading exceeds north.
+	static constexpr float	SENSOR_VAL_LIMIT = 999999;			// No reading absolute value will ever be greater.
 	constexpr float			WIND_DIR_SPEED_THRESHOLD = 1;		// WindSpeed below which wind direction is not reported.
 	static constexpr float	GUST_THRESHOLD = 8;					// Minimum speed that qualifies as gust.
 	static constexpr float	GUST_SPREAD = 10.36;				// Speed must exceed avg speed by this amount.

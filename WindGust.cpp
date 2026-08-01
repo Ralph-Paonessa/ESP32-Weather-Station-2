@@ -130,6 +130,6 @@ void WindGust::_clear_10_min() {
 	_gust_now = DataPoint(0, 0);	// reset gust
 
 	// Reset to extremes. (Real values will always surpass these.)
-	_min_10_min_dp = DataPoint(0, +VAL_LIMIT);	// not used anywhere!
-	_max_10_min_dp = DataPoint(0, -VAL_LIMIT);	// not used anywhere!
+	_min_10_min_dp = DataPoint(0, +SENSOR_VAL_LIMIT);	// not used anywhere!
+	_max_10_min_dp = DataPoint(0, -SENSOR_VAL_LIMIT);	// not used anywhere!
 }
