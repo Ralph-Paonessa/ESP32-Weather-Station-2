@@ -140,6 +140,15 @@ void createServerRouteHandler() {
 			request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
 			});
 
+
+		// BME Temperature graph page.
+		server.on("/chart_BME_T", HTTP_GET, [](AsyncWebServerRequest* request) {
+			_chart_request = CHART_TEMPERATURE_BME_F;
+			request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
+			});
+
+
+
 		// Wind speed graph page.
 		server.on("/chart_W", HTTP_GET, [](AsyncWebServerRequest* request) {
 			_chart_request = CHART_WIND_SPEED;
@@ -291,6 +300,11 @@ void createServerRouteHandler() {
 				case CHART_WIND_GUST:
 					request->send(200, "text/plain", windGust.dataPoints_10_min_as_String().c_str());
 					break;
+
+				case CHART_TEMPERATURE_BME_F:
+					request->send(200, "text/plain", d_TempF_for_RH.dataPoints_10_min_as_String().c_str());
+					break;
+
 				default:
 					request->send(200, "text/plain", "");
 					break;

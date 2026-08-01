@@ -23,7 +23,7 @@ String columnNames() {
 	String s = "Time";				// (1)
 	s += "\t\t\tT, F";				// (1)
 	s += "\tP, mbSL\tP, mbSt";		// (2)
-	s += "\tRH %\tBME T,C";			// (2)
+	s += "\tRH %\tBME T,F";			// (2)
 	s += "\tSolar%";				// (1)
 	s += "\tUV-A\tUV-B\tUV idx";	// (3)
 	s += "\tIR, C";					// (1)
@@ -49,7 +49,7 @@ String sensorsDataString_current() {
 	s += "\t" + String(d_Pres_mb.valueLastAdded());			// absolute mb (hPa) (Station P)
 	// RH (2)
 	s += "\t" + String(d_RH.valueLastAdded());				// %RH
-	s += "\t" + String(d_TempC_for_RH.valueLastAdded());	// temp recorded by BME280
+	s += "\t" + String(d_TempF_for_RH.valueLastAdded());	// temp recorded by BME280
 	// Solar (1)
 	s += "\t" + String(d_Insol.valueLastAdded());			// PV solar cell %
 	// UV (3)
@@ -98,7 +98,7 @@ String sensorsDataString_10_min() {
 	s += "\t" + String(d_Pres_mb.avg_10_min());			// absolute mb (hPa)
 	// RH (2)
 	s += "\t" + String(d_RH.avg_10_min());				// %RH
-	s += "\t" + String(d_TempC_for_RH.avg_10_min());	// temp recorded by BME280
+	s += "\t" + String(d_TempF_for_RH.avg_10_min());	// temp recorded by BME280
 	// Solar (1)
 	s += "\t" + String(d_Insol.avg_10_min());			// PV solar cell mV
 	// UV (3)
@@ -169,7 +169,7 @@ void PrintSensorOutputs() {
 	Serial.print(d_Pres_mb.valueLastAdded(), 1); Serial.print(F(" mb\t"));
 	// Relative Humidity
 	Serial.print(d_RH.valueLastAdded(), 1); Serial.print(F(" % \t\t"));
-	Serial.print(d_TempC_for_RH.valueLastAdded()); Serial.print(F("ºC\t\t"));
+	Serial.print(d_TempF_for_RH.valueLastAdded()); Serial.print(F("ºC\t\t"));
 	// Solar radiation.
 	Serial.print(d_Insol.valueLastAdded(), 1); Serial.print(F(" mV\t"));
 	// UV sensor.

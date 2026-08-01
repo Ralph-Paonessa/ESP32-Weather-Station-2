@@ -59,7 +59,7 @@ SDCard sd;		// SDCard instance for SD card routines.
 SensorData d_TempF;					// Temp
 SensorData d_Pres_mb(false);		// P					(Data not in filesys)
 SensorData d_Pres_seaLvl_mb;		// P adjust to sea lvl
-SensorData d_TempC_for_RH(false);	// Temp on P sensor		(Data not in filesys)
+SensorData d_TempF_for_RH;			// Temp on P sensor		(Converted C to F)
 SensorData d_RH;					// Rel humidity
 SensorData d_UVA(false);			// UVA					(Data not in filesys)
 SensorData d_UVB(false);			// UVB					(Data not in filesys)
@@ -79,9 +79,10 @@ void sensors_AddLabels() {
 	windDir.addLabels("Wind direction", "windDir", "", "&deg;");
 	windGust.addLabels("Wind Gust", "gust", "mph");
 	d_TempF.addLabels("Temperature", "temp", "F", "&deg;F");
+	d_TempF_for_RH.addLabels("Temperature", "temp", "F", "&deg;F");
 	d_Pres_mb.addLabels("Pressure (station)", "presSta", "mb");
 	d_Pres_seaLvl_mb.addLabels("Pressure (MSLP)", "presSeaLvl", "mb");
-	d_TempC_for_RH.addLabels("Temp for RH", "tForRH", "C", "&degC;");
+	d_TempF_for_RH.addLabels("Temp for RH", "tForRH", "C", "&degC;");
 	d_RH.addLabels("Rel. Humidity", "RH", "%", "&percnt;");
 	d_IRSky_C.addLabels("Sky Temperature", "skyTemp", "C", "&degC;");
 	d_UVA.addLabels("UV A Radiation", "uvA", "");
@@ -101,7 +102,7 @@ void sensors_createFiles() {
 	d_TempF.createSensorDataFiles();
 	//d_Pres_mb.createSensorDataFiles();
 	d_Pres_seaLvl_mb.createSensorDataFiles();
-	//d_TempC_for_RH.createSensorDataFiles(); 
+	//d_TempF_for_RH.createSensorDataFiles(); 
 	d_RH.createSensorDataFiles();
 	d_IRSky_C.createSensorDataFiles();
 	//d_UVA.createSensorDataFiles();         
@@ -485,7 +486,7 @@ void setup() {
 		recoverData(d_UVB, lastTimeStr.toInt(), now());
 		recoverData(d_UVIndex, lastTimeStr.toInt(), now());
 		recoverData(d_Pres_mb, lastTimeStr.toInt(), now());
-		recoverData(d_TempC_for_RH, lastTimeStr.toInt(), now());
+		recoverData(d_TempF_for_RH, lastTimeStr.toInt(), now());
 		recoverData(d_Pres_seaLvl_mb, lastTimeStr.toInt(), now());
 		recoverData(d_RH, lastTimeStr.toInt(), now());
 		recoverData(d_IRSky_C, lastTimeStr.toInt(), now());

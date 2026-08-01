@@ -102,7 +102,7 @@ String processor(const String& var) {
 
 	// Added for terrarium monitor.
 	if (var == "TEMPERATURE_BME_F")
-		return String(Utilities::temperature_F(d_TempC_for_RH.valueLastAdded()), 0);
+		return String(d_TempF_for_RH.valueLastAdded(), 0);
 
 	///  DAILY MAXIMA  ///////////////////
 
@@ -249,6 +249,8 @@ String processor(const String& var) {
 			return String(d_IRSky_C.label() + ", " + d_IRSky_C.units_html());
 		case CHART_TEMPERATURE_F:
 			return String(d_TempF.label() + ", " + d_TempF.units_html());
+		case CHART_TEMPERATURE_BME_F:
+			return String(d_TempF_for_RH.label() + ", " + d_TempF.units_html());
 		case CHART_PRESSURE_SEA_LEVEL:
 			return String(d_Pres_seaLvl_mb.label() + ", " + d_Pres_seaLvl_mb.units());
 		case CHART_RELATIVE_HUMIDITY:
@@ -280,6 +282,8 @@ String processor(const String& var) {
 			return String(d_IRSky_C.label());
 		case CHART_TEMPERATURE_F:
 			return String(d_TempF.label());
+		case CHART_TEMPERATURE_BME_F:
+			return String(d_TempF_for_RH.label());
 		case CHART_PRESSURE_SEA_LEVEL:
 			return String(d_Pres_seaLvl_mb.label());
 		case CHART_RELATIVE_HUMIDITY:
@@ -308,6 +312,8 @@ String processor(const String& var) {
 		case CHART_IR_SKY:
 			return "min: -50";
 		case CHART_TEMPERATURE_F:
+			return "min: 0";
+		case CHART_TEMPERATURE_BME_F:
 			return "min: 0";
 		case CHART_PRESSURE_SEA_LEVEL:
 			return "min: 950";
@@ -340,6 +346,8 @@ String processor(const String& var) {
 			return ", max: 50";
 		case CHART_TEMPERATURE_F:
 			return ", max: 100";
+		case CHART_TEMPERATURE_BME_F:
+			return ", max: 100";
 		case CHART_PRESSURE_SEA_LEVEL:
 			return ", max: 1050";
 		case CHART_RELATIVE_HUMIDITY:
@@ -366,6 +374,8 @@ String processor(const String& var) {
 		case CHART_IR_SKY:
 			return ", tickAmount: 5";
 		case CHART_TEMPERATURE_F:
+			return ", tickAmount: 5";
+		case CHART_TEMPERATURE_BME_F:
 			return ", tickAmount: 5";
 		case CHART_PRESSURE_SEA_LEVEL:
 			return ", tickAmount: 3";

@@ -291,7 +291,8 @@ void readSensor_by_index(int index) {
 	}
 	case 5:
 	{
-		d_TempC_for_RH.addReading(DataPoint(now(), sensor_PRH.readTemperature()));
+		// Convert C to F.
+		d_TempF_for_RH.addReading(DataPoint(now(), Utilities::temperature_F(sensor_PRH.readTemperature())));
 		break;
 	}
 	case 6:
@@ -300,7 +301,7 @@ void readSensor_by_index(int index) {
 		float psl = pressureAtSeaLevel(
 			d_Pres_mb.valueLastAdded(),
 			gps.data.altitude(),
-			d_TempC_for_RH.valueLastAdded());
+			d_TempF_for_RH.valueLastAdded());
 		d_Pres_seaLvl_mb.addReading(DataPoint(now(), psl));
 		break;
 	}
@@ -371,7 +372,7 @@ void processSensor_10_min_by_index(int index) {
 	}
 	case 5: {
 		//float temp = sensor_PRH.readTemperature();
-		d_TempC_for_RH.process_data_10_min();
+		d_TempF_for_RH.process_data_10_min();
 		break;
 	}
 	case 6: {
@@ -458,7 +459,7 @@ void processSensor_60_min_by_index(int index) {
 		break;
 	case 5:
 		//float temp = sensor_PRH.readTemperature();
-		d_TempC_for_RH.process_data_60_min();
+		d_TempF_for_RH.process_data_60_min();
 		break;
 	case 6:
 		// P adjusted to sea level.
@@ -545,7 +546,7 @@ void processSensor_day_by_index(int index) {
 	case 5:
 	{
 		//float temp = sensor_PRH.readTemperature();
-		d_TempC_for_RH.process_data_day();
+		d_TempF_for_RH.process_data_day();
 		break;
 	}
 	case 6:
@@ -589,11 +590,11 @@ void processSensor_day_by_index(int index) {
 		sd.logStatus(msg, gps.dateTime_Str());
 	}
 	}
-	//#if defined(VM_DEBUG)
+#if defined(VM_DEBUG)
 	float elapsed = (micros() - start_usec) / 1000.;
 	String msg = "Processing Day data for Sensor " + String(index) + " takes " + String(elapsed, 3) + "usec";
 	sd.logStatus(msg, gps.dateTime_Str());
-	//#endif
+#endif
 }
 
 /// <summary>
@@ -629,7 +630,7 @@ void readSensors_Simulate() {
 	dp = DataPoint(now(), dummy_Pres_mb.linear(1000, 0.1) / 100);
 	d_Pres_mb.addReading(dp);			// Raw pressure in mb (hectopascals)
 	//dp = DataPoint(now(), dummy_Temp_for_RH_C.linear(60, 0.02));
-	//d_TempC_for_RH.addReading(dp);		// Temp (C) of P, RH sensor.
+	//d_TempF_for_RH.addReading(dp);		// Temp (C) of P, RH sensor.
 	// P adjusted to sea level.
 	float psl = pressureAtSeaLevel(
 		dummy_Pres_seaLvl_mb.linear(950, 0.01),
@@ -666,7 +667,7 @@ void processReadings_10_min_XXX_TOO_MANY_SENSORS() {
 	d_TempF.process_data_10_min();
 	d_Pres_mb.process_data_10_min();		// Just save avg_10?
 	d_Pres_seaLvl_mb.process_data_10_min();
-	d_TempC_for_RH.process_data_10_min();	// Just save avg_10?
+	d_TempF_for_RH.process_data_10_min();	// Just save avg_10?
 	d_RH.process_data_10_min();
 	d_UVA.process_data_10_min();
 	d_UVB.process_data_10_min();
