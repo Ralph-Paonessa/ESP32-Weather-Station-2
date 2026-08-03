@@ -292,7 +292,8 @@ void readSensor_by_index(int index) {
 	case 5:
 	{
 		// Convert C to F.
-		d_TempF_for_RH.addReading(DataPoint(now(), Utilities::temperature_F(sensor_PRH.readTemperature())));
+		d_TempF_for_RH.addReading(
+			DataPoint(now(), Utilities::temperature_F(sensor_PRH.readTemperature())));
 		break;
 	}
 	case 6:
@@ -301,7 +302,7 @@ void readSensor_by_index(int index) {
 		float psl = pressureAtSeaLevel(
 			d_Pres_mb.valueLastAdded(),
 			gps.data.altitude(),
-			d_TempF_for_RH.valueLastAdded());
+			Utilities::temperature_C(d_TempF_for_RH.valueLastAdded()));	// convert F back to C!
 		d_Pres_seaLvl_mb.addReading(DataPoint(now(), psl));
 		break;
 	}
@@ -688,6 +689,7 @@ void processReadings_60_min() {
 	windDir.process_data_60_min();
 	d_TempF.process_data_60_min();
 	d_Pres_seaLvl_mb.process_data_60_min();
+	d_TempF_for_RH.process_data_60_min();
 	d_RH.process_data_60_min();
 	d_UVA.process_data_60_min();
 	d_UVB.process_data_60_min();
@@ -704,6 +706,7 @@ void processReadings_day() {
 	windSpeed.process_data_day();
 	windDir.process_data_day();
 	d_TempF.process_data_day();
+	d_Pres_seaLvl_mb.process_data_day();
 	d_Pres_seaLvl_mb.process_data_day();
 	d_RH.process_data_day();
 	d_UVA.process_data_day();

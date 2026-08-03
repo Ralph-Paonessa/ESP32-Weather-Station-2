@@ -498,7 +498,7 @@ void createServerRouteHandler() {
 			});
 
 #if defined(VM_DEBUG)
-}
+	}
 	else {
 		Serial.println("BYPASSING WEB SERVER INITIALIZATION");
 	}

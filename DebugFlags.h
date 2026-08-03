@@ -8,7 +8,7 @@
 constexpr bool isDEBUG_BypassGPS = true;				// Bypass gps syncing.
 constexpr bool isDEBUG_BypassWifi = false;				// Bypass WiFi connect.	 XXX  CRASHES!!!
 constexpr bool isDEBUG_BypassSDCard = false;			// Bypass SD card.
-constexpr bool isDEBUG_DeleteSDCardFiles = true;		// Delete Data and Log files from SD card.
+constexpr bool isDEBUG_DeleteSDCardFiles = false;		// Delete Data and Log files from SD card.
 constexpr bool isDEBUG_ListLittleFS = true;				// List contents of LittleFS.
 constexpr bool isDEBUG_BypassWebServer = false;			// Bypass Web Server.
 constexpr bool isDEBUG_run_test_in_setup = false;		// Run only test code inserted in Setup.

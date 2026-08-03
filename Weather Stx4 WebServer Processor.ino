@@ -137,6 +137,9 @@ String processor(const String& var) {
 	if (var == "REL_HUMIDITY_HI") {
 		return String(d_RH.max_today_dp().value, 0);
 	}
+	if (var == "TEMPERATURE_F_FOR_RH_HI") {
+		return String(d_TempF_for_RH.max_today_dp().value, 0);
+	}
 	if (var == "UV_A_HI") {
 		if (isGood_UV) {
 			return String(d_UVA.max_today_dp().value, 0);
@@ -186,6 +189,9 @@ String processor(const String& var) {
 	}
 	if (var == "REL_HUMIDITY_LO") {
 		return String(d_RH.min_today_dp().value, 0);
+	}
+	if (var == "TEMPERATURE_F_FOR_RH_LO") {
+		return String(d_TempF_for_RH.min_today_dp().value, 0);
 	}
 	if (var == "IR_T_SKY_LO") {
 		return String(d_IRSky_C.min_today_dp().value, 0);
@@ -360,7 +366,7 @@ String processor(const String& var) {
 		case CHART_IR_SKY:
 			return ", max: 50";
 		case CHART_TEMPERATURE_F:
-			return ", max: 100";
+			return ", max: 120";
 		case CHART_TEMPERATURE_BME_F:
 			return ", max: 100";
 		case CHART_PRESSURE_SEA_LEVEL:
