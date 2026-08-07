@@ -29,6 +29,7 @@ namespace App_Settings {
 	constexpr unsigned int	SENSORS_READ_INTERVAL_SEC = 15;	// Interval between start of reading sensors.
 	constexpr unsigned int	WIFI_CHECK_INTERVAL_SEC = 60;	// Interval between check for WiFi connection.
 
+	constexpr bool			IS_RECOVER_DATA_FROM_LITTLEFS = false;							// Set true to recover sensor data saved in LittleFS.
 	constexpr unsigned int	DATA_RECOVER_10_MIN_AGE_LIMIT_SEC = 30 * SECONDS_PER_MINUTE;	// Recover 10-min data no older than 30 min.
 	constexpr unsigned int	DATA_RECOVER_60_MIN_AGE_LIMIT_SEC = 3 * SECONDS_PER_HOUR;		// Recover 60-min data no older than 3 hr.
 	constexpr unsigned int	DATA_RECOVER_DAY_AGE_LIMIT_SEC = 3 * SECONDS_PER_DAY;			// Recover day data no older than 3 days.
@@ -37,7 +38,7 @@ namespace App_Settings {
 	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 4;// Minimum number of GPS satellites before syncing.
 	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 3;	// Minimum GPS cycles before syncing.
 	constexpr unsigned int	GPS_CYCLE_DELAY_SEC = 2;	// Delay before getting another GPS fix, sec.
-	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 35;	// Max number of GPS cycles before abandoning.
+	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 15;	// Max number of GPS cycles before abandoning sync.
 	constexpr float			GPS_MAX_ALLOWED_HDOP = 2;	// Minimum HDOP precision for syncing.
 
 	constexpr unsigned int	GPS_DUMMY_ALTITUDE = 700;	// Dummy altitude for GPS. (used Ridgecrest)

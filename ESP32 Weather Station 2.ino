@@ -45,10 +45,10 @@ SDCard sd;		// SDCard instance for SD card routines.
 #include <esp32-hal-timer.h>
 #include <esp32-hal.h>
 #include <HardwareSerial.h>
-#include <WiFi.h>
-#include <WiFiType.h>
-#include <esp_attr.h>
-#include <freertos/task.h>
+//#include <WiFi.h>
+//#include <WiFiType.h>
+//#include <esp_attr.h>
+//#include <freertos/task.h>
 #include <freertos/portmacro.h>
 #include <cstddef>
 #include <SD.h>
@@ -477,30 +477,36 @@ void setup() {
 #endif
 	// Retrieve recent saved data from LittleFS. (In case of inadvertent reboot.)
 
-	String lastTimeStr = fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str());
-	if (lastTimeStr.length() > 0) {
-		msg = "Last data save time = " + GPSModule::dateTime_Str(lastTimeStr.toInt());
-		sd.logStatus(msg, now());
-
-		// RECOVER DATA FOR ALL SENSORS.
-		recoverData(d_TempF, lastTimeStr.toInt(), now());
-		recoverData(d_UVA, lastTimeStr.toInt(), now());
-		recoverData(d_UVB, lastTimeStr.toInt(), now());
-		recoverData(d_UVIndex, lastTimeStr.toInt(), now());
-		recoverData(d_Pres_mb, lastTimeStr.toInt(), now());
-		recoverData(d_TempF_for_RH, lastTimeStr.toInt(), now());
-		recoverData(d_Pres_seaLvl_mb, lastTimeStr.toInt(), now());
-		recoverData(d_RH, lastTimeStr.toInt(), now());
-		recoverData(d_IRSky_C, lastTimeStr.toInt(), now());
-		recoverData(d_Insol, lastTimeStr.toInt(), now());
-		recoverData(windSpeed, lastTimeStr.toInt(), now());
-		recoverData(windDir, lastTimeStr.toInt(), now());
-		recoverData(windGust, lastTimeStr.toInt(), now());
+	if (IS_RECOVER_DATA_FROM_LITTLEFS) {
+		String lastTimeStr = fileRead(LittleFS, SENSOR_LAST_SAVE_TIME_FILEPATH_FS.c_str());
+		if (lastTimeStr.length() > 0) {
+			msg = "Last data save time = " + GPSModule::dateTime_Str(lastTimeStr.toInt());
+			sd.logStatus(msg, now());
+			// RECOVER DATA FOR ALL SENSORS.
+			recoverData(d_TempF, lastTimeStr.toInt(), now());
+			recoverData(d_UVA, lastTimeStr.toInt(), now());
+			recoverData(d_UVB, lastTimeStr.toInt(), now());
+			recoverData(d_UVIndex, lastTimeStr.toInt(), now());
+			recoverData(d_Pres_mb, lastTimeStr.toInt(), now());
+			recoverData(d_TempF_for_RH, lastTimeStr.toInt(), now());
+			recoverData(d_Pres_seaLvl_mb, lastTimeStr.toInt(), now());
+			recoverData(d_RH, lastTimeStr.toInt(), now());
+			recoverData(d_IRSky_C, lastTimeStr.toInt(), now());
+			recoverData(d_Insol, lastTimeStr.toInt(), now());
+			recoverData(windSpeed, lastTimeStr.toInt(), now());
+			recoverData(windDir, lastTimeStr.toInt(), now());
+			recoverData(windGust, lastTimeStr.toInt(), now());
+		}
+		else {
+			msg = "Did not find last data save time. No data recovery.";
+			sd.logStatus(msg, now());
+		}
 	}
 	else {
-		msg = "Did not find last data save time. No data recovery.";
+		msg = "Data recovery: Configured to not recover data.";
 		sd.logStatus(msg, now());
 	}
+
 
 	// Date info to determine when new day begins.
 	oldDay = day();
@@ -741,7 +747,6 @@ void loop() {
 	if (millis() - time_start_current_loop > LOOP_TIME_WARN_THRESHOLD_MS) {
 		String msg = "Loop " + String(millis() - time_start_current_loop) + "ms";
 		sd.logStatus(msg, gps.dateTime_Str());
-		//Serial.printf("long loop %lims\n", millis() - time_start_current_loop);
 	}
 }
 /******************************        END LOOP        **********************************/
