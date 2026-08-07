@@ -20,10 +20,10 @@ logged to the SD card.
 
 #include <Arduino.h>
 
-#include <TinyGPSPlus.h>	// Mikal Hart - includes TinyGPS++.h
-#include <TimeLib.h>		// Paul Stoffregen - Time
-
-#include "App_Settings.h"	// namespace App_Settings
+//#include <TinyGPSPlus.h>	// Mikal Hart - includes TinyGPS++.h
+//#include <TimeLib.h>		// Paul Stoffregen - Time
+//
+//#include "App_Settings.h"	// namespace App_Settings
 #include "SDCard.h"			// for data logging.
 using namespace App_Settings;
 
@@ -94,14 +94,22 @@ private:
 	bool _isGpsReceiving = false;
 
 	/// <summary>
-	/// Sets system time and date to GPS values.
+	/// Sets time we use (TimeLib.h) from GPS time. Also 
+	/// sets ESP32 internal RTC clock (sys/time.h).
 	/// </summary>
 	void syncSystemTimeToGPS();
 
 	/// <summary>
+	/// Sets ESP32 internal RTC clock.
+	/// </summary>
+	/// <param name="tNow">Time to set.</param>
+	/// <remarks>Needed for file systems.</remarks>
+	void sync_ESP32_internal_clock(time_t tNow);
+
+	/// <summary>
 	/// Saves current GPS location data.
 	/// </summary>
-	void syncLocationToGPS();
+	void set_location_from_gps();
 
 	/// <summary>
 	/// Returns true if the GPS date and time pass all validity tests.
@@ -115,7 +123,12 @@ private:
 	/// <returns>True if valid GPS location data.</returns>
 	bool isGpsLocationValid();
 
-	void syncSystemWithCurrentGpsData(unsigned long millisStart, int countGpsCycles);
+	/// <summary>
+	/// Sets the system time and location from GPS data.
+	/// </summary>
+	/// <param name="millisStart">Millis when the sync operation started.</param>
+	/// <param name="countGpsCycles">Total number of GPS cycles.</param>
+	void sync_time_and_location_from_gps(unsigned long millisStart, int countGpsCycles);
 
 	/// <summary>
 	/// Log gps data.
@@ -134,6 +147,9 @@ private:
 
 	void logData_Valid_NotEnoughCycles(int countValidCycles);
 
+	/// <summary>
+	/// Logs one cycle of gps data retrieval.
+	/// </summary>
 	void logCurrentCycle();
 
 	void logSyncIsComplete();

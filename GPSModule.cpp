@@ -5,14 +5,19 @@ Uses TinyGPS++ library to communicate with GPS module, and TimeLib
 (Paul Stoffregen) to keep track of date and time obtined from GPS.
 
 */
-
 #include "GPSModule.h"
+
 #include <esp32-hal.h>
+#include <TinyGPSPlus.h>		// Mikal Hart - includes TinyGPS++.h
+#include <TimeLib.h>			// Paul Stoffregen - Time library we use
+#include <sys/time.h>			// Native ESP32 time library (needed for filesys times)
 
-TinyGPSPlus _tinyGPS;				// TinyGPS++ instance.
-HardwareSerial _serialGPS(2);		// Allowed values 0, 1, 2?
+#include "App_Settings.h"		// namespace App_Settings
 
-SDCard _sdCard;		// SDCard instance for data logging.
+TinyGPSPlus _tinyGPS;			// TinyGPS++ instance. (Scoped only to this library.)
+HardwareSerial _serialGPS(2);	// Allowed values 0, 1, 2?
+
+SDCard _sdCard;					// SDCard instance for logging status.
 
 /// <summary>
 /// Exposes methods to interact with a GPS module.
@@ -83,11 +88,9 @@ bool GPSModule::syncToGPS(SDCard& sdCard, bool isSimulate) {
 	long int countAvailable = 0;
 
 	// Loop until GPS syncs.
-	while (!_isGpsSynced)
-	{
+	while (!_isGpsSynced) {
 		// Loop while data is in the serial buffer.
-		while (_serialGPS.available() > 0)
-		{
+		while (_serialGPS.available() > 0) {
 			countAvailable++;
 
 			// Log this message the first time in the loop.
@@ -98,8 +101,7 @@ bool GPSModule::syncToGPS(SDCard& sdCard, bool isSimulate) {
 			}
 			// We require GPS_CYCLES_FOR_SYNC consecutive
 			// cycles of valid gps data.
-			while (_tinyGPS.encode(_serialGPS.read()))	// while GPS is encoding data
-			{
+			while (_tinyGPS.encode(_serialGPS.read())) {	// while GPS is encoding data
 				// A new GPS sentence was encoded.
 				_countGpsCycles++;
 				logCurrentCycle();
@@ -108,18 +110,17 @@ bool GPSModule::syncToGPS(SDCard& sdCard, bool isSimulate) {
 				if (_countGpsCycles >= GPS_CYCLES_COUNT_MAX
 					&& countValidCycles < 1) {
 					// Use gps time if valid.
-					if (isGpsDateTimeValid())
-					{
+					if (isGpsDateTimeValid()) {
 						syncSystemTimeToGPS();
-						return false;
+						sync_ESP32_internal_clock(now());
+						return false;	///	XXX	XXX WHYS IS THIS FALSE?!?!?!	Because the gps TIME, but not LOCATION, was found valid!
 					}
 				}
-				// Does the data pass our validity tests?
-				if (isGpsLocationValid() && isGpsDateTimeValid())
-				{
+				// Does the data pass our validity tests for both time and location?
+				if (isGpsLocationValid() && isGpsDateTimeValid()) {
 					// VALID DATA.
-					// Must have valid data for GPS_CYCLES_FOR_SYNC
-					// *consecutive* cycles.
+					// Must have valid data for *consecutive* number 
+					// of cycles equal to GPS_CYCLES_FOR_SYNC.
 					countValidCycles++;
 					logData_Valid(countValidCycles);
 					// Error check.
@@ -131,26 +132,23 @@ bool GPSModule::syncToGPS(SDCard& sdCard, bool isSimulate) {
 					if (countValidCycles == GPS_CYCLES_FOR_SYNC) {
 						// SUCCESS!!
 						// Sync system time and location with the GPS. 
-						syncSystemWithCurrentGpsData(timeStart, _countGpsCycles);
+						sync_time_and_location_from_gps(timeStart, _countGpsCycles);
 						_isGpsSynced = true;	// flag GPS synced and we're finished.
 						logSyncIsComplete();
 						return true;
 					}
-					else
-					{
+					else {
 						// Not enough valid cycles yet.
 						logData_Valid_NotEnoughCycles(countValidCycles);
 					}
 				}
-				else
-				{
+				else {
 					// INVALID DATA.
 					logData_NotValid();
 					countValidCycles = 0;	// Reset valid cycles.
 				}
 				// If not synced, wait between cycles.
-				if (!_isGpsSynced)
-				{
+				if (!_isGpsSynced) {
 					// Wait but keep receiving GPS data.
 					gpsSmartDelay(GPS_CYCLE_DELAY_SEC);
 				}
@@ -218,8 +216,7 @@ void GPSModule::logData_NotValid() {
 /// Logs number of GPS sentences that failed checksum.
 /// </summary>
 void GPSModule::logData_checksumFailures() {
-	if (_tinyGPS.failedChecksum() > 0)
-	{
+	if (_tinyGPS.failedChecksum() > 0) {
 		String msg = String(_tinyGPS.failedChecksum());
 		msg += " GPS sentences FAILED CHECKSUM.";
 		_sdCard.logStatus(msg, millis());
@@ -238,7 +235,7 @@ void GPSModule::logData_Valid_NotEnoughCycles(int countValidCycles) {
 }
 
 /// <summary>
-/// Logs one cyle of gps data retrieval.
+/// Logs one cycle of gps data retrieval.
 /// </summary>
 void GPSModule::logCurrentCycle() {
 	_sdCard.logStatus(LINE_SEPARATOR);
@@ -274,11 +271,12 @@ void GPSModule::logSyncIsComplete() {
 /// </summary>
 /// <returns>True if valid GPS location data.</returns>
 bool GPSModule::isGpsLocationValid() {
-	return		(
-		_tinyGPS.satellites.value() >= GPS_SATELLITES_REQUIRED
-		&& _tinyGPS.location.isValid()
-		&& _tinyGPS.altitude.isValid()
-		&& _tinyGPS.hdop.value() / 100. <= GPS_MAX_ALLOWED_HDOP);
+	return
+		(_tinyGPS.satellites.value() >= GPS_SATELLITES_REQUIRED
+			&& _tinyGPS.location.isValid()
+			&& _tinyGPS.altitude.isValid()
+			&& _tinyGPS.hdop.value() / 100. <= GPS_MAX_ALLOWED_HDOP
+			);
 }
 
 /// <summary>
@@ -290,18 +288,17 @@ bool GPSModule::isGpsDateTimeValid() {
 }
 
 /// <summary>
-/// Sets the system time and location to the current GPS data.
+/// Sets the system time and location from GPS data.
 /// </summary>
-/// <param name="millisStart">Mills when the sync operation started.</param>
+/// <param name="millisStart">Millis when the sync operation started.</param>
 /// <param name="countGpsCycles">Total number of GPS cycles.</param>
-/// <param name="sdCard">SDCard instance for logging.</param>
-void GPSModule::syncSystemWithCurrentGpsData(unsigned long millisStart, int countGpsCycles) {
+void GPSModule::sync_time_and_location_from_gps(unsigned long millisStart, int countGpsCycles) {
 	String msg = "GPS valid data criteria met after ";
 	msg += String(countGpsCycles) + " cycles.";
 	_sdCard.logStatus(msg, millis());
 	data._timeForSyncProcess_sec = (millis() - millisStart) / 1000.;
 	syncSystemTimeToGPS();
-	syncLocationToGPS();
+	set_location_from_gps();
 	_sdCard.logStatus("GPS data: COMPLETE. Sync GPS data.", millis());
 }
 
@@ -320,9 +317,9 @@ void GPSModule::gpsSmartDelay(unsigned long delay) {
 }
 
 /// <summary>
-/// Saves current GPS location data.
+/// Sets our location data from gps readings.
 /// </summary>
-void GPSModule::syncLocationToGPS() {
+void GPSModule::set_location_from_gps() {
 	// Keep the current GPS data.
 	data._latitude = _tinyGPS.location.lat();
 	data._longitude = _tinyGPS.location.lng();
@@ -384,11 +381,11 @@ void GPSModule::logGpsData() {
 }
 
 /// <summary>
-/// Set system time and date to GPS values.
+/// Sets time we use (TimeLib.h) from GPS time. Also 
+/// sets ESP32 internal RTC clock (sys/time.h).
 /// </summary>
 void GPSModule::syncSystemTimeToGPS() {
-	// Use TimLib setTime:
-	// setTime(hours, minutes, seconds, days, months, years)
+	// Set the time that TimeLib uses (for now()).
 	setTime(_tinyGPS.time.hour(), _tinyGPS.time.minute(), _tinyGPS.time.second(),
 		_tinyGPS.date.day(), _tinyGPS.date.month(), _tinyGPS.date.year());
 	// Convert from UTC to current time zone.
@@ -397,6 +394,23 @@ void GPSModule::syncSystemTimeToGPS() {
 	if (IS_DAYLIGHT_TIME) {
 		adjustTime(3600);
 	}
+	// Set ESP32 internal RTC (sys/time.h) to TimeLib time.
+	sync_ESP32_internal_clock(now());
+}
+
+/// <summary>
+/// Sets ESP32 internal clock.
+/// </summary>
+/// <param name="tNow">Time to set.</param>
+/// <remarks>Needed for file systems.</remarks>
+void GPSModule::sync_ESP32_internal_clock(time_t tNow) {
+	// Set ESP32 internal clock (sys/time.h) (for LittleFS).
+	// Format for ESP32 native system clock.
+	struct timeval tv;
+	tv.tv_sec = now();	// seconds since Jan 1 1970
+	tv.tv_usec = 0;     // microseconds
+	// Set ESP32 internal RTC clock.
+	settimeofday(&tv, NULL);	// use NULL for 2nd param timezone that is obsolete.
 }
 
 /// <summary>
@@ -404,8 +418,7 @@ void GPSModule::syncSystemTimeToGPS() {
 /// location data has been received and saved.
 /// </summary>
 /// <returns>True if gps data received and saved.</returns>
-bool GPSModule::isSynced()
-{
+bool GPSModule::isSynced() {
 	return _isGpsSynced;
 }
 
@@ -413,8 +426,7 @@ bool GPSModule::isSynced()
 /// Number of GPS cycles.
 /// </summary>
 /// <returns>Number of cycles.</returns>
-unsigned int GPSModule::cyclesCount()
-{
+unsigned int GPSModule::cyclesCount() {
 	return _countGpsCycles;
 }
 
@@ -542,7 +554,7 @@ String GPSModule::dateTime_Str() {
 /// </summary>
 /// <param name="t_num">Numeric (Unix) time.</param>
 /// <returns>Date and time as "yyyy-mm-dd hh:mm"</returns>
-String GPSModule::dateTime_Str(time_t t_num) {	
+String GPSModule::dateTime_Str(time_t t_num) {
 	String s = String(year(t_num)) + "-";
 	// Month.
 	if (month(t_num) < 10) { s += "0"; }
