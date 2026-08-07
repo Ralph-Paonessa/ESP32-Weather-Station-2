@@ -5,6 +5,8 @@
 #include "Utilities.h"
 #include "DataPoint.h"
 #include <HardwareSerial.h>
+#include <Wire.h>
+#include <WString.h>
 
 /// <summary>
 /// Prints line to serial port during VM_DEBUG.
@@ -15,6 +17,28 @@ void Utilities::serial_println_DEBUG(const String& prefix, const char* msg) {
 	Serial.print(prefix); Serial.print(" ");
 	Serial.println(msg);
 #endif
+}
+
+/// <summary>
+/// Scans all I2C addresses to detect connected devices.
+/// </summary>
+/// <returns>String that lists devices found.</returns>
+String Utilities::scan_I2C() {
+	Wire.begin();
+	int count = 0;
+	String s = "Scan for I2C devices:\n";
+	for (byte address = 1; address < 127; address++) {
+		Wire.beginTransmission(address);
+		if (Wire.endTransmission() == 0) {
+			count += 1;
+			s += "\tFound device " + String(count);
+			s += " at 0x" + String(address, HEX) + "\n";
+		}
+	}
+	if (count == 0) {
+		s += "\tNo devices found";
+	}
+	return s;
 }
 
 /// <summary>
