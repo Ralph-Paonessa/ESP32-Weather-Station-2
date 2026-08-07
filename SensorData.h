@@ -85,8 +85,8 @@ public:
 	SensorData(bool isDataInFileSys = true,	bool isReportDailyMaxOnly = false);
 
 	/// <summary>
-	/// Creates files that hold sensor data points at various 
-	/// intervals.
+	/// Creates files for this sensor in nonvolatile LittleFS 
+	/// to retain sensor data points at various intervals.
 	/// </summary>
 	/// <param name="isConvertZeroToEmpty">
 	/// Set to true to convert zero to empty in output strings. (Default is true.)

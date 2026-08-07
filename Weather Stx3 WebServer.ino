@@ -176,11 +176,17 @@ void createServerRouteHandler() {
 			request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
 			});
 
-		// Sky Infrared graph page.
-		server.on("/chart_IR", HTTP_GET, [](AsyncWebServerRequest* request) {
-			_chart_request = CHART_IR_SKY;
+		// Sky Infrared temp C graph page.
+		server.on("/chart_IR_C", HTTP_GET, [](AsyncWebServerRequest* request) {
+			_chart_request = CHART_IR_SKY_C;
 			request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
 			});
+
+		//// Sky Infrared temp F graph page.
+		//server.on("/chart_IR_F", HTTP_GET, [](AsyncWebServerRequest* request) {
+		//	_chart_request = CHART_IR_SKY_F				;
+		//	request->send(LittleFS, "/html/chart.html", "text/html", false, processor);
+		//	});
 
 		// UV Index graph page.
 		server.on("/chart_UVIndex", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -273,7 +279,7 @@ void createServerRouteHandler() {
 				case CHART_INSOLATION:
 					request->send(200, "text/plain", d_Insol.dataPoints_10_min_as_String().c_str());
 					break;
-				case CHART_IR_SKY:
+				case CHART_IR_SKY_C:
 					request->send(200, "text/plain", d_IRSky_C.dataPoints_10_min_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
@@ -322,7 +328,7 @@ void createServerRouteHandler() {
 				case CHART_INSOLATION:
 					request->send(200, "text/plain", d_Insol.dataPoints_60_min_as_String().c_str());
 					break;
-				case CHART_IR_SKY:
+				case CHART_IR_SKY_C:
 					request->send(200, "text/plain", d_IRSky_C.dataPoints_60_min_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
@@ -371,7 +377,7 @@ void createServerRouteHandler() {
 				case CHART_INSOLATION:
 					request->send(200, "text/plain", d_Insol.dataPoints_dayMaxMin_as_String().c_str());
 					break;
-				case CHART_IR_SKY:
+				case CHART_IR_SKY_C:
 					request->send(200, "text/plain", d_IRSky_C.dataPoints_dayMaxMin_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
@@ -417,7 +423,7 @@ void createServerRouteHandler() {
 				case CHART_INSOLATION:
 					request->send(200, "text/plain", d_Insol.dataPoints_dayMax_as_String().c_str());
 					break;
-				case CHART_IR_SKY:
+				case CHART_IR_SKY_C:
 					request->send(200, "text/plain", d_IRSky_C.dataPoints_dayMax_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:
@@ -463,7 +469,7 @@ void createServerRouteHandler() {
 				case CHART_INSOLATION:
 					request->send(200, "text/plain", d_Insol.dataPoints_dayMin_as_String().c_str());
 					break;
-				case CHART_IR_SKY:
+				case CHART_IR_SKY_C:
 					request->send(200, "text/plain", d_IRSky_C.dataPoints_dayMin_as_String().c_str());
 					break;
 				case CHART_TEMPERATURE_F:

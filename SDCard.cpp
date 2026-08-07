@@ -144,7 +144,7 @@ void SDCard::logDeviceStatus(
 	String msg = "DEVICE STATUS REPORT:";
 	logStatus(msg, gpsDateTime);
 
-	msg = "WiFi connected: XXX THIS STATUS IS NOT CODED YET!!";
+	msg = "WiFi connected: (not implemented)";
 	//msg += Utilities::bool_OK_Error(wiFi_isConnected);
 	logStatus_indent(msg);
 

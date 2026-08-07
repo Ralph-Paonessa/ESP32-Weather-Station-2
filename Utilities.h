@@ -20,6 +20,12 @@ namespace Utilities {
 	void serial_println_DEBUG(const String& prefix, const char* msg);
 
 	/// <summary>
+	/// Scans all I2C addresses to detect connected devices.
+	/// </summary>
+	/// <returns>String that lists devices found.</returns>
+	String scan_I2C();
+
+	/// <summary>
 	/// Prints DataPoint time and value to serial port during VM_DEBUG.
 	/// </summary>
 	/// <param name="prefix">Prefix for message.</param>

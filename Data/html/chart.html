@@ -27,17 +27,11 @@
             <div class="nav home">
                 <a href="/"><img src="home-icon.png" class="icon" /></a>
             </div>
-            <!--<div class="nav"><a onclick="getChartData('/data_10', 10, %UTC_CURRENT_OFFSET_HOURS%)">Recent</a></div>
-            <div class="nav"><a onclick="getChartData('/data_60', 60, %UTC_CURRENT_OFFSET_HOURS%)">Hourly</a></div>
-            <div class="nav"><a onclick="getChartData('/data_max_min', 720, %UTC_CURRENT_OFFSET_HOURS%)">Daily</a></div>-->
 
+            <!-- Chart duration buttons -->
             <div id="min_10" class="nav active" onclick="getChartData('/data_10', this)">Recent</div>
             <div id="min_60" class="nav" onclick="getChartData('/data_60', this)">Hourly</div>
             <div id="mx_mn" class="nav" onclick="getChartData('/data_max_min', this)">Daily</div>
-
-            <!--<div id="min_10" class="nav active"><a onclick="getChartData('/data_10', this)">Recent</a></div>
-            <div id="min_60" class="nav"><a onclick="getChartData('/data_60', this)">Hourly</a></div>
-            <div id="mx_mn" class="nav"><a onclick="getChartData('/data_max_min', this)">Daily</a></div>-->
 
         </div>
         <div class="chart-container">

@@ -25,6 +25,7 @@ void WiFiTools::WiFiEvent(WiFiEvent_t event) {
 	case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
 		_wifiState = WifiState::DISCONNECTED;
 		break;
+	default: break;	// ignore other events
 	}
 }
 

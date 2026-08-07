@@ -266,7 +266,7 @@ String processor(const String& var) {
 			return "Chart not specified!";
 		case CHART_INSOLATION:
 			return String(d_Insol.label() + ", " + d_Insol.units_html());
-		case CHART_IR_SKY:
+		case CHART_IR_SKY_C:
 			return String(d_IRSky_C.label() + ", " + d_IRSky_C.units_html());
 		case CHART_TEMPERATURE_F:
 			return String(d_TempF.label() + ", " + d_TempF.units_html());
@@ -299,7 +299,7 @@ String processor(const String& var) {
 			return "Chart not specified!";
 		case CHART_INSOLATION:
 			return String(d_Insol.label());
-		case CHART_IR_SKY:
+		case CHART_IR_SKY_C:
 			return String(d_IRSky_C.label());
 		case CHART_TEMPERATURE_F:
 			return String(d_TempF.label());
@@ -330,7 +330,7 @@ String processor(const String& var) {
 			return "min: -500";
 		case CHART_INSOLATION:
 			return "min: 0";
-		case CHART_IR_SKY:
+		case CHART_IR_SKY_C:
 			return "min: -50";
 		case CHART_TEMPERATURE_F:
 			return "min: 0";
@@ -363,7 +363,7 @@ String processor(const String& var) {
 			return ", max: 500";
 		case CHART_INSOLATION:
 			return ", max: 100";
-		case CHART_IR_SKY:
+		case CHART_IR_SKY_C:
 			return ", max: 50";
 		case CHART_TEMPERATURE_F:
 			return ", max: 120";
@@ -392,7 +392,7 @@ String processor(const String& var) {
 		// Based on chart requested.
 		switch (_chart_request)
 		{
-		case CHART_IR_SKY:
+		case CHART_IR_SKY_C:
 			return ", tickAmount: 5";
 		case CHART_TEMPERATURE_F:
 			return ", tickAmount: 5";

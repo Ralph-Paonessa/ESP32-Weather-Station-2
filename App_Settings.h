@@ -34,10 +34,10 @@ namespace App_Settings {
 	constexpr unsigned int	DATA_RECOVER_DAY_AGE_LIMIT_SEC = 3 * SECONDS_PER_DAY;			// Recover day data no older than 3 days.
 
 	constexpr unsigned long GPS_BAUD_RATE = 9600;		// Baud rate for NEO-6M 9600 GPS.
-	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 5;// Minimum number of GPS satellites before syncing.
-	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 4;	// Minimum GPS cycles before syncing.
+	constexpr unsigned int	GPS_SATELLITES_REQUIRED = 4;// Minimum number of GPS satellites before syncing.
+	constexpr unsigned int	GPS_CYCLES_FOR_SYNC = 3;	// Minimum GPS cycles before syncing.
 	constexpr unsigned int	GPS_CYCLE_DELAY_SEC = 2;	// Delay before getting another GPS fix, sec.
-	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 5;	// XXX	XXX	Max number of GPS cycles before quitting.
+	constexpr unsigned int	GPS_CYCLES_COUNT_MAX = 35;	// Max number of GPS cycles before abandoning.
 	constexpr float			GPS_MAX_ALLOWED_HDOP = 2;	// Minimum HDOP precision for syncing.
 
 	constexpr unsigned int	GPS_DUMMY_ALTITUDE = 700;	// Dummy altitude for GPS. (used Ridgecrest)
@@ -111,7 +111,8 @@ namespace App_Settings {
 		CHART_RELATIVE_HUMIDITY,
 		CHART_UV_INDEX,
 		CHART_INSOLATION,
-		CHART_IR_SKY
+		CHART_IR_SKY_C,
+		CHART_IR_SKY_F	// not implemented!
 	};
 }
 

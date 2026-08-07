@@ -64,7 +64,7 @@ SensorData d_RH;					// Rel humidity
 SensorData d_UVA(false);			// UVA					(Data not in filesys)
 SensorData d_UVB(false);			// UVB					(Data not in filesys)
 SensorData d_UVIndex;				// UV Index
-SensorData d_Insol(true, true);		// Insolation			(Data not in filesys, no minima)
+SensorData d_Insol(true, true);		// Insolation			(Data not in filesys; no minima)
 SensorData d_IRSky_C;				// IR sky temp
 SensorData d_fanRPM(false);			// Fan RPM
 WindSpeed windSpeed(DAVIS_SPEED_CAL_FACTOR);	// Wind speed
@@ -357,6 +357,8 @@ void setup() {
 
 	sd.logStatus("App settings:");
 	sd.logApp_Settings();
+
+	sd.logStatus(scan_I2C(), millis());
 
 	//  SETUP: ==========  CREATE WIFI NETWORK   ========== //	
 //#if defined(VM_DEBUG)

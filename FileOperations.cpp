@@ -18,8 +18,9 @@ String FileOps::fileStatus_toString(FileStatus status) {
 	case Created:  return "Created";
 	case ErrorCreating:  return "ErrorCreating";
 	case ErrorOpening:  return "ErrorOpening";
+	case Unknown: return "Unknown";
+	default: return "Error: undefined status"; // Fallback for invalid/cast enum values
 	}
-	return "Unknown"; // Fallback for invalid/cast enum values
 };
 
 /// <summary>

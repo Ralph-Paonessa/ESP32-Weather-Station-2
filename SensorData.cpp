@@ -275,7 +275,7 @@ void SensorData::recover_data_dayMaxMin_from_file() {
 }
 
 /*****************************************************************
-	DELIMITED STRINGS FROM MEMORY
+	DELIMITED STRINGS OF DATA POINTS
 ******************************************************************/
 
 /// <summary>
@@ -350,7 +350,8 @@ String SensorData::dataPoints_dayMin_as_String() {
 ******************************************************************/
 
 /// <summary>
-/// Creates files that hold sensor data points at various intervals.
+/// Creates files for this sensor in nonvolatile LittleFS 
+/// to retain sensor data points at various intervals.
 /// </summary>
 /// <param name="isConvertZeroToEmpty">
 /// Set to true to convert zero to empty in output strings.</param>
